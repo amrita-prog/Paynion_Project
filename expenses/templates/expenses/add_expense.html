@@ -1,0 +1,110 @@
+{% extends "base.html" %}
+
+{% block title %}Add Expense{% endblock %}
+
+{% block content %}
+<div class="container mt-4">
+
+    <h3 class="mb-3">
+        {% if group %}
+            Add Expense – <span class="text-primary">{{ group.title }}</span>
+        {% else %}
+            Add Expense
+        {% endif %}
+    </h3>
+
+    {% if group %}
+        <p class="text-muted">
+            Expense will be added to this group automatically.
+        </p>
+    {% endif %}
+
+    <hr>
+
+    <form method="POST">
+        {% csrf_token %}
+
+        {# ---------- GROUP (only for direct add) ---------- #}
+        {% if not group and form.group %}
+            <div class="mb-3">
+                <label class="form-label fw-semibold">Select Group</label>
+                {{ form.group }}
+                {% if form.group.errors %}
+                    <div class="text-danger small">{{ form.group.errors }}</div>
+                {% endif %}
+            </div>
+        {% endif %}
+
+        {# ---------- AMOUNT ---------- #}
+        <div class="mb-3">
+            <label class="form-label fw-semibold">Amount</label>
+            {{ form.amount }}
+            {% if form.amount.errors %}
+                <div class="text-danger small">{{ form.amount.errors }}</div>
+            {% endif %}
+        </div>
+
+        {# ---------- DESCRIPTION ---------- #}
+        <div class="mb-3">
+            <label class="form-label fw-semibold">Description</label>
+            {{ form.description }}
+            {% if form.description.errors %}
+                <div class="text-danger small">{{ form.description.errors }}</div>
+            {% endif %}
+        </div>
+
+        {# ---------- SPLIT TYPE (RADIO) ---------- #}
+        <div class="mb-3">
+            <label class="form-label fw-semibold">Split Type</label>
+
+            {% for radio in form.split_type %}
+                <div class="form-check">
+                    {{ radio.tag }}
+                    <label class="form-check-label">
+                        {{ radio.choice_label }}
+                    </label>
+                </div>
+            {% endfor %}
+
+            {% if form.split_type.errors %}
+                <div class="text-danger small">{{ form.split_type.errors }}</div>
+            {% endif %}
+        </div>
+
+        {# ---------- SPLIT BETWEEN (CHECKBOXES) ---------- #}
+        <div class="mb-3">
+            <label class="form-label fw-semibold">Split Between</label>
+
+            {% for checkbox in form.split_between %}
+                <div class="form-check">
+                    {{ checkbox.tag }}
+                    <label class="form-check-label">
+                        {{ checkbox.choice_label }}
+                    </label>
+                </div>
+            {% empty %}
+                <p class="text-muted small">
+                    Select a group to see members
+                </p>
+            {% endfor %}
+
+            {% if form.split_between.errors %}
+                <div class="text-danger small">
+                    {{ form.split_between.errors }}
+                </div>
+            {% endif %}
+        </div>
+
+        <div class="d-flex gap-2 mt-4">
+            <button class="btn btn-success">
+                Save Expense
+            </button>
+
+            <a href="{% url 'dashboard' %}" class="btn btn-secondary">
+                Cancel
+            </a>
+        </div>
+    </form>
+
+</div>
+{% endblock %}

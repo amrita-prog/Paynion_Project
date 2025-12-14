@@ -1,0 +1,48 @@
+{% extends 'base.html' %}
+
+{% block content %}
+<div class="container mt-4">
+    <h2 class="mb-3">Create New Group</h2>
+    <hr>
+
+    <form method="POST" class="mt-3">
+        {% csrf_token %}
+
+        <!-- Show field errors at the top -->
+        {% if form.errors %}
+            <div class="alert alert-danger">
+                <strong>Please fix the errors below:</strong>
+            </div>
+        {% endif %}
+
+        <!-- Title -->
+        <div class="mb-3">
+            <label class="form-label">Group Title</label>
+            {{ form.title }}
+            {% if form.title.errors %}
+                <div class="text-danger">{{ form.title.errors }}</div>
+            {% endif %}
+        </div>
+
+        <!-- Description -->
+        <div class="mb-3">
+            <label class="form-label">Description</label>
+            {{ form.description }}
+            {% if form.description.errors %}
+                <div class="text-danger">{{ form.description.errors }}</div>
+            {% endif %}
+        </div>
+
+        <!-- Members -->
+        <div class="mb-3">
+            <label class="form-label">Select Members</label><br>
+            {{ form.members }}
+            {% if form.members.errors %}
+                <div class="text-danger">{{ form.members.errors }}</div>
+            {% endif %}
+        </div>
+
+        <button class="btn btn-primary">Create Group</button>
+    </form>
+</div>
+{% endblock %}
