@@ -68,15 +68,28 @@
 
 
     <!-- ACTION BUTTONS -->
-    <div class="d-flex justify-content-between my-4">
+<div class="d-flex justify-content-between my-4">
+
+    <div class="d-flex gap-2">
         <a href="{% url 'create_group' %}" class="btn btn-success">
             + Create Group
         </a>
 
-        <a href="{% url 'view_all_group' %}" class="btn btn-primary">
-            + Add Expense
+        <!-- NEW: All Groups button -->
+        <a href="{% url 'view_all_group' %}"
+        class="btn btn-outline-secondary">
+            All Groups
         </a>
     </div>
+
+    <!-- Add Expense (will go to group selection flow) -->
+    <a href="{% url 'view_all_group' %}?from=add_expense"
+    class="btn btn-primary">
+        + Add Expense
+    </a>
+
+</div>
+
 
 
     <!-- RECENT EXPENSES -->

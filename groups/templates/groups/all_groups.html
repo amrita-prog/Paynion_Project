@@ -3,61 +3,95 @@
 {% block title %}All Groups{% endblock %}
 
 {% block content %}
+
+<!-- PAGE HEADER -->
 <div class="container mt-4">
 
-    <div class="d-flex justify-content-between align-items-center mb-3">
-        <h2>All Groups</h2>
+    <div class="d-flex justify-content-between align-items-center mb-4">
+        <div>
+            <h2 class="fw-bold mb-1">Your Groups</h2>
+            <p class="text-muted mb-0">
+                Manage your groups and view details
+            </p>
+        </div>
+
         <a href="{% url 'create_group' %}" class="btn btn-primary">
             + Create Group
         </a>
     </div>
 
+    <!-- GROUP LIST -->
     {% if groups %}
-        <div class="row">
-            {% for group in groups %}
-                <div class="col-md-4 mb-3">
-                    <div class="card shadow-sm h-100">
-                        <div class="card-body d-flex flex-column">
+    <div class="row">
 
-                            <h5 class="card-title">{{ group.title }}</h5>
+        {% for group in groups %}
+        <div class="col-md-4 mb-4">
 
-                            {% if group.description %}
-                                <p class="card-text text-muted">
-                                    {{ group.description|truncatechars:80 }}
-                                </p>
-                            {% endif %}
+            <div class="card shadow-sm h-100 border-0">
+                <div class="card-body d-flex flex-column">
 
-                            <p class="mb-1">
-                                <strong>Members:</strong> {{ group.members.count }}
-                            </p>
+                    <!-- GROUP TITLE -->
+                    <h5 class="card-title fw-semibold mb-2">
+                        {{ group.title }}
+                    </h5>
 
-                            <p class="mb-1">
-                                <strong>Created by:</strong> {{ group.created_by.full_name }}
-                            </p>
+                    <!-- DESCRIPTION -->
+                    {% if group.description %}
+                    <p class="text-muted small mb-3">
+                        {{ group.description|truncatechars:90 }}
+                    </p>
+                    {% endif %}
 
-                            <p class="text-muted small">
-                                Created on {{ group.created_at|date:"d M Y, h:i A" }}
-                            </p>
-
-                            <!-- 🔥 ADD EXPENSE BUTTON -->
-                            <div class="mt-auto">
-                                <a href="{% url 'add_expense_group' group.id %}"
-                                class="btn btn-sm btn-outline-success">
-                                    Add Expense
-                                </a>
-
-                            </div>
-
+                    <!-- META INFO -->
+                    <div class="mb-3 small text-secondary">
+                        <div>
+                            <strong>Members:</strong> {{ group.members.count }}
+                        </div>
+                        <div>
+                            <strong>Created by:</strong> {{ group.created_by.full_name }}
+                        </div>
+                        <div>
+                            <strong>Created on:</strong>
+                            {{ group.created_at|date:"d M Y" }}
                         </div>
                     </div>
+
+                    <!-- ACTION BUTTONS -->
+                    <div class="mt-auto d-flex gap-2">
+
+                        <a href="{% url 'group_detail' group.id %}"
+                           class="btn btn-sm btn-outline-primary w-100">
+                            View Details
+                        </a>
+
+                        {% if show_add_expense %}
+                        <a href="{% url 'add_expense_group' group.id %}"
+                           class="btn btn-sm btn-success w-100">
+                            Add Expense
+                        </a>
+                        {% endif %}
+
+                    </div>
+
                 </div>
-            {% endfor %}
+            </div>
+
         </div>
+        {% endfor %}
+
+    </div>
     {% else %}
-        <div class="alert alert-info">
-            No groups found. Create your first group!
-        </div>
+
+    <!-- EMPTY STATE -->
+    <div class="alert alert-info text-center">
+        <h5>No Groups Found</h5>
+        <p class="mb-0">
+            Create your first group to start tracking expenses.
+        </p>
+    </div>
+
     {% endif %}
 
 </div>
+
 {% endblock %}

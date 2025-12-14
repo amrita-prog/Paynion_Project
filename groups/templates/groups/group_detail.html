@@ -1,0 +1,47 @@
+{% extends "base.html" %}
+{% block content %}
+
+<h2>{{ group.title }}</h2>
+<p class="text-muted">{{ group.description }}</p>
+
+<hr>
+
+<!-- ACTIONS -->
+<div class="d-flex gap-2 mb-4">
+  <a href="{% url 'add_expense_group' group.id %}"
+     class="btn btn-success">Add Expense</a>
+
+  <a href="#" class="btn btn-outline-primary">Edit Group</a>
+  <a href="#" class="btn btn-outline-danger">Delete Group</a>
+</div>
+
+<!-- MEMBERS -->
+<h4>Members</h4>
+<ul class="list-group mb-4">
+  {% for member in group.members.all %}
+  <li class="list-group-item d-flex justify-content-between">
+    {{ member.full_name }}
+    {% if group.created_by == request.user and member != request.user %}
+      <a href="#" class="text-danger">Remove</a>
+    {% endif %}
+  </li>
+  {% endfor %}
+</ul>
+
+<!-- EXPENSES -->
+<h4>Expenses</h4>
+{% if expenses %}
+  {% for exp in expenses %}
+    <div class="card mb-2 p-2">
+      <strong>{{ exp.description }}</strong>
+      <small>
+        ₹{{ exp.amount }} |
+        Paid by {{ exp.paid_by.full_name }}
+      </small>
+    </div>
+  {% endfor %}
+{% else %}
+  <p class="text-muted">No expenses yet.</p>
+{% endif %}
+
+{% endblock %}
