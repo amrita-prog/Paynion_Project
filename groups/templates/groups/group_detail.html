@@ -1,47 +1,121 @@
 {% extends "base.html" %}
+{% block title %}Group Details{% endblock %}
+
 {% block content %}
+<div class="container mt-4">
 
-<h2>{{ group.title }}</h2>
-<p class="text-muted">{{ group.description }}</p>
+  <!-- ================= GROUP HEADER ================= -->
+  <div class="card shadow-sm mb-4">
+    <div class="card-body">
 
-<hr>
+      <div class="d-flex justify-content-between align-items-start">
+        <div>
+          <h3 class="mb-1">{{ group.title }}</h3>
+          <p class="text-muted mb-0">{{ group.description }}</p>
+        </div>
 
-<!-- ACTIONS -->
-<div class="d-flex gap-2 mb-4">
-  <a href="{% url 'add_expense_group' group.id %}"
-     class="btn btn-success">Add Expense</a>
+        {% if request.user == group.created_by %}
+        <div class="d-flex gap-2">
+          <a href="{% url 'edit_group' group.id %}"
+             class="btn btn-sm btn-outline-primary">
+             Edit
+          </a>
 
-  <a href="#" class="btn btn-outline-primary">Edit Group</a>
-  <a href="#" class="btn btn-outline-danger">Delete Group</a>
-</div>
+          <a href="{% url 'delete_group' group.id %}"
+             class="btn btn-sm btn-outline-danger">
+             Delete
+          </a>
+        </div>
+        {% endif %}
+      </div>
 
-<!-- MEMBERS -->
-<h4>Members</h4>
-<ul class="list-group mb-4">
-  {% for member in group.members.all %}
-  <li class="list-group-item d-flex justify-content-between">
-    {{ member.full_name }}
-    {% if group.created_by == request.user and member != request.user %}
-      <a href="#" class="text-danger">Remove</a>
-    {% endif %}
-  </li>
-  {% endfor %}
-</ul>
-
-<!-- EXPENSES -->
-<h4>Expenses</h4>
-{% if expenses %}
-  {% for exp in expenses %}
-    <div class="card mb-2 p-2">
-      <strong>{{ exp.description }}</strong>
-      <small>
-        ₹{{ exp.amount }} |
-        Paid by {{ exp.paid_by.full_name }}
-      </small>
     </div>
-  {% endfor %}
-{% else %}
-  <p class="text-muted">No expenses yet.</p>
-{% endif %}
+  </div>
 
+  <!-- ================= ACTION ================= -->
+  <div class="mb-4">
+    <a href="{% url 'add_expense' group.id %}"
+       class="btn btn-success">
+       + Add Expense
+    </a>
+  </div>
+
+  <!-- ================= MEMBERS ================= -->
+  <div class="card shadow-sm mb-4">
+    <div class="card-body">
+
+      <div class="d-flex justify-content-between align-items-center mb-3">
+        <h5 class="mb-0">Members</h5>
+
+        {% if request.user == group.created_by %}
+        <a href="#"
+           class="btn btn-sm btn-outline-success">
+           + Add Member
+        </a>
+        {% endif %}
+      </div>
+
+      <ul class="list-group">
+        {% for member in group.members.all %}
+        <li class="list-group-item d-flex justify-content-between align-items-center">
+          <span>{{ member.full_name }}</span>
+
+          {% if request.user == group.created_by and member != request.user %}
+          <a href="#" class="text-danger small">Remove</a>
+          {% endif %}
+        </li>
+        {% endfor %}
+      </ul>
+
+    </div>
+  </div>
+
+  <!-- ================= EXPENSES ================= -->
+  <div class="card shadow-sm">
+    <div class="card-body">
+
+      <h5 class="mb-3">Expenses</h5>
+
+      {% if expenses %}
+        {% for exp in expenses %}
+        <div class="border rounded p-3 mb-3">
+
+          <!-- Expense Header -->
+          <div class="d-flex justify-content-between">
+            <strong>{{ exp.description }}</strong>
+            <span class="fw-semibold">₹ {{ exp.amount }}</span>
+          </div>
+
+          <small class="text-muted d-block mb-2">
+            Paid by {{ exp.paid_by.full_name }} •
+            {{ exp.created_at|date:"d M Y" }}
+          </small>
+
+          <!-- Split Details -->
+          <div class="mt-2">
+            <small class="fw-semibold">Split Details:</small>
+
+            <ul class="mt-1 mb-0 ps-3">
+              {% for split in exp.splits.all %}
+                <li>
+                  {{ split.user.full_name }} owes ₹ {{ split.amount }}
+                </li>
+              {% empty %}
+                <li class="text-muted">
+                  Split not calculated yet
+                </li>
+              {% endfor %}
+            </ul>
+          </div>
+
+        </div>
+        {% endfor %}
+      {% else %}
+        <p class="text-muted">No expenses yet.</p>
+      {% endif %}
+
+    </div>
+  </div>
+
+</div>
 {% endblock %}
