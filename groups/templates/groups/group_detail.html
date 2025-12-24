@@ -4,116 +4,105 @@
 {% block content %}
 <div class="container mt-4">
 
-  <!-- ================= GROUP HEADER ================= -->
+  <!-- GROUP HEADER -->
   <div class="card shadow-sm mb-4">
-    <div class="card-body">
-
-      <div class="d-flex justify-content-between align-items-start">
-        <div>
-          <h3 class="mb-1">{{ group.title }}</h3>
-          <p class="text-muted mb-0">{{ group.description }}</p>
-        </div>
-
-        {% if request.user == group.created_by %}
-        <div class="d-flex gap-2">
-          <a href="{% url 'edit_group' group.id %}"
-             class="btn btn-sm btn-outline-primary">
-             Edit
-          </a>
-
-          <a href="{% url 'delete_group' group.id %}"
-             class="btn btn-sm btn-outline-danger">
-             Delete
-          </a>
-        </div>
-        {% endif %}
+    <div class="card-body d-flex justify-content-between">
+      <div>
+        <h3>{{ group.title }}</h3>
+        <p class="text-muted mb-0">{{ group.description }}</p>
       </div>
 
+      {% if request.user == group.created_by %}
+      <div class="d-flex gap-2">
+        <a href="{% url 'edit_group' group.id %}" class="btn btn-sm btn-outline-primary">Edit</a>
+
+        <form method="POST" action="{% url 'delete_group' group.id %}">
+          {% csrf_token %}
+          <button class="btn btn-sm btn-outline-danger">Delete</button>
+        </form>
+      </div>
+      {% endif %}
     </div>
   </div>
 
-  <!-- ================= ACTION ================= -->
+  <!-- ADD EXPENSE -->
   <div class="mb-4">
-    <a href="{% url 'add_expense' group.id %}"
-       class="btn btn-success">
-       + Add Expense
+    <a href="{% url 'add_expense' group.id %}" class="btn btn-success">
+      + Add Expense
     </a>
   </div>
 
-  <!-- ================= MEMBERS ================= -->
+  <!-- MEMBERS -->
   <div class="card shadow-sm mb-4">
     <div class="card-body">
+      <h5 class="mb-3">Members</h5>
 
-      <div class="d-flex justify-content-between align-items-center mb-3">
-        <h5 class="mb-0">Members</h5>
-
-        {% if request.user == group.created_by %}
-        <a href="#"
-           class="btn btn-sm btn-outline-success">
-           + Add Member
-        </a>
-        {% endif %}
-      </div>
+      {% if request.user == group.created_by %}
+      <form method="POST" action="{% url 'add_member' group.id %}" class="d-flex gap-2 mb-3">
+        {% csrf_token %}
+        <input type="email" name="email" class="form-control" placeholder="Enter email" required>
+        <button class="btn btn-outline-success">Add</button>
+      </form>
+      {% endif %}
 
       <ul class="list-group">
         {% for member in group.members.all %}
         <li class="list-group-item d-flex justify-content-between align-items-center">
-          <span>{{ member.full_name }}</span>
+          {{ member.full_name }}
 
           {% if request.user == group.created_by and member != request.user %}
-          <a href="#" class="text-danger small">Remove</a>
+          <a href="{% url 'remove_member' group.id member.id %}"
+             class="text-danger small"
+             onclick="return confirm('Remove this member?');">
+            Remove
+          </a>
           {% endif %}
         </li>
         {% endfor %}
       </ul>
-
     </div>
   </div>
 
-  <!-- ================= EXPENSES ================= -->
+  <!-- EXPENSES -->
   <div class="card shadow-sm">
     <div class="card-body">
-
       <h5 class="mb-3">Expenses</h5>
 
-      {% if expenses %}
-        {% for exp in expenses %}
-        <div class="border rounded p-3 mb-3">
-
-          <!-- Expense Header -->
-          <div class="d-flex justify-content-between">
+      {% for exp in expenses %}
+      <div class="border rounded p-3 mb-3">
+        <div class="d-flex justify-content-between">
+          <div>
             <strong>{{ exp.description }}</strong>
+            <div class="text-muted small">
+              Paid by {{ exp.paid_by.full_name }} • {{ exp.created_at|date:"d M Y" }}
+            </div>
+          </div>
+
+          <div class="d-flex gap-2">
             <span class="fw-semibold">₹ {{ exp.amount }}</span>
+            <a href="{% url 'edit_expense' exp.id %}" class="btn btn-sm btn-outline-primary">Edit</a>
+            <a href="{% url 'delete_expense' exp.id %}"
+               class="btn btn-sm btn-outline-danger"
+               onclick="return confirm('Delete expense?');">
+              Delete
+            </a>
           </div>
-
-          <small class="text-muted d-block mb-2">
-            Paid by {{ exp.paid_by.full_name }} •
-            {{ exp.created_at|date:"d M Y" }}
-          </small>
-
-          <!-- Split Details -->
-          <div class="mt-2">
-            <small class="fw-semibold">Split Details:</small>
-
-            <ul class="mt-1 mb-0 ps-3">
-              {% for split in exp.splits.all %}
-                <li>
-                  {{ split.user.full_name }} owes ₹ {{ split.amount }}
-                </li>
-              {% empty %}
-                <li class="text-muted">
-                  Split not calculated yet
-                </li>
-              {% endfor %}
-            </ul>
-          </div>
-
         </div>
-        {% endfor %}
-      {% else %}
-        <p class="text-muted">No expenses yet.</p>
-      {% endif %}
 
+        <div class="mt-3">
+          <small class="fw-semibold">Split Details</small>
+          <ul class="mt-2 ps-3">
+            {% for split in exp.splits.all %}
+            <li>{{ split.user.full_name }} owes ₹ {{ split.amount }}</li>
+            {% empty %}
+            <li class="text-muted">Split not calculated</li>
+            {% endfor %}
+          </ul>
+        </div>
+      </div>
+      {% empty %}
+      <p class="text-muted">No expenses yet.</p>
+      {% endfor %}
     </div>
   </div>
 
