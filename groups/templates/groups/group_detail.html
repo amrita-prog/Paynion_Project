@@ -63,6 +63,31 @@
     </div>
   </div>
 
+  <!-- ================= BALANCES ================= -->
+    <div class="card shadow-sm mb-4">
+      <div class="card-body">
+        <h5 class="mb-3">Balances</h5>
+
+        <ul class="list-group">
+          {% for user, balance in balances.items %}
+            <li class="list-group-item d-flex justify-content-between">
+              <span>{{ user.full_name }}</span>
+
+              {% if balance > 0 %}
+                <span class="text-success">Gets ₹{{ balance|floatformat:2 }}</span>
+              {% elif balance < 0 %}
+                <span class="text-danger">Owes ₹{{ balance|floatformat:2 }}</span>
+              {% else %}
+                <span class="text-muted">Settled</span>
+              {% endif %}
+            </li>
+          {% endfor %}
+        </ul>
+
+      </div>
+    </div>
+
+
   <!-- EXPENSES -->
   <div class="card shadow-sm">
     <div class="card-body">
