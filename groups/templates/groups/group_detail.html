@@ -88,6 +88,29 @@
     </div>
 
 
+    <!-- ================= SETTLEMENTS ================= -->
+    <div class="card shadow-sm mb-4">
+      <div class="card-body">
+        <h5 class="mb-3">Suggested Settlements</h5>
+
+        {% if settlements %}
+          <ul class="list-group">
+            {% for s in settlements %}
+            <li class="list-group-item">
+              <strong>{{ s.from.full_name }}</strong>
+              pays
+              <strong>{{ s.to.full_name }}</strong>
+              ₹{{ s.amount|floatformat:2 }}
+            </li>
+            {% endfor %}
+          </ul>
+        {% else %}
+          <p class="text-muted">All settled 🎉</p>
+        {% endif %}
+      </div>
+    </div>
+
+
   <!-- EXPENSES -->
   <div class="card shadow-sm">
     <div class="card-body">

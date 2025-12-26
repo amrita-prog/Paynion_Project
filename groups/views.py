@@ -2,7 +2,7 @@ from django.shortcuts import render, redirect, get_object_or_404
 from django.contrib.auth.decorators import login_required
 from django.contrib import messages
 from django.contrib.auth import get_user_model
-from expenses.utils import calculate_group_balances
+from expenses.utils import calculate_group_balances, calculate_settlements
 from .forms import GroupCreateForm
 from .models import Group
 
@@ -78,20 +78,15 @@ def view_all_group(request):
 @login_required
 def group_detail(request, group_id):
     group = get_object_or_404(Group, id=group_id)
-
     expenses = group.expenses.all().order_by("-created_at")
-
-    # ✅ MUST be dictionary
     balances = calculate_group_balances(group)
-
-    # 🔒 Debug safety check (temporary)
-    if not isinstance(balances, dict):
-        raise ValueError("balances must be a dictionary")
+    settlements = calculate_settlements(balances)
 
     return render(request, "groups/group_detail.html", {
         "group": group,
         "expenses": expenses,
         "balances": balances,
+        "settlements": settlements,
     })
 
 
