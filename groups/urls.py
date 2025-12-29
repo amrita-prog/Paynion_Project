@@ -9,4 +9,6 @@ urlpatterns = [
     path("detail/<int:group_id>/", views.group_detail, name="group_detail"),
     path("add_member/<int:group_id>/", views.add_member, name="add_member"),
     path("remove_member/<int:group_id>/<int:user_id>/", views.remove_member, name="remove_member"),
+    path("invite/send/<int:group_id>/", views.send_group_invite, name="send_invite"),
+    path("groups/invite/accept/<uuid:token>/", views.accept_group_invite, name="accept_group_invite"),
 ]

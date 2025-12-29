@@ -4,7 +4,10 @@ from django.contrib import messages
 from django.contrib.auth import get_user_model
 from expenses.utils import calculate_group_balances, calculate_settlements
 from .forms import GroupCreateForm
-from .models import Group
+from django.conf import settings
+from django.core.mail import send_mail
+from .models import Group, GroupInvite
+from django.http import HttpResponse
 
 User = get_user_model()
 
@@ -135,3 +138,45 @@ def remove_member(request, group_id, user_id):
     messages.success(request, "Member removed successfully.")
 
     return redirect("group_detail", group_id=group.id)
+
+
+
+
+@login_required
+def send_group_invite(request, group_id):
+    if request.method == "POST":
+        email = request.POST.get("email")
+        group = get_object_or_404(Group, id=group_id)
+        invite = GroupInvite.objects.create(email=email,group=group,invited_by=request.user)
+
+        invite_link = f"http://127.0.0.1:8000/groups/invite/accept/{invite.token}/"
+
+        send_mail(
+            subject=f"Invite to join {group.title}",
+            message=f"""
+You have been invited to join the group "{group.title}"
+
+Click below to accept the invite:
+{invite_link}
+
+If you are not logged in, you will be asked to login or signup first.
+""",
+            from_email=settings.DEFAULT_FROM_EMAIL,
+            recipient_list=[email],
+            fail_silently=False
+        )
+
+        return redirect("group_detail", group_id=group.id)
+
+
+
+def accept_group_invite(request, token):
+    invite = get_object_or_404(GroupInvite, token=token, is_accepted=False)
+    if request.user.email != invite.email: # email safety check
+        return HttpResponse("This invite was not sent to your email.", status=403)
+    
+    invite.group.members.add(request.user)
+    invite.is_accepted = True
+    invite.save()
+
+    return redirect("group_detail", group_id = invite.group.id)

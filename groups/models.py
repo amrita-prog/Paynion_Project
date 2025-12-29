@@ -1,5 +1,6 @@
 from django.db import models
 from django.conf import settings
+import uuid
 
 User = settings.AUTH_USER_MODEL
 
@@ -14,3 +15,17 @@ class Group(models.Model):
 
     def __str__(self):
         return self.title
+
+
+
+
+class GroupInvite(models.Model):
+    email = models.EmailField()
+    group = models.ForeignKey("Group", on_delete=models.CASCADE)
+    token = models.UUIDField(default=uuid.uuid4, unique=True)
+    invited_by = models.ForeignKey(User, on_delete=models.CASCADE, null=True, blank=True)
+    is_accepted = models.BooleanField(default=False)
+    created_at = models.DateTimeField(auto_now_add=True)
+
+    def __str__(self):
+        return f"{self.email} → {self.group.title}"
