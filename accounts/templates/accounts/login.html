@@ -28,7 +28,7 @@
                     {% endfor %}
                 {% endif %}
 
-                <form method="POST" action="{% url 'login' %}">
+                <form method="POST" action="{% url 'accounts:login' %}">
                     {% csrf_token %}
 
                     <!-- Email -->
@@ -60,7 +60,7 @@
 
                 <p class="text-center mt-3">
                     Don’t have an account?
-                    <a href="{% url 'signup' %}">Create Account</a>
+                    <a href="{% url 'accounts:signup' %}">Create Account</a>
                 </p>
 
             </div>

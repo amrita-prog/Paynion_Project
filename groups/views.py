@@ -8,6 +8,8 @@ from django.conf import settings
 from django.core.mail import send_mail
 from .models import Group, GroupInvite
 from django.http import HttpResponse
+from django.urls import reverse
+from django.utils.http import urlencode
 
 User = get_user_model()
 
@@ -21,7 +23,7 @@ def create_group(request):
             group.created_by = request.user
             group.save()
             form.save_m2m()
-            return redirect("dashboard")
+            return redirect("accounts:dashboard")
     else:
         form = GroupCreateForm()
 
@@ -34,13 +36,13 @@ def edit_group(request, group_id):
 
     if request.user != group.created_by:
         messages.error(request, "You are not allowed to edit this group.")
-        return redirect("group_detail", group_id=group.id)
+        return redirect("groups:group_detail", group_id=group.id)
 
     if request.method == "POST":
         form = GroupCreateForm(request.POST, instance=group)
         if form.is_valid():
             form.save()
-            return redirect("group_detail", group_id=group.id)
+            return redirect("groups:group_detail", group_id=group.id)
     else:
         form = GroupCreateForm(instance=group)
 
@@ -56,11 +58,11 @@ def delete_group(request, group_id):
 
     if request.user != group.created_by:
         messages.error(request, "You are not allowed to delete this group.")
-        return redirect("group_detail", group_id=group.id)
+        return redirect("groups:group_detail", group_id=group.id)
 
     if request.method == "POST":
         group.delete()
-        return redirect("dashboard")
+        return redirect("accounts:dashboard")
 
     return render(request, "groups/confirm_delete.html", {"group": group})
 
@@ -101,7 +103,7 @@ def add_member(request, group_id):
 
     if request.user != group.created_by:
         messages.error(request, "You are not allowed to add members.")
-        return redirect("group_detail", group_id=group.id)
+        return redirect("groups:group_detail", group_id=group.id)
 
     if request.method == "POST":
         email = request.POST.get("email")
@@ -110,7 +112,7 @@ def add_member(request, group_id):
             user = User.objects.get(email=email)
         except User.DoesNotExist:
             messages.error(request, "User not found.")
-            return redirect("group_detail", group_id=group.id)
+            return redirect("groups:group_detail", group_id=group.id)
 
         if user in group.members.all():
             messages.warning(request, "User already exists in this group.")
@@ -118,7 +120,7 @@ def add_member(request, group_id):
             group.members.add(user)
             messages.success(request, "Member added successfully.")
 
-    return redirect("group_detail", group_id=group.id)
+    return redirect("groups:group_detail", group_id=group.id)
 
 
 @login_required
@@ -128,16 +130,16 @@ def remove_member(request, group_id, user_id):
 
     if request.user != group.created_by:
         messages.error(request, "You are not allowed to remove members.")
-        return redirect("group_detail", group_id=group.id)
+        return redirect("groups:group_detail", group_id=group.id)
 
     if user == group.created_by:
         messages.error(request, "Group creator cannot be removed.")
-        return redirect("group_detail", group_id=group.id)
+        return redirect("groups:group_detail", group_id=group.id)
 
     group.members.remove(user)
     messages.success(request, "Member removed successfully.")
 
-    return redirect("group_detail", group_id=group.id)
+    return redirect("groups:group_detail", group_id=group.id)
 
 
 
@@ -166,17 +168,27 @@ If you are not logged in, you will be asked to login or signup first.
             fail_silently=False
         )
 
-        return redirect("group_detail", group_id=group.id)
+        return redirect("groups:group_detail", group_id=group.id)
 
 
 
 def accept_group_invite(request, token):
     invite = get_object_or_404(GroupInvite, token=token, is_accepted=False)
-    if request.user.email != invite.email: # email safety check
-        return HttpResponse("This invite was not sent to your email.", status=403)
-    
+
+    # 1️⃣ User login nahi hai → pehle login karao
+    if not request.user.is_authenticated:
+        return redirect(f"/accounts/login/?next=/groups/invite/accept/{token}/")
+
+    # 2️⃣ Ab safe hai email check karna
+    if request.user.email != invite.email:
+        messages.error(request, "This invite is not for your email.")
+        return redirect("accounts:dashboard")
+
+    # 3️⃣ User ko group me add karo
     invite.group.members.add(request.user)
+
     invite.is_accepted = True
     invite.save()
 
-    return redirect("group_detail", group_id = invite.group.id)
+    messages.success(request, "You joined successfully!")
+    return redirect("groups:group_detail", group_id=invite.group.id)

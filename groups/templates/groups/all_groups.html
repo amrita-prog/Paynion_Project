@@ -15,7 +15,7 @@
             </p>
         </div>
 
-        <a href="{% url 'create_group' %}" class="btn btn-primary">
+        <a href="{% url 'groups:create_group' %}" class="btn btn-primary">
             + Create Group
         </a>
     </div>
@@ -59,7 +59,7 @@
                     <!-- ACTION BUTTONS -->
                     <div class="mt-auto d-flex gap-2">
 
-                        <a href="{% url 'group_detail' group.id %}"
+                        <a href="{% url 'groups:group_detail' group.id %}"
                            class="btn btn-sm btn-outline-primary w-100">
                             View Details
                         </a>

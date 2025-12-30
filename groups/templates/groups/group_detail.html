@@ -14,9 +14,9 @@
 
       {% if request.user == group.created_by %}
       <div class="d-flex gap-2">
-        <a href="{% url 'edit_group' group.id %}" class="btn btn-sm btn-outline-primary">Edit</a>
+        <a href="{% url 'groups:edit_group' group.id %}" class="btn btn-sm btn-outline-primary">Edit</a>
 
-        <form method="POST" action="{% url 'delete_group' group.id %}">
+        <form method="POST" action="{% url 'groups:delete_group' group.id %}">
           {% csrf_token %}
           <button class="btn btn-sm btn-outline-danger">Delete</button>
         </form>
@@ -27,7 +27,7 @@
 
 
   <h3>Invite Member</h3>
-  <form method="post" action="{% url 'send_invite' group.id %}">
+  <form method="post" action="{% url 'groups:send_invite' group.id %}">
       {% csrf_token %}
       <input type="email" name="email" placeholder="Enter email" required>
       <button type="submit">Send Invite</button>
@@ -49,7 +49,7 @@
       <h5 class="mb-3">Members</h5>
 
       {% if request.user == group.created_by %}
-      <form method="POST" action="{% url 'add_member' group.id %}" class="d-flex gap-2 mb-3">
+      <form method="POST" action="{% url 'groups:add_member' group.id %}" class="d-flex gap-2 mb-3">
         {% csrf_token %}
         <input type="email" name="email" class="form-control" placeholder="Enter email" required>
         <button class="btn btn-outline-success">Add</button>
@@ -62,7 +62,7 @@
           {{ member.full_name }}
 
           {% if request.user == group.created_by and member != request.user %}
-          <a href="{% url 'remove_member' group.id member.id %}"
+          <a href="{% url 'groups:remove_member' group.id member.id %}"
              class="text-danger small"
              onclick="return confirm('Remove this member?');">
             Remove

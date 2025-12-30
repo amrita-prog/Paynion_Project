@@ -38,7 +38,7 @@ def add_expense(request, group_id):
                 handle_custom_split(expense, users, request.POST)
 
             messages.success(request, "Expense added successfully")
-            return redirect("group_detail", group.id)
+            return redirect("groups:group_detail", group.id)
 
     else:
         form = ExpenseForm(group=group)
@@ -55,12 +55,12 @@ def delete_expense(request, expense_id):
 
     if request.user != expense.paid_by:
         messages.error(request, "You do not have permission to delete this expense.")
-        return redirect("group_detail", group_id=expense.group.id)
+        return redirect("groups:group_detail", group_id=expense.group.id)
     
     expense.delete()
 
     messages.success(request, "Expense deleted successfully.")
-    return redirect("group_detail", group_id=expense.group.id)
+    return redirect("groups:group_detail", group_id=expense.group.id)
 
 
 @login_required
@@ -87,7 +87,7 @@ def edit_expense(request, expense_id):
                 handle_custom_split(expense, users, request.POST)
 
             messages.success(request, "Expense updated successfully")
-            return redirect("group_detail", group.id)
+            return redirect("groups:group_detail", group.id)
 
     else:
         form = ExpenseForm(instance=expense, group=group)

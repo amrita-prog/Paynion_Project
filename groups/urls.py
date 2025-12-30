@@ -1,5 +1,8 @@
 from django.urls import path
 from . import views
+import uuid
+
+app_name = "groups"
 
 urlpatterns = [
     path("create/", views.create_group, name="create_group"),
@@ -10,5 +13,5 @@ urlpatterns = [
     path("add_member/<int:group_id>/", views.add_member, name="add_member"),
     path("remove_member/<int:group_id>/<int:user_id>/", views.remove_member, name="remove_member"),
     path("invite/send/<int:group_id>/", views.send_group_invite, name="send_invite"),
-    path("groups/invite/accept/<uuid:token>/", views.accept_group_invite, name="accept_group_invite"),
+    path("invite/accept/<uuid:token>/", views.accept_group_invite, name="accept_invite"),
 ]

@@ -99,8 +99,8 @@
                 {% endif %}
             </button>   
 
-            <a href="{% if expense %}{% url 'group_detail' expense.group.id %}
-                    {% else %}{% url 'group_detail' group.id %}{% endif %}"
+            <a href="{% if expense %}{% url 'groups:group_detail' expense.group.id %}
+                    {% else %}{% url 'groups:group_detail' group.id %}{% endif %}"
             class="btn btn-secondary">
                 Cancel
             </a>

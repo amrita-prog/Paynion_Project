@@ -5,8 +5,7 @@ from django.contrib.auth import login, logout, authenticate
 from django.contrib import messages
 from django.contrib.auth.decorators import login_required
 from django.contrib.auth import get_user_model
-
-from groups.models import Group
+from groups.models import Group, GroupInvite
 from expenses.models import Expense
 
 User = get_user_model()
@@ -18,7 +17,7 @@ def signup_view(request):
         if form.is_valid():
             user = form.save()
             messages.success(request, "Account created successfully. Please log in.")
-            return redirect('login')
+            return redirect('accounts:login')
         else:
             messages.error(request, "Please correct the errors below.")
     else:
@@ -45,7 +44,7 @@ def login_view(request):
         if user:
             login(request, user)
             messages.success(request, "Logged in successfully.")
-            return redirect("dashboard")
+            return redirect("accounts:dashboard")
         else:
             messages.error(request, "Invalid email or password.")
 
@@ -57,7 +56,12 @@ def dashboard(request):
     total_groups = Group.objects.filter(members=request.user).count()
     total_expenses = Expense.objects.filter(paid_by=request.user).count()
 
-    recent_expenses = Expense.objects.filter(paid_by=request.user).order_by('-created_at')[:5]
+    pending_invites = GroupInvite.objects.filter(
+        email=request.user.email,
+        is_accepted=False
+    )
+
+    recent_expenses = Expense.objects.filter(paid_by=request.user).order_by('-created_at')
 
     balance = 0  
 
@@ -72,4 +76,4 @@ def dashboard(request):
 def logout_view(request):
     logout(request)
     messages.success(request, "Logged out successfully.")
-    return redirect("login")
+    return redirect("accounts:login")
