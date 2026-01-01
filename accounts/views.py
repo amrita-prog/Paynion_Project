@@ -28,13 +28,14 @@ def signup_view(request):
 
 
 def login_view(request):
+    next_url = request.GET.get("next")
+
     if request.method == "POST":
         email = request.POST.get("email")
         password = request.POST.get("password")
 
-        # Match email to username for authentication
         try:
-            user_obj = User.objects.get(email=email)
+            User.objects.get(email=email)
         except User.DoesNotExist:
             messages.error(request, "Invalid email or password.")
             return render(request, "accounts/login.html")
@@ -44,7 +45,12 @@ def login_view(request):
         if user:
             login(request, user)
             messages.success(request, "Logged in successfully.")
+
+            if next_url:
+                return redirect(next_url)
+
             return redirect("accounts:dashboard")
+
         else:
             messages.error(request, "Invalid email or password.")
 
