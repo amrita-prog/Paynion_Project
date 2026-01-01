@@ -86,12 +86,15 @@ def group_detail(request, group_id):
     expenses = group.expenses.all().order_by("-created_at")
     balances = calculate_group_balances(group)
     settlements = calculate_settlements(balances)
+    is_admin = request.user == group.created_by
+
 
     return render(request, "groups/group_detail.html", {
         "group": group,
         "expenses": expenses,
         "balances": balances,
         "settlements": settlements,
+        "is_admin": is_admin,
     })
 
 
@@ -175,20 +178,21 @@ If you are not logged in, you will be asked to login or signup first.
 def accept_group_invite(request, token):
     invite = get_object_or_404(GroupInvite, token=token, is_accepted=False)
 
-    # 1️⃣ User login nahi hai → pehle login karao
     if not request.user.is_authenticated:
-        return redirect(f"/accounts/login/?next=/groups/invite/accept/{token}/")
+        login_url = reverse("accounts:login")
+        return redirect(f"{login_url}?next={request.path}")
 
-    # 2️⃣ Ab safe hai email check karna
-    if request.user.email != invite.email:
-        messages.error(request, "This invite is not for your email.")
-        return redirect("accounts:dashboard")
+    if request.method == "POST":
+        if request.POST.get("action") == "accept":
+            invite.group.members.add(request.user)
+            invite.is_accepted = True
+            invite.save()
+            messages.success(request, "You joined the group!")
+            return redirect("groups:group_detail", group_id=invite.group.id)
 
-    # 3️⃣ User ko group me add karo
-    invite.group.members.add(request.user)
+        else:
+            invite.delete()
+            messages.info(request, "Invite rejected")
+            return redirect("accounts:dashboard")
 
-    invite.is_accepted = True
-    invite.save()
-
-    messages.success(request, "You joined successfully!")
-    return redirect("groups:group_detail", group_id=invite.group.id)
+    return render(request, "groups/accept_invite.html", {"invite": invite})

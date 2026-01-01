@@ -26,12 +26,15 @@
   </div>
 
 
-  <h3>Invite Member</h3>
+  
+  {% if request.user == group.created_by %}
   <form method="post" action="{% url 'groups:send_invite' group.id %}">
       {% csrf_token %}
       <input type="email" name="email" placeholder="Enter email" required>
-      <button type="submit">Send Invite</button>
+      <button class="btn btn-primary">Send Invite</button>
   </form>
+  {% endif %}
+
 
 
 

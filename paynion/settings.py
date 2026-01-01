@@ -129,4 +129,4 @@ EMAIL_USE_TLS = True
 EMAIL_HOST_USER = "itizamritamishra@gmail.com"
 EMAIL_HOST_PASSWORD = "yvxhjcylgdbnapfo"
 
-DEFAULT_FROM_EMAIL = "itizamritamishra@gmail.com"
+DEFAULT_FROM_EMAIL = EMAIL_HOST_USER
