@@ -28,14 +28,14 @@ def signup_view(request):
 
 
 def login_view(request):
-    next_url = request.GET.get("next")
+    next_url = request.GET.get("next") or request.POST.get("next")
 
     if request.method == "POST":
         email = request.POST.get("email")
         password = request.POST.get("password")
 
         try:
-            User.objects.get(email=email)
+            user_obj = User.objects.get(email=email)
         except User.DoesNotExist:
             messages.error(request, "Invalid email or password.")
             return render(request, "accounts/login.html")
@@ -46,15 +46,16 @@ def login_view(request):
             login(request, user)
             messages.success(request, "Logged in successfully.")
 
+            # 🔥 MAIN FIX
             if next_url:
                 return redirect(next_url)
 
             return redirect("accounts:dashboard")
-
         else:
             messages.error(request, "Invalid email or password.")
 
-    return render(request, "accounts/login.html")
+    return render(request, "accounts/login.html", {"next": next_url})
+
 
 
 @login_required
@@ -83,3 +84,18 @@ def logout_view(request):
     logout(request)
     messages.success(request, "Logged out successfully.")
     return redirect("accounts:login")
+
+
+@login_required
+def profile_view(request):
+    user = request.user
+
+    groups = Group.objects.filter(members=user)
+    expenses_paid = Expense.objects.filter(paid_by=user)
+
+    context = {
+        'user_obj': user,
+        'groups': groups,
+        'expenses_paid': expenses_paid,
+    }
+    return render(request, 'accounts/profile.html', context)

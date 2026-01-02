@@ -88,12 +88,13 @@
               <span>{{ user.full_name }}</span>
 
               {% if balance > 0 %}
-                <span class="text-success">Gets ₹{{ balance|floatformat:2 }}</span>
+                <span class="text-success">Will Receive ₹{{ balance|floatformat:2 }}</span>
               {% elif balance < 0 %}
-                <span class="text-danger">Owes ₹{{ balance|floatformat:2 }}</span>
+                <span class="text-danger">Needs to Pay ₹{{ balance|floatformat:2 }}</span>
               {% else %}
-                <span class="text-muted">Settled</span>
+                <span class="text-muted">No Dues</span>
               {% endif %}
+
             </li>
           {% endfor %}
         </ul>
@@ -112,7 +113,7 @@
             {% for s in settlements %}
             <li class="list-group-item">
               <strong>{{ s.from.full_name }}</strong>
-              pays
+              should pay
               <strong>{{ s.to.full_name }}</strong>
               ₹{{ s.amount|floatformat:2 }}
             </li>
@@ -155,7 +156,7 @@
           <small class="fw-semibold">Split Details</small>
           <ul class="mt-2 ps-3">
             {% for split in exp.splits.all %}
-            <li>{{ split.user.full_name }} owes ₹ {{ split.amount }}</li>
+            <li>{{ split.user.full_name }} needs to pay ₹ {{ split.amount }}</li>
             {% empty %}
             <li class="text-muted">Split not calculated</li>
             {% endfor %}

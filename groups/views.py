@@ -174,7 +174,7 @@ If you are not logged in, you will be asked to login or signup first.
         return redirect("groups:group_detail", group_id=group.id)
 
 
-
+@login_required
 def accept_group_invite(request, token):
     invite = get_object_or_404(GroupInvite, token=token, is_accepted=False)
 
