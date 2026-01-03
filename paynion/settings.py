@@ -120,6 +120,9 @@ USE_TZ = True
 STATIC_URL = 'static/'
 AUTH_USER_MODEL = 'accounts.CustomUser'
 
+
+
+
 EMAIL_BACKEND = "django.core.mail.backends.smtp.EmailBackend"
 
 EMAIL_HOST = "smtp.gmail.com"
@@ -130,3 +133,10 @@ EMAIL_HOST_USER = "itizamritamishra@gmail.com"
 EMAIL_HOST_PASSWORD = "yvxhjcylgdbnapfo"
 
 DEFAULT_FROM_EMAIL = EMAIL_HOST_USER
+
+
+
+
+MEDIA_URL = '/media/'
+MEDIA_ROOT = BASE_DIR / 'media'
+

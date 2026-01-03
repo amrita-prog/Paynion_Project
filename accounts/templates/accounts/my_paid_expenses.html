@@ -1,0 +1,34 @@
+{% extends "base.html" %}
+{% block title %}My Expenses{% endblock %}
+
+{% block content %}
+<div class="container mt-4">
+
+  <h4 class="mb-3">Expenses Paid by Me</h4>
+
+  {% if expenses %}
+    {% for exp in expenses %}
+      <div class="card shadow-sm mb-3">
+        <div class="card-body">
+          <h6>{{ exp.description }}</h6>
+
+          <p class="mb-1 text-muted">
+            Group: {{ exp.group.title }}
+          </p>
+
+          <p class="mb-1">
+            Amount: <strong>₹ {{ exp.amount }}</strong>
+          </p>
+
+          <small class="text-muted">
+            {{ exp.created_at|date:"d M Y" }}
+          </small>
+        </div>
+      </div>
+    {% endfor %}
+  {% else %}
+    <p class="text-muted">No expenses found.</p>
+  {% endif %}
+
+</div>
+{% endblock %}

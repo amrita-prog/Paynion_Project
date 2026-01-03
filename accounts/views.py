@@ -6,7 +6,8 @@ from django.contrib import messages
 from django.contrib.auth.decorators import login_required
 from django.contrib.auth import get_user_model
 from groups.models import Group, GroupInvite
-from expenses.models import Expense
+from expenses.models import Expense, ExpenseSplit
+from django.db.models import Sum
 
 User = get_user_model()
 
@@ -80,10 +81,13 @@ def dashboard(request):
     })
 
 
+@login_required
 def logout_view(request):
     logout(request)
     messages.success(request, "Logged out successfully.")
     return redirect("accounts:login")
+
+
 
 
 @login_required
@@ -91,11 +95,40 @@ def profile_view(request):
     user = request.user
 
     groups = Group.objects.filter(members=user)
-    expenses_paid = Expense.objects.filter(paid_by=user)
+
+    # Total Paid by Me
+    total_paid_by_me = Expense.objects.filter(
+        paid_by=user
+    ).aggregate(total=Sum('amount'))['total'] or 0
+
+    # Total I Need to Pay
+    total_need_to_pay = ExpenseSplit.objects.filter(
+        user=user
+    ).exclude(
+        expense__paid_by=user
+    ).aggregate(total=Sum('amount'))['total'] or 0
+
+    # Total I Will Get Back
+    total_get_back = ExpenseSplit.objects.filter(
+        expense__paid_by=user
+    ).exclude(
+        user=user
+    ).aggregate(total=Sum('amount'))['total'] or 0
 
     context = {
-        'user_obj': user,
-        'groups': groups,
-        'expenses_paid': expenses_paid,
+        "user": user,
+        "groups":groups,
+        "total_paid_by_me": total_paid_by_me,
+        "total_need_to_pay": total_need_to_pay,
+        "total_get_back": total_get_back,
     }
-    return render(request, 'accounts/profile.html', context)
+
+    return render(request, "accounts/profile.html", context)
+
+
+
+@login_required
+def my_paid_expenses(request):
+    user = request.user
+    expenses = Expense.objects.filter(paid_by=request.user).select_related("group")
+    return render(request, 'accounts/my_paid_expenses.html', {'expenses': expenses})
