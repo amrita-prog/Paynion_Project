@@ -178,21 +178,21 @@ If you are not logged in, you will be asked to login or signup first.
 def accept_group_invite(request, token):
     invite = get_object_or_404(GroupInvite, token=token, is_accepted=False)
 
-    if not request.user.is_authenticated:
-        login_url = reverse("accounts:login")
-        return redirect(f"{login_url}?next={request.path}")
+    if invite.email != request.user.email:
+        messages.error(request, "This invitation is not for your email address.")
+        return redirect("accounts:dashboard")
 
     if request.method == "POST":
         if request.POST.get("action") == "accept":
             invite.group.members.add(request.user)
             invite.is_accepted = True
             invite.save()
-            messages.success(request, "You joined the group!")
+            messages.success(request, "You have successfully joined the group!")
             return redirect("groups:group_detail", group_id=invite.group.id)
 
         else:
             invite.delete()
-            messages.info(request, "Invite rejected")
+            messages.info(request, "Invitation rejected.")
             return redirect("accounts:dashboard")
 
     return render(request, "groups/accept_invite.html", {"invite": invite})

@@ -9,24 +9,29 @@ from groups.models import Group, GroupInvite
 from expenses.models import Expense, ExpenseSplit
 from django.db.models import Sum
 from django.conf import settings
+from django.urls import reverse
 import os
 
 User = get_user_model()
 
 
 def signup_view(request):
+    next_url = request.GET.get('next')
     if request.method == 'POST':
         form = SignUpForm(request.POST, request.FILES)
         if form.is_valid():
             user = form.save()
             messages.success(request, "Account created successfully. Please log in.")
+            login_url = reverse('accounts:login')
+            if next_url:
+                return redirect(f"{login_url}?next={next_url}")
             return redirect('accounts:login')
         else:
             messages.error(request, "Please correct the errors below.")
     else:
         form = SignUpForm()
 
-    return render(request, 'accounts/signup.html', {'form': form})
+    return render(request, 'accounts/signup.html', {'form': form, 'next': next_url})
 
 
 
@@ -63,13 +68,17 @@ def login_view(request):
 
 @login_required
 def dashboard(request):
-    total_groups = Group.objects.filter(members=request.user).count()
-    total_expenses = Expense.objects.filter(paid_by=request.user).count()
-
     pending_invites = GroupInvite.objects.filter(
         email=request.user.email,
         is_accepted=False
     )
+
+    if pending_invites.exists():
+        invite = pending_invites.first()
+        return redirect("groups:accept_invite", token=invite.token)
+
+    total_groups = Group.objects.filter(members=request.user).count()
+    total_expenses = Expense.objects.filter(paid_by=request.user).count()
 
     recent_expenses = Expense.objects.filter(paid_by=request.user).order_by('-created_at')
 
