@@ -1,6 +1,6 @@
 from django.shortcuts import render, redirect
 from django.http.response import HttpResponse
-from .forms import SignUpForm
+from .forms import SignUpForm, EditProfileForm
 from django.contrib.auth import login, logout, authenticate 
 from django.contrib import messages
 from django.contrib.auth.decorators import login_required
@@ -8,6 +8,8 @@ from django.contrib.auth import get_user_model
 from groups.models import Group, GroupInvite
 from expenses.models import Expense, ExpenseSplit
 from django.db.models import Sum
+from django.conf import settings
+import os
 
 User = get_user_model()
 
@@ -132,3 +134,36 @@ def my_paid_expenses(request):
     user = request.user
     expenses = Expense.objects.filter(paid_by=request.user).select_related("group")
     return render(request, 'accounts/my_paid_expenses.html', {'expenses': expenses})
+
+
+
+@login_required
+def edit_profile(request):
+    user = request.user
+
+    if request.method == "POST":
+        form = EditProfileForm(request.POST, request.FILES, instance=user)
+
+        if form.is_valid():
+
+            # REMOVE PROFILE IMAGE
+            if request.POST.get("remove_image"):
+                if user.profile_image and user.profile_image.name != "default_profile.jpg":
+                    image_path = os.path.join(settings.MEDIA_ROOT, user.profile_image.name)
+                    if os.path.exists(image_path):
+                        os.remove(image_path)
+
+                user.profile_image = "default_profile.jpg"
+                user.save()
+
+            else:
+                form.save()
+
+            return redirect("accounts:profile")
+
+    else:
+        form = EditProfileForm(instance=user)
+
+    return render(request, "accounts/edit_profile.html", {
+        "form": form
+    })

@@ -28,3 +28,19 @@ class SignUpForm(UserCreationForm):
         if commit:
             user.save()
         return user
+    
+
+class EditProfileForm(forms.ModelForm):
+    profile_image = forms.ImageField(required=False, widget=forms.FileInput(attrs={
+        "class": "d-none",
+        "accept": "image/*"
+    }))
+    class Meta:
+        model = CustomUser
+        fields = ['full_name', 'phone', 'bio', 'profile_image']
+
+        widgets = {
+            'full_name': forms.TextInput(attrs={'class': 'form-control'}),
+            'phone': forms.TextInput(attrs={'class': 'form-control'}),
+            'bio': forms.Textarea(attrs={'class': 'form-control','rows': 3}),
+        }
