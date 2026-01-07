@@ -10,6 +10,8 @@ from expenses.models import Expense, ExpenseSplit
 from django.db.models import Sum
 from django.conf import settings
 from django.urls import reverse
+from datetime import timedelta
+from django.utils import timezone
 import os
 
 User = get_user_model()
@@ -54,7 +56,7 @@ def login_view(request):
             login(request, user)
             messages.success(request, "Logged in successfully.")
 
-            # 🔥 MAIN FIX
+            # MAIN FIX
             if next_url:
                 return redirect(next_url)
 
@@ -68,8 +70,12 @@ def login_view(request):
 
 @login_required
 def dashboard(request):
+    user = request.user
+    today = timezone.now().date()
+
+    #  INVITE REDIRECT 
     pending_invites = GroupInvite.objects.filter(
-        email=request.user.email,
+        email=user.email,
         is_accepted=False
     )
 
@@ -77,19 +83,97 @@ def dashboard(request):
         invite = pending_invites.first()
         return redirect("groups:accept_invite", token=invite.token)
 
-    total_groups = Group.objects.filter(members=request.user).count()
-    total_expenses = Expense.objects.filter(paid_by=request.user).count()
+    #  SUMMARY CARDS 
+    total_groups = Group.objects.filter(members=user).count()
+    total_expenses = Expense.objects.filter(paid_by=user).count()
 
-    recent_expenses = Expense.objects.filter(paid_by=request.user).order_by('-created_at')
+    recent_expenses = (
+        Expense.objects
+        .filter(paid_by=user)
+        .order_by('-created_at')[:5]
+    )
 
-    balance = 0  
+    #  ACCOUNT AGE 
+    account_age_days = (today - user.date_joined.date()).days
+    show_last_week = account_age_days >= 7
 
-    return render(request, "accounts/dashboard.html", {
+    #  DATE RANGES 
+    start_this_week = today - timedelta(days=today.weekday())
+    start_last_week = start_this_week - timedelta(days=7)
+    end_last_week = start_this_week - timedelta(days=1)
+
+    #  THIS WEEK DATA 
+    this_week_paid = (
+        Expense.objects
+        .filter(paid_by=user, created_at__date__gte=start_this_week)
+        .values('created_at__date')
+        .annotate(total=Sum('amount'))
+    )
+
+    this_week_received = (
+        ExpenseSplit.objects
+        .filter(user=user, expense__created_at__date__gte=start_this_week)
+        .exclude(expense__paid_by=user)
+        .values('expense__created_at__date')
+        .annotate(total=Sum('amount'))
+    )
+
+    def format_data(qs):
+        labels, values = [], []
+        for item in qs:
+            labels.append(item[list(item.keys())[0]].strftime("%a"))
+            values.append(float(item["total"]))
+        return labels, values
+
+    tw_paid_labels, tw_paid_values = format_data(this_week_paid)
+    tw_recv_labels, tw_recv_values = format_data(this_week_received)
+
+    context = {
         "total_groups": total_groups,
         "total_expenses": total_expenses,
         "recent_expenses": recent_expenses,
-        "balance": balance,
-    })
+        "balance": 0,  # (future calculation)
+        "this_week": {
+            "labels": tw_paid_labels,
+            "paid": tw_paid_values,
+            "received": tw_recv_values,
+        },
+        "show_last_week": show_last_week,
+    }
+
+    #  LAST WEEK (ONLY IF VALID) 
+    if show_last_week:
+        last_week_paid = (
+            Expense.objects
+            .filter(
+                paid_by=user,
+                created_at__date__range=(start_last_week, end_last_week)
+            )
+            .values('created_at__date')
+            .annotate(total=Sum('amount'))
+        )
+
+        last_week_received = (
+            ExpenseSplit.objects
+            .filter(
+                user=user,
+                expense__created_at__date__range=(start_last_week, end_last_week)
+            )
+            .exclude(expense__paid_by=user)
+            .values('expense__created_at__date')
+            .annotate(total=Sum('amount'))
+        )
+
+        lw_paid_labels, lw_paid_values = format_data(last_week_paid)
+        lw_recv_labels, lw_recv_values = format_data(last_week_received)
+
+        context["last_week"] = {
+            "labels": lw_paid_labels,
+            "paid": lw_paid_values,
+            "received": lw_recv_values,
+        }
+
+    return render(request, "accounts/dashboard.html", context)
 
 
 @login_required

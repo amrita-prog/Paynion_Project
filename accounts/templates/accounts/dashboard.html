@@ -109,6 +109,36 @@
 
     </div>
 
+
+
+    <!-- EXPENSE CHART -->
+
+    <div class="card shadow-sm mt-4">
+    <div class="card-body">
+
+        <div class="d-flex justify-content-between align-items-center mb-3">
+        <h5 class="mb-0">Weekly Expenses</h5>
+
+        <select id="weekSelect" class="form-select form-select-sm w-auto">
+            <option value="this">This Week</option>
+
+            {% if show_last_week %}
+            <option value="last">Last Week</option>
+            {% endif %}
+        </select>
+        </div>
+
+        <canvas id="expenseChart" height="120"></canvas>
+
+        <small class="text-muted d-block mt-2">
+        Data shown based on your usage duration
+        </small>
+
+    </div>
+    </div>
+
+
+
     <!-- ACTION BUTTONS -->
     <div class="d-flex justify-content-between my-4">
 
@@ -167,6 +197,53 @@
 
 <!-- Bootstrap JS -->
 <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/js/bootstrap.bundle.min.js"></script>
+
+<script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+
+<script>
+const chartData = {
+  this: {
+    labels: {{ this_week.labels|safe }},
+    paid: {{ this_week.paid|safe }},
+    received: {{ this_week.received|safe }},
+  },
+  {% if show_last_week %}
+  last: {
+    labels: {{ last_week.labels|safe }},
+    paid: {{ last_week.paid|safe }},
+    received: {{ last_week.received|safe }},
+  }
+  {% endif %}
+};
+
+const ctx = document.getElementById("expenseChart").getContext("2d");
+
+let chart = new Chart(ctx, {
+  type: "bar",
+  data: {
+    labels: chartData.this.labels,
+    datasets: [
+      {
+        label: "Paid by Me",
+        data: chartData.this.paid,
+      },
+      {
+        label: "Received",
+        data: chartData.this.received,
+      }
+    ]
+  }
+});
+
+document.getElementById("weekSelect").addEventListener("change", function () {
+  const selected = this.value;
+  chart.data.labels = chartData[selected].labels;
+  chart.data.datasets[0].data = chartData[selected].paid;
+  chart.data.datasets[1].data = chartData[selected].received;
+  chart.update();
+});
+</script>
+
 
 </body>
 </html>
