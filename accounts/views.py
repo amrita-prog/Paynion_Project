@@ -12,6 +12,9 @@ from django.conf import settings
 from django.urls import reverse
 from datetime import timedelta
 from django.utils import timezone
+from accounts.models import Notification
+
+from django.views.decorators.http import require_POST
 import os
 
 User = get_user_model()
@@ -68,10 +71,20 @@ def login_view(request):
 
 
 
+# 
+
+
 @login_required
 def dashboard(request):
     user = request.user
     today = timezone.now().date()
+
+    # 🔔 FETCH UNREAD NOTIFICATION (IMPORTANT)
+    notification = (
+        Notification.objects
+        .filter(user=user, is_read=False)
+        .first()
+    )
 
     #  INVITE REDIRECT 
     pending_invites = GroupInvite.objects.filter(
@@ -95,85 +108,78 @@ def dashboard(request):
 
     #  ACCOUNT AGE 
     account_age_days = (today - user.date_joined.date()).days
-    show_last_week = account_age_days >= 7
+    total_weeks = max(1, account_age_days // 7 + 1)
 
-    #  DATE RANGES 
-    start_this_week = today - timedelta(days=today.weekday())
-    start_last_week = start_this_week - timedelta(days=7)
-    end_last_week = start_this_week - timedelta(days=1)
+    #  DROPDOWN OPTIONS 
+    week_options = [{"value": 1, "label": "This Week"}]
 
-    #  THIS WEEK DATA 
-    this_week_paid = (
-        Expense.objects
-        .filter(paid_by=user, created_at__date__gte=start_this_week)
-        .values('created_at__date')
-        .annotate(total=Sum('amount'))
+    if total_weeks >= 2:
+        week_options.append({"value": 2, "label": "Last Week"})
+
+    for i in range(3, total_weeks + 1):
+        week_options.append({"value": i, "label": f"Last {i} Weeks"})
+
+    week_options.append({"value": "all", "label": "All Time"})
+
+    #  SELECTED RANGE 
+    selected = request.GET.get("weeks", "1")
+
+    if selected == "all":
+        start_date = None
+    else:
+        start_date = today - timedelta(days=int(selected) * 7)
+
+    #  PAID BY ME 
+    paid_qs = Expense.objects.filter(paid_by=user)
+    if start_date:
+        paid_qs = paid_qs.filter(created_at__date__gte=start_date)
+
+    paid_data = (
+        paid_qs
+        .values("created_at__date")
+        .annotate(total=Sum("amount"))
+        .order_by("created_at__date")
     )
 
-    this_week_received = (
-        ExpenseSplit.objects
-        .filter(user=user, expense__created_at__date__gte=start_this_week)
-        .exclude(expense__paid_by=user)
-        .values('expense__created_at__date')
-        .annotate(total=Sum('amount'))
+    #  I NEED TO PAY 
+    need_to_pay_qs = ExpenseSplit.objects.filter(user=user).exclude(expense__paid_by=user)
+    if start_date:
+        need_to_pay_qs = need_to_pay_qs.filter(expense__created_at__date__gte=start_date)
+
+    need_to_pay_data = (
+        need_to_pay_qs
+        .values("expense__created_at__date")
+        .annotate(total=Sum("amount"))
+        .order_by("expense__created_at__date")
     )
 
-    def format_data(qs):
+    #  FORMAT DATA 
+    def format_data(qs, date_key):
         labels, values = [], []
         for item in qs:
-            labels.append(item[list(item.keys())[0]].strftime("%a"))
+            labels.append(item[date_key].strftime("%d %b"))
             values.append(float(item["total"]))
         return labels, values
 
-    tw_paid_labels, tw_paid_values = format_data(this_week_paid)
-    tw_recv_labels, tw_recv_values = format_data(this_week_received)
+    paid_labels, paid_values = format_data(paid_data, "created_at__date")
+    need_labels, need_values = format_data(need_to_pay_data, "expense__created_at__date")
 
     context = {
+        "notification": notification,   # ✅ PASS TO TEMPLATE
         "total_groups": total_groups,
         "total_expenses": total_expenses,
         "recent_expenses": recent_expenses,
-        "balance": 0,  # (future calculation)
-        "this_week": {
-            "labels": tw_paid_labels,
-            "paid": tw_paid_values,
-            "received": tw_recv_values,
-        },
-        "show_last_week": show_last_week,
+        "week_options": week_options,
+        "chart": {
+            "labels": paid_labels,
+            "paid": paid_values,
+            "need_to_pay": need_values,
+        }
     }
 
-    #  LAST WEEK (ONLY IF VALID) 
-    if show_last_week:
-        last_week_paid = (
-            Expense.objects
-            .filter(
-                paid_by=user,
-                created_at__date__range=(start_last_week, end_last_week)
-            )
-            .values('created_at__date')
-            .annotate(total=Sum('amount'))
-        )
-
-        last_week_received = (
-            ExpenseSplit.objects
-            .filter(
-                user=user,
-                expense__created_at__date__range=(start_last_week, end_last_week)
-            )
-            .exclude(expense__paid_by=user)
-            .values('expense__created_at__date')
-            .annotate(total=Sum('amount'))
-        )
-
-        lw_paid_labels, lw_paid_values = format_data(last_week_paid)
-        lw_recv_labels, lw_recv_values = format_data(last_week_received)
-
-        context["last_week"] = {
-            "labels": lw_paid_labels,
-            "paid": lw_paid_values,
-            "received": lw_recv_values,
-        }
-
     return render(request, "accounts/dashboard.html", context)
+
+
 
 
 @login_required
@@ -252,7 +258,10 @@ def edit_profile(request):
             else:
                 form.save()
 
-            return redirect("accounts:profile")
+            # ✅ ADD SUCCESS MESSAGE (THIS TRIGGERS TOAST)
+            messages.success(request, "Profile updated successfully!")
+
+            return redirect("accounts:edit_profile")  # redirect back to same page
 
     else:
         form = EditProfileForm(instance=user)
@@ -260,3 +269,18 @@ def edit_profile(request):
     return render(request, "accounts/edit_profile.html", {
         "form": form
     })
+
+
+@login_required
+@require_POST
+def mark_notification_read(request, notification_id):
+    try:
+        notification = Notification.objects.get(
+            id=notification_id,
+            user=request.user
+        )
+        notification.is_read = True
+        notification.save()
+        return JsonResponse({"status": "ok"})
+    except Notification.DoesNotExist:
+        return JsonResponse({"status": "error"}, status=404)

@@ -10,11 +10,45 @@ from .services import (
     handle_custom_split
 )
 from groups.models import Group
+from accounts.models import Notification
 
 User = get_user_model()
 
 
 @login_required
+# def add_expense(request, group_id):
+#     group = get_object_or_404(Group, id=group_id)
+
+#     if request.method == "POST":
+#         form = ExpenseForm(request.POST, group=group)
+
+#         if form.is_valid():
+#             expense = form.save(commit=False)
+#             expense.group = group
+#             expense.paid_by = request.user
+#             expense.save()
+
+#             users = form.cleaned_data["split_between"]
+#             expense.splits.all().delete()
+
+#             if expense.split_type == "equal":
+#                 handle_equal_split(expense, users)
+#             elif expense.split_type == "percentage":
+#                 handle_percentage_split(expense, users, request.POST)
+#             elif expense.split_type == "custom":
+#                 handle_custom_split(expense, users, request.POST)
+
+#             messages.success(request, "Expense added successfully")
+#             return redirect("groups:group_detail", group.id)
+
+#     else:
+#         form = ExpenseForm(group=group)
+
+#     return render(request, "expenses/expense_form.html", {
+#         "form": form,
+#         "group": group
+#     })
+
 def add_expense(request, group_id):
     group = get_object_or_404(Group, id=group_id)
 
@@ -28,16 +62,27 @@ def add_expense(request, group_id):
             expense.save()
 
             users = form.cleaned_data["split_between"]
+
+            # Clear old splits (safety)
             expense.splits.all().delete()
 
             if expense.split_type == "equal":
                 handle_equal_split(expense, users)
+
             elif expense.split_type == "percentage":
                 handle_percentage_split(expense, users, request.POST)
+
             elif expense.split_type == "custom":
                 handle_custom_split(expense, users, request.POST)
 
-            messages.success(request, "Expense added successfully")
+            # 🔔 CREATE NOTIFICATIONS (IMPORTANT PART)
+            for member in users:
+                if member != request.user:
+                    Notification.objects.create(
+                        user=member,
+                        message=f"₹{expense.amount} added in group '{group.title}'"
+                    )
+
             return redirect("groups:group_detail", group.id)
 
     else:
@@ -47,6 +92,8 @@ def add_expense(request, group_id):
         "form": form,
         "group": group
     })
+
+
 
 
 @login_required
