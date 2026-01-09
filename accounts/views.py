@@ -71,7 +71,12 @@ def login_view(request):
 
 
 
-# 
+def format_data(qs, date_key):
+        labels, values = [], []
+        for item in qs:
+            labels.append(item[date_key].strftime("%d %b"))
+            values.append(float(item["total"]))
+        return labels, values
 
 
 @login_required
@@ -79,7 +84,7 @@ def dashboard(request):
     user = request.user
     today = timezone.now().date()
 
-    # 🔔 FETCH UNREAD NOTIFICATION (IMPORTANT)
+    #  FETCH UNREAD NOTIFICATION (IMPORTANT)
     notification = (
         Notification.objects
         .filter(user=user, is_read=False)
@@ -103,7 +108,7 @@ def dashboard(request):
     recent_expenses = (
         Expense.objects
         .filter(paid_by=user)
-        .order_by('-created_at')[:5]
+        .order_by('-created_at')
     )
 
     #  ACCOUNT AGE 
@@ -153,19 +158,39 @@ def dashboard(request):
         .order_by("expense__created_at__date")
     )
 
-    #  FORMAT DATA 
-    def format_data(qs, date_key):
-        labels, values = [], []
-        for item in qs:
-            labels.append(item[date_key].strftime("%d %b"))
-            values.append(float(item["total"]))
-        return labels, values
+
+    #  I WILL GET BACK (OTHERS OWE ME)
+    will_get_back_qs = (
+        ExpenseSplit.objects
+        .filter(expense__paid_by=user)
+        .exclude(user=user)
+    )
+
+    if start_date:
+        will_get_back_qs = will_get_back_qs.filter(
+            expense__created_at__date__gte=start_date
+        )
+
+    will_get_back_data = (
+        will_get_back_qs
+        .values("expense__created_at__date")
+        .annotate(total=Sum("amount"))
+        .order_by("expense__created_at__date")
+    )
+
+    getback_labels, getback_values = format_data(
+        will_get_back_data,
+        "expense__created_at__date"
+    )
+
+
+    #  FORMAT DATA FOR CHART
 
     paid_labels, paid_values = format_data(paid_data, "created_at__date")
     need_labels, need_values = format_data(need_to_pay_data, "expense__created_at__date")
 
     context = {
-        "notification": notification,   # ✅ PASS TO TEMPLATE
+        "notification": notification,   # PASS TO TEMPLATE
         "total_groups": total_groups,
         "total_expenses": total_expenses,
         "recent_expenses": recent_expenses,
@@ -174,6 +199,7 @@ def dashboard(request):
             "labels": paid_labels,
             "paid": paid_values,
             "need_to_pay": need_values,
+            "will_get_back": getback_values,
         }
     }
 

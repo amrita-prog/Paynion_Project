@@ -144,11 +144,14 @@
           <div class="d-flex gap-2">
             <span class="fw-semibold">₹ {{ exp.amount }}</span>
             <a href="{% url 'edit_expense' exp.id %}" class="btn btn-sm btn-outline-primary">Edit</a>
-            <a href="{% url 'delete_expense' exp.id %}"
-               class="btn btn-sm btn-outline-danger"
-               onclick="return confirm('Delete expense?');">
+            <form method="post" action="{% url 'delete_expense' exp.id %}" style="display:inline;">
+            {% csrf_token %}
+            <button type="submit"
+                    class="btn btn-sm btn-outline-danger"
+                    onclick="return confirm('Delete expense?');">
               Delete
-            </a>
+            </button>
+          </form>
           </div>
         </div>
 

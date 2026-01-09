@@ -11,9 +11,5 @@ urlpatterns = [
     path('profile/', views.profile_view, name='profile'),
     path("my-expenses/", views.my_paid_expenses, name="my_expenses"),
     path("edit-profile/", views.edit_profile, name="edit_profile"),
-    path(
-        "notification/read/<int:notification_id>/",
-        views.mark_notification_read,
-        name="mark_notification_read"
-    ),
+    path("notification/read/<int:notification_id>/",views.mark_notification_read,name="mark_notification_read"),
 ]

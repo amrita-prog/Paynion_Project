@@ -98,16 +98,64 @@ def add_expense(request, group_id):
 
 @login_required
 def delete_expense(request, expense_id):
-    expense = get_object_or_404(Expense, id = expense_id)
+    expense = get_object_or_404(Expense, id=expense_id)
 
+    # Permission check
     if request.user != expense.paid_by:
-        messages.error(request, "You do not have permission to delete this expense.")
         return redirect("groups:group_detail", group_id=expense.group.id)
-    
-    expense.delete()
 
-    messages.success(request, "Expense deleted successfully.")
-    return redirect("groups:group_detail", group_id=expense.group.id)
+    group = expense.group
+
+    # Get users involved in this expense (except deleter)
+    split_users = expense.splits.exclude(user=request.user)
+
+    if request.method == "POST":
+
+        # Send notification to other users
+        for split in split_users:
+            Notification.objects.create(
+                user=split.user,
+                message=f"Expense '{expense.description}' was deleted in group {group.name}"
+            )
+
+        expense.delete()
+
+    return redirect("groups:group_detail", group_id=group.id)
+
+
+
+# @login_required
+# def delete_expense(request, expense_id):
+#     expense = get_object_or_404(Expense, id=expense_id)
+#     group = expense.group
+
+#     if request.user != expense.paid_by:
+#         messages.error(request, "You are not allowed to delete this expense.")
+#         return redirect("groups:group_detail", group.id)
+
+#     if request.method == "POST":
+#         deleted_by = request.user.full_name
+#         expense_name = expense.description
+
+#         split_users = (
+#             expense.splits
+#             .exclude(user=request.user)
+#             .values_list("user", flat=True)
+#         )
+
+#         for user_id in split_users:
+#             Notification.objects.create(
+#                 user_id=user_id,
+#                 message=f"Expense '{expense_name}' was deleted by {deleted_by}"
+#             )
+
+#         expense.delete()
+#         messages.success(request, "Expense deleted successfully.")
+#         return redirect("groups:group_detail", group.id)
+
+#     # 👇 THIS FIXES YOUR ERROR
+#     return redirect("groups:group_detail", group.id)
+
 
 
 @login_required
