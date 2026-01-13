@@ -3,6 +3,7 @@ from django.contrib.auth.models import AbstractUser
 from django.conf import settings
 
 
+
 # Create your models here.
 
 def user_profile_path(instance, filename):
@@ -14,6 +15,7 @@ class CustomUser(AbstractUser):
     phone = models.CharField(max_length=10, blank=True, null=True)
     profile_image = models.ImageField(upload_to=user_profile_path, default='default_profile.jpg',blank=True,null=True)
     bio = models.CharField(max_length=255, blank=True, null=True)
+    upi_id = models.CharField(max_length=100, blank=True, null=True)
 
     USERNAME_FIELD = 'email'
     REQUIRED_FIELDS = ['username', 'full_name']   # keep username but don't use for login
@@ -33,3 +35,7 @@ class Notification(models.Model):
 
     def __str__(self):
         return self.message
+    
+
+
+

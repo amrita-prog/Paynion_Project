@@ -22,6 +22,20 @@
         <div class="col-md-7 text-center text-md-start">
           <h4 class="mb-1 fw-bold">{{ request.user.full_name }}</h4>
           <p class="text-muted mb-1">{{ request.user.email }}</p>
+          {% if request.user.upi_id %}
+            <p class="mb-1">
+              <span class="badge bg-light text-dark">
+                UPI ID: {{ request.user.upi_id }}
+              </span>
+            </p>
+          {% else %}
+            <p class="mb-1">
+              <span class="badge bg-warning text-dark">
+                UPI ID not added
+              </span>
+            </p>
+          {% endif %}
+
           <span class="badge bg-light text-secondary">
             Joined on {{ request.user.date_joined|date:"d M Y" }}
           </span>

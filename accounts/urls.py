@@ -12,4 +12,6 @@ urlpatterns = [
     path("my-expenses/", views.my_paid_expenses, name="my_expenses"),
     path("edit-profile/", views.edit_profile, name="edit_profile"),
     path("notification/read/<int:notification_id>/",views.mark_notification_read,name="mark_notification_read"),
+    path("report/", views.report, name="report"),
+    path("report/pdf/", views.report_pdf, name="report_pdf"),
 ]

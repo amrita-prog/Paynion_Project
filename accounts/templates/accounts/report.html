@@ -1,0 +1,225 @@
+{% extends "base.html" %}
+{% block content %}
+
+<style>
+  .stat-card {
+    border: none;
+    border-radius: 12px;
+    transition: transform .2s ease, box-shadow .2s ease;
+  }
+  .stat-card:hover {
+    transform: translateY(-3px);
+    box-shadow: 0 8px 20px rgba(0,0,0,.08);
+  }
+  .stat-card small {
+    color: #6c757d;
+    font-weight: 500;
+  }
+  .stat-card h5 {
+    font-weight: 700;
+    margin-top: 6px;
+  }
+
+  .section-title {
+    font-weight: 600;
+    margin-bottom: 12px;
+  }
+
+  table thead {
+    background: #f8f9fa;
+  }
+
+  .table td, .table th {
+    vertical-align: middle;
+  }
+</style>
+
+<!-- ================= SUMMARY CARDS ================= -->
+<div class="row g-3 mb-4">
+  <div class="col-md-3 col-6">
+    <div class="card stat-card text-center shadow-sm">
+      <div class="card-body py-3">
+        <small>Total Paid By Me</small>
+        <h5 class="text-primary">₹{{ total_paid }}</h5>
+      </div>
+    </div>
+  </div>
+
+  <div class="col-md-3 col-6">
+    <div class="card stat-card text-center shadow-sm">
+      <div class="card-body py-3">
+        <small>I Need To Pay</small>
+        <h5 class="text-danger">₹{{ need_to_pay }}</h5>
+      </div>
+    </div>
+  </div>
+
+  <div class="col-md-3 col-6">
+    <div class="card stat-card text-center shadow-sm">
+      <div class="card-body py-3">
+        <small>I Will Get Back</small>
+        <h5 class="text-success">₹{{ will_get_back }}</h5>
+      </div>
+    </div>
+  </div>
+
+  <div class="col-md-3 col-6">
+    <div class="card stat-card text-center shadow-sm">
+      <div class="card-body py-3">
+        <small>Balance</small>
+        <h5 class="text-dark">₹{{ balance }}</h5>
+      </div>
+    </div>
+  </div>
+</div>
+
+
+
+<a href="{% url 'accounts:report_pdf' %}"
+   class="btn btn-outline-danger btn-sm mb-3">
+   Download PDF
+</a>
+
+
+
+
+<!-- ================= GROUP SUMMARY ================= -->
+<h5 class="section-title">Group Wise Summary</h5>
+
+<div class="card shadow-sm mb-4">
+  <div class="card-body p-0">
+    <table class="table table-sm table-bordered mb-0">
+      <thead>
+        <tr>
+          <th>Group</th>
+          <th>Total</th>
+          <th>Paid By Me</th>
+          <th>Get Back</th>
+          <th>Need To Pay</th>
+        </tr>
+      </thead>
+      <tbody>
+        {% for g in group_report %}
+        <tr>
+          <td>{{ g.group }}</td>
+          <td>₹{{ g.total }}</td>
+          <td>₹{{ g.paid }}</td>
+          <td class="text-success">₹{{ g.get_back }}</td>
+          <td class="text-danger">₹{{ g.need_pay }}</td>
+        </tr>
+        {% endfor %}
+      </tbody>
+    </table>
+  </div>
+</div>
+
+<!-- ================= MONTHLY CHART =================
+<div class="card shadow-sm mb-4">
+  <div class="card-body">
+    <h6 class="section-title mb-3">Monthly Expenses</h6>
+    <canvas id="monthlyChart" height="100"></canvas>
+  </div>
+</div> -->
+
+<script>
+const labels = [{% for m in monthly_data %}"{{ m.month|date:'M Y' }}",{% endfor %}];
+const data = [{% for m in monthly_data %}{{ m.total }},{% endfor %}];
+
+new Chart(document.getElementById("monthlyChart"), {
+  type: "line",
+  data: {
+    labels: labels,
+    datasets: [{
+      label: "Monthly Expenses",
+      data: data,
+      borderColor: "#0d6efd",
+      backgroundColor: "rgba(13,110,253,0.15)",
+      tension: 0.4,
+      fill: true,
+      pointRadius: 4
+    }]
+  },
+  options: {
+    plugins: { legend: { display: false } },
+    scales: { y: { beginAtZero: true } }
+  }
+});
+</script>
+
+<!-- ================= EXPENSE REPORT ================= -->
+<h5 class="section-title mt-4">Expense Report</h5>
+
+<form method="get" class="row g-2 align-items-end mb-3">
+  <div class="col-md-3 col-6">
+    <input type="date" name="from" class="form-control form-control-sm">
+  </div>
+  <div class="col-md-3 col-6">
+    <input type="date" name="to" class="form-control form-control-sm">
+  </div>
+  <div class="col-md-2 col-12">
+    <button class="btn btn-primary btn-sm w-100">Apply</button>
+  </div>
+</form>
+
+<div class="card shadow-sm">
+  <div class="card-body p-0">
+    <table class="table table-bordered mb-0">
+      <thead>
+        <tr>
+          <th>Date</th>
+          <th>Group</th>
+          <th>Description</th>
+          <th>Paid By</th>
+          <th>Amount</th>
+          <th>Status</th>
+        </tr>
+      </thead>
+      <tbody id="expenseTable">
+        {% for exp in expenses %}
+        <tr class="expense-row d-none">
+          <td>{{ exp.created_at|date:"d M Y" }}</td>
+          <td>{{ exp.group.title }}</td>
+          <td>{{ exp.description }}</td>
+          <td>{{ exp.paid_by.full_name }}</td>
+          <td>₹{{ exp.amount }}</td>
+          <td>
+            {% if exp.paid_by == user %}
+              <span class="badge bg-primary">Paid by Me</span>
+            {% else %}
+              <span class="badge bg-secondary">Involved</span>
+            {% endif %}
+          </td>
+        </tr>
+        {% endfor %}
+      </tbody>
+    </table>
+  </div>
+</div>
+
+<div class="text-end mt-2">
+  <button id="viewMoreBtn" class="btn btn-outline-primary btn-sm">
+    View More
+  </button>
+</div>
+
+<script>
+document.addEventListener("DOMContentLoaded", function () {
+  const rows = document.querySelectorAll(".expense-row");
+  const btn = document.getElementById("viewMoreBtn");
+  let visibleCount = 0;
+  const STEP = 6;
+
+  function showMore() {
+    for (let i = visibleCount; i < visibleCount + STEP && i < rows.length; i++) {
+      rows[i].classList.remove("d-none");
+    }
+    visibleCount += STEP;
+    if (visibleCount >= rows.length) btn.style.display = "none";
+  }
+
+  showMore();
+  btn.addEventListener("click", showMore);
+});
+</script>
+
+{% endblock %}

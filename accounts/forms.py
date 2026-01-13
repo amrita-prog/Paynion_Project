@@ -37,10 +37,11 @@ class EditProfileForm(forms.ModelForm):
     }))
     class Meta:
         model = CustomUser
-        fields = ['full_name', 'phone', 'bio', 'profile_image']
+        fields = ['full_name', 'phone','upi_id', 'bio', 'profile_image']
 
         widgets = {
             'full_name': forms.TextInput(attrs={'class': 'form-control'}),
             'phone': forms.TextInput(attrs={'class': 'form-control'}),
+            'upi_id': forms.TextInput(attrs={'class': 'form-control'}),
             'bio': forms.Textarea(attrs={'class': 'form-control','rows': 3}),
         }

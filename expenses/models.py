@@ -21,7 +21,7 @@ class Expense(models.Model):
     created_at = models.DateTimeField(auto_now_add=True)
 
     class Meta:
-        ordering = ["-created_at"]   # 🔥 newest expense first
+        ordering = ["-created_at"]   # newest expense first
 
     def __str__(self):
         return f"{self.description} - ₹{self.amount}"

@@ -71,6 +71,16 @@
           {{ form.bio }}
         </div>
 
+        <!-- ================= UPI ID ================= -->
+        <div class="mb-3">
+          <label class="form-label">UPI ID</label>
+          {{ form.upi_id }}
+          <small class="text-muted">
+            Required to receive payments (e.g. name@upi, phone@okaxis)
+          </small>
+        </div>
+
+
         <!-- ================= ACTION BUTTONS ================= -->
         <div class="d-flex justify-content-between mt-4">
           <a href="{% url 'accounts:profile' %}"

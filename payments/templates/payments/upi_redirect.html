@@ -1,0 +1,26 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <title>Complete Payment</title>
+</head>
+<body style="text-align:center; padding:30px;">
+
+<h3>Pay ₹{{ payment.amount }} to {{ payment.receiver.full_name }}</h3>
+
+<p>On mobile, UPI app will open automatically.</p>
+
+<script>
+  if (/Android|iPhone|iPad/i.test(navigator.userAgent)) {
+    window.location.href = "{{ upi_link }}";
+  }
+</script>
+
+<hr>
+
+<h5>Desktop User?</h5>
+<p>Scan QR using your UPI app</p>
+
+<img src="data:image/png;base64,{{ qr_code }}" width="220">
+
+</body>
+</html>

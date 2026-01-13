@@ -13,9 +13,18 @@ from django.urls import reverse
 from datetime import timedelta
 from django.utils import timezone
 from accounts.models import Notification
-
+from django.db.models.functions import TruncMonth
+from django.http import JsonResponse
+from django.template.loader import get_template
+from django.http import HttpResponse
+from xhtml2pdf import pisa
+from django.utils import timezone
+from django.views.decorators.csrf import csrf_exempt
 from django.views.decorators.http import require_POST
 import os
+
+
+
 
 User = get_user_model()
 
@@ -284,7 +293,7 @@ def edit_profile(request):
             else:
                 form.save()
 
-            # ✅ ADD SUCCESS MESSAGE (THIS TRIGGERS TOAST)
+            # ADD SUCCESS MESSAGE (THIS TRIGGERS TOAST)
             messages.success(request, "Profile updated successfully!")
 
             return redirect("accounts:edit_profile")  # redirect back to same page
@@ -310,3 +319,139 @@ def mark_notification_read(request, notification_id):
         return JsonResponse({"status": "ok"})
     except Notification.DoesNotExist:
         return JsonResponse({"status": "error"}, status=404)
+    
+
+
+
+@login_required
+def report(request):
+    user = request.user
+
+    # ---------------- FILTERS ----------------
+    from_date = request.GET.get("from")
+    to_date = request.GET.get("to")
+
+    expenses = Expense.objects.filter(group__members=user)
+
+    if from_date and to_date:
+        expenses = expenses.filter(created_at__date__range=[from_date, to_date])
+
+    expenses = expenses.order_by("-created_at")
+
+    # ---------------- SUMMARY ----------------
+    total_paid = (
+        expenses
+        .filter(paid_by=user)
+        .aggregate(Sum("amount"))["amount__sum"] or 0
+    )
+
+    need_to_pay = (
+        ExpenseSplit.objects
+        .filter(user=user)
+        .exclude(expense__paid_by=user)
+        .aggregate(Sum("amount"))["amount__sum"] or 0
+    )
+
+    will_get_back = (
+        ExpenseSplit.objects
+        .filter(expense__paid_by=user)
+        .exclude(user=user)
+        .aggregate(Sum("amount"))["amount__sum"] or 0
+    )
+
+    balance = will_get_back - need_to_pay
+
+    # ---------------- GROUP WISE REPORT ----------------
+    group_report = []
+
+    groups = Group.objects.filter(members=user)
+
+    for group in groups:
+        total = Expense.objects.filter(group=group).aggregate(Sum("amount"))["amount__sum"] or 0
+
+        paid = Expense.objects.filter(
+            group=group,
+            paid_by=user
+        ).aggregate(Sum("amount"))["amount__sum"] or 0
+
+        get_back = ExpenseSplit.objects.filter(
+            expense__group=group,
+            expense__paid_by=user
+        ).exclude(user=user).aggregate(Sum("amount"))["amount__sum"] or 0
+
+        need_pay = ExpenseSplit.objects.filter(
+            expense__group=group,
+            user=user
+        ).exclude(expense__paid_by=user).aggregate(Sum("amount"))["amount__sum"] or 0
+
+        group_report.append({
+            "group": group.title,
+            "total": total,
+            "paid": paid,
+            "get_back": get_back,
+            "need_pay": need_pay,
+        })
+
+
+    # ---------------- CONTEXT ----------------
+    context = {
+        "expenses": expenses,   # first 6 only
+        "total_paid": total_paid,
+        "need_to_pay": need_to_pay,
+        "will_get_back": will_get_back,
+        "balance": balance,
+        "group_report": group_report,
+        "all_expenses": expenses,   # for view more
+    }
+
+    return render(request, "accounts/report.html", context)
+
+
+
+
+
+
+@login_required
+def report_pdf(request):
+    user = request.user
+
+    expenses = Expense.objects.filter(group__members=user).order_by("-created_at")
+
+    total_paid = expenses.filter(paid_by=user).aggregate(Sum("amount"))["amount__sum"] or 0
+
+    need_to_pay = (
+        ExpenseSplit.objects
+        .filter(user=user)
+        .exclude(expense__paid_by=user)
+        .aggregate(Sum("amount"))["amount__sum"] or 0
+    )
+
+    will_get_back = (
+        ExpenseSplit.objects
+        .filter(expense__paid_by=user)
+        .exclude(user=user)
+        .aggregate(Sum("amount"))["amount__sum"] or 0
+    )
+
+    balance = will_get_back - need_to_pay
+
+    template = get_template("accounts/report_pdf.html")
+
+    html = template.render({
+        "user": user,
+        "expenses": expenses,
+        "total_paid": total_paid,
+        "need_to_pay": need_to_pay,
+        "will_get_back": will_get_back,
+        "balance": balance,
+        "date": timezone.now(),
+    })
+
+    response = HttpResponse(content_type="application/pdf")
+    response["Content-Disposition"] = 'attachment; filename="Expense_Report.pdf"'
+
+    pisa.CreatePDF(html, dest=response)
+    return response
+
+
+
