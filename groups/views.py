@@ -10,6 +10,8 @@ from .models import Group, GroupInvite
 from django.http import HttpResponse
 from django.urls import reverse
 from django.utils.http import urlencode
+from payments.models import Settlement
+from django.db import transaction
 
 User = get_user_model()
 
@@ -81,30 +83,6 @@ def view_all_group(request):
 
 
 
-# @login_required
-# def group_detail(request, group_id):
-#     group = get_object_or_404(Group, id=group_id)
-
-#     expenses = group.expenses.all().order_by("-created_at")
-#     balances = calculate_group_balances(group)
-
-#     settlements = Settlement.objects.filter(
-#         group=group,
-#         status__in=["PENDING", "PAID_REQUESTED"]
-#     )
-
-#     is_admin = request.user == group.created_by
-
-#     return render(request, "groups/group_detail.html", {
-#         "group": group,
-#         "expenses": expenses,
-#         "balances": balances,
-#         "settlements": settlements,
-#         "is_admin": is_admin,
-#     })
-
-from payments.models import Settlement
-from django.db import transaction
 
 @login_required
 def group_detail(request, group_id):
@@ -113,23 +91,38 @@ def group_detail(request, group_id):
     expenses = group.expenses.all().order_by("-created_at")
     balances = calculate_group_balances(group)
 
-    # 1️⃣ calculate settlements (memory)
+    # Calculate fresh settlements from balances
     calculated_settlements = calculate_settlements(balances)
 
-    # 2️⃣ persist settlements into DB
     with transaction.atomic():
-        for s in calculated_settlements:
-            Settlement.objects.get_or_create(
-                group=group,
-                payer=s["from"],
-                receiver=s["to"],
-                defaults={
-                    "amount": s["amount"],
-                    "status": "PENDING"
-                }
-            )
 
-    # 3️⃣ fetch active settlements from DB
+        # Fetch existing ACTIVE settlements (important)
+        existing_settlements = Settlement.objects.filter(
+            group=group,
+            status__in=["PENDING", "PAID_REQUESTED"]
+        )
+
+        # Delete ONLY those pending settlements
+        # which are NOT in payment flow
+        existing_settlements.filter(status="PENDING").delete()
+
+        # Create new settlements ONLY if they don't already exist
+        for s in calculated_settlements:
+            already_exists = existing_settlements.filter(
+                payer=s["from"],
+                receiver=s["to"]
+            ).exists()
+
+            if not already_exists:
+                Settlement.objects.create(
+                    group=group,
+                    payer=s["from"],
+                    receiver=s["to"],
+                    amount=s["amount"],
+                    status="PENDING"
+                )
+
+    # Fetch active settlements for UI
     settlements = Settlement.objects.filter(
         group=group,
         status__in=["PENDING", "PAID_REQUESTED"]

@@ -104,86 +104,128 @@
 
 
     <!-- ================= SETTLEMENTS ================= -->
-<div class="card shadow-sm mb-4">
-  <div class="card-body">
-    <h5 class="mb-3">Suggested Settlements</h5>
+    <div class="card shadow-sm mb-4">
+      <div class="card-body">
+        <h5 class="mb-3">Suggested Settlements</h5>
 
-    {% if settlements %}
-      <ul class="list-group">
-        {% for s in settlements %}
-        <li class="list-group-item d-flex justify-content-between align-items-center">
+        {% if settlements %}
+          <ul class="list-group">
+            {% for s in settlements %}
+            <li class="list-group-item d-flex justify-content-between align-items-center">
 
-          <div>
-            <strong>{{ s.payer.full_name }}</strong>
-            should pay
-            <strong>{{ s.receiver.full_name }}</strong>
-            ₹{{ s.amount|floatformat:2 }}
+              <div>
+                <strong>{{ s.payer.full_name }}</strong>
+                should pay
+                <strong>{{ s.receiver.full_name }}</strong>
+                ₹{{ s.amount|floatformat:2 }}
 
-            {% if s.status == "PAID_REQUESTED" %}
-              <br>
-              <small class="text-warning">
-                Payment done, waiting for receiver confirmation
-              </small>
-            {% endif %}
-          </div>
-
-          <!-- ================= ACTION BUTTONS ================= -->
-
-          <!-- 👤 PAYER VIEW -->
-          {% if user == s.payer %}
-
-            {% if s.status == "PENDING" %}
-              <div class="d-flex gap-2">
-
-                <!-- 1️⃣ PAY NOW -->
-                <form method="post" action="{% url 'payments:upi_pay' %}">
-                  {% csrf_token %}
-                  <input type="hidden" name="to_user_id" value="{{ s.receiver.id }}">
-                  <input type="hidden" name="amount" value="{{ s.amount }}">
-                  <button type="submit" class="btn btn-sm btn-primary">
-                    Pay Now
-                  </button>
-                </form>
-
-                <!-- 2️⃣ MARK AS PAID -->
-                <a href="{% url 'payments:mark_as_paid' s.id %}"
-                   class="btn btn-sm btn-success">
-                  Mark as Paid
-                </a>
-
+                {% if s.status == "PAID_REQUESTED" %}
+                  <br>
+                  <small class="text-warning">
+                    Payment done ({{ s.payment_mode }}), waiting for receiver confirmation
+                  </small>
+                {% endif %}
               </div>
 
-            {% elif s.status == "PAID_REQUESTED" %}
-              <span class="badge bg-warning text-dark">
-                Waiting
-              </span>
-            {% endif %}
+              <!-- ================= ACTION BUTTONS ================= -->
 
-          {% endif %}
+              <!-- PAYER VIEW -->
+              {% if user == s.payer %}
 
-          <!-- 👤 RECEIVER VIEW -->
-          {% if user == s.receiver and s.status == "PAID_REQUESTED" %}
-            <div class="d-flex gap-2">
-              <a href="{% url 'payments:accept_payment' s.id %}"
-                 class="btn btn-sm btn-primary">
-                Accept
-              </a>
+                {% if s.status == "PENDING" %}
+                  <div class="d-flex gap-2">
 
-              <a href="{% url 'payments:reject_payment' s.id %}"
-                 class="btn btn-sm btn-danger">
-                Reject
-              </a>
+                    <!-- OPTIONAL: PAY NOW (UPI OPEN ONLY) -->
+                    <form method="post" action="{% url 'payments:upi_pay' %}">
+                      {% csrf_token %}
+                      <input type="hidden" name="to_user_id" value="{{ s.receiver.id }}">
+                      <input type="hidden" name="amount" value="{{ s.amount }}">
+                      <button type="submit" class="btn btn-sm btn-primary">
+                        Pay Now
+                      </button>
+                    </form>
+
+                    <!-- SINGLE MARK AS PAID -->
+                    <button class="btn btn-sm btn-success"
+                            data-bs-toggle="modal"
+                            data-bs-target="#markPaidModal{{ s.id }}">
+                      Mark as Paid
+                    </button>
+
+                  </div>
+
+                {% elif s.status == "PAID_REQUESTED" %}
+                  <span class="badge bg-warning text-dark">
+                    Waiting
+                  </span>
+                {% endif %}
+
+              {% endif %}
+
+              <!-- RECEIVER VIEW -->
+              {% if user == s.receiver and s.status == "PAID_REQUESTED" %}
+                <div class="d-flex gap-2">
+                  <a href="{% url 'payments:accept_payment' s.id %}"
+                    class="btn btn-sm btn-primary">
+                    Accept
+                  </a>
+
+                  <a href="{% url 'payments:reject_payment' s.id %}"
+                    class="btn btn-sm btn-danger">
+                    Reject
+                  </a>
+                </div>
+              {% endif %}
+
+            </li>
+
+            <!-- ================= MARK AS PAID MODAL ================= -->
+            <div class="modal fade" id="markPaidModal{{ s.id }}" tabindex="-1">
+              <div class="modal-dialog">
+                <div class="modal-content">
+
+                  <form method="post" action="{% url 'payments:mark_as_paid' s.id %}">
+                    {% csrf_token %}
+
+                    <div class="modal-header">
+                      <h5 class="modal-title">Confirm Payment</h5>
+                      <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+                    </div>
+
+                    <div class="modal-body">
+                      <p>
+                        Mark payment of <strong>₹{{ s.amount }}</strong>
+                        to <strong>{{ s.receiver.full_name }}</strong>
+                      </p>
+
+                      <label class="form-label">Payment Mode</label>
+                      <select name="payment_mode" class="form-select" required>
+                        <option value="">Select mode</option>
+                        <option value="UPI">UPI</option>
+                        <option value="CASH">Cash</option>
+                      </select>
+                    </div>
+
+                    <div class="modal-footer">
+                      <button type="submit" class="btn btn-success">
+                        Confirm Paid
+                      </button>
+                    </div>
+
+                  </form>
+
+                </div>
+              </div>
             </div>
-          {% endif %}
+            <!-- ================= END MODAL ================= -->
 
-        </li>
-        {% endfor %}
-      </ul>
-    {% else %}
-      <p class="text-muted">All settled 🎉</p>
-    {% endif %}
-  </div>
-</div>
+            {% endfor %}
+          </ul>
+        {% else %}
+          <p class="text-muted">All settled 🎉</p>
+        {% endif %}
+      </div>
+    </div>
 
 
 

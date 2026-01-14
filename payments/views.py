@@ -67,8 +67,15 @@ def mark_as_paid(request, settlement_id):
 
     if request.user != settlement.payer:
         messages.error(request, "You are not allowed.")
-        return redirect("dashboard")
+        return redirect("accounts:dashboard")
+    
+    payment_mode = request.POST.get("payment_mode")
 
+    if payment_mode not in ["UPI", "CASH"]:
+        messages.error(request, "Please select payment mode.")
+        return redirect("groups:group_detail", group_id=settlement.group.id)
+    
+    settlement.payment_mode = payment_mode
     settlement.status = "PAID_REQUESTED"
     settlement.paid_requested_at = timezone.now()
     settlement.save()
@@ -96,9 +103,12 @@ def accept_payment(request, settlement_id):
         paid_by=settlement.payer,
         received_by=settlement.receiver,
         amount=settlement.amount,
-        payment_mode="UPI",
+        payment_mode=settlement.payment_mode,
         requested_at=settlement.paid_requested_at
     )
+
+    settlement.group.last_settled_at = settlement.settled_at
+    settlement.group.save()
 
     messages.success(request, "Payment confirmed successfully.")
     return redirect("groups:group_detail", group_id=settlement.group.id)

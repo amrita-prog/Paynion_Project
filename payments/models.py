@@ -29,12 +29,22 @@ class Payment(models.Model):
 
 
 class Settlement(models.Model):
-    group = models.ForeignKey(
-        Group, on_delete=models.CASCADE, related_name="settlements"
-    )
+    PAYMENT_MODE_CHOICES = [
+        ("UPI", "UPI"),
+        ("CASH", "Cash"),
+    ]
+
+    group = models.ForeignKey(Group, on_delete=models.CASCADE)
     payer = models.ForeignKey(User, on_delete=models.CASCADE, related_name="payments_to_make")
     receiver = models.ForeignKey(User, on_delete=models.CASCADE, related_name="payments_to_receive")
     amount = models.DecimalField(max_digits=10, decimal_places=2)
+
+    payment_mode = models.CharField(
+        max_length=10,
+        choices=PAYMENT_MODE_CHOICES,
+        null=True,
+        blank=True
+    )
 
     status = models.CharField(
         max_length=20,
@@ -65,7 +75,9 @@ class PaymentHistory(models.Model):
     )
     amount = models.DecimalField(max_digits=10, decimal_places=2)
     payment_mode = models.CharField(
-        max_length=20, choices=[("UPI", "UPI"), ("CASH", "Cash")]
+        max_length=20, choices=[("UPI", "UPI"), ("CASH", "Cash")],
+        null=True,
+        blank=True
     )
 
     requested_at = models.DateTimeField()
