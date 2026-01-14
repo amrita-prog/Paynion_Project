@@ -80,14 +80,62 @@ def view_all_group(request):
 
 
 
+
+# @login_required
+# def group_detail(request, group_id):
+#     group = get_object_or_404(Group, id=group_id)
+
+#     expenses = group.expenses.all().order_by("-created_at")
+#     balances = calculate_group_balances(group)
+
+#     settlements = Settlement.objects.filter(
+#         group=group,
+#         status__in=["PENDING", "PAID_REQUESTED"]
+#     )
+
+#     is_admin = request.user == group.created_by
+
+#     return render(request, "groups/group_detail.html", {
+#         "group": group,
+#         "expenses": expenses,
+#         "balances": balances,
+#         "settlements": settlements,
+#         "is_admin": is_admin,
+#     })
+
+from payments.models import Settlement
+from django.db import transaction
+
 @login_required
 def group_detail(request, group_id):
     group = get_object_or_404(Group, id=group_id)
+
     expenses = group.expenses.all().order_by("-created_at")
     balances = calculate_group_balances(group)
-    settlements = calculate_settlements(balances)
-    is_admin = request.user == group.created_by
 
+    # 1️⃣ calculate settlements (memory)
+    calculated_settlements = calculate_settlements(balances)
+
+    # 2️⃣ persist settlements into DB
+    with transaction.atomic():
+        for s in calculated_settlements:
+            Settlement.objects.get_or_create(
+                group=group,
+                payer=s["from"],
+                receiver=s["to"],
+                defaults={
+                    "amount": s["amount"],
+                    "status": "PENDING"
+                }
+            )
+
+    # 3️⃣ fetch active settlements from DB
+    settlements = Settlement.objects.filter(
+        group=group,
+        status__in=["PENDING", "PAID_REQUESTED"]
+    )
+
+    is_admin = request.user == group.created_by
 
     return render(request, "groups/group_detail.html", {
         "group": group,

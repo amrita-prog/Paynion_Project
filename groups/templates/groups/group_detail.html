@@ -104,44 +104,86 @@
 
 
     <!-- ================= SETTLEMENTS ================= -->
-    <div class="card shadow-sm mb-4">
-      <div class="card-body">
-        <h5 class="mb-3">Suggested Settlements</h5>
+<div class="card shadow-sm mb-4">
+  <div class="card-body">
+    <h5 class="mb-3">Suggested Settlements</h5>
 
-        {% if settlements %}
-          <ul class="list-group">
-            {% for s in settlements %}
-            <li class="list-group-item d-flex justify-content-between align-items-center">
+    {% if settlements %}
+      <ul class="list-group">
+        {% for s in settlements %}
+        <li class="list-group-item d-flex justify-content-between align-items-center">
 
-              <div>
-                <strong>{{ s.from.full_name }}</strong>
-                should pay
-                <strong>{{ s.to.full_name }}</strong>
-                ₹{{ s.amount|floatformat:2 }}
-              </div>
+          <div>
+            <strong>{{ s.payer.full_name }}</strong>
+            should pay
+            <strong>{{ s.receiver.full_name }}</strong>
+            ₹{{ s.amount|floatformat:2 }}
 
-              {% if user == s.from %}
+            {% if s.status == "PAID_REQUESTED" %}
+              <br>
+              <small class="text-warning">
+                Payment done, waiting for receiver confirmation
+              </small>
+            {% endif %}
+          </div>
+
+          <!-- ================= ACTION BUTTONS ================= -->
+
+          <!-- 👤 PAYER VIEW -->
+          {% if user == s.payer %}
+
+            {% if s.status == "PENDING" %}
+              <div class="d-flex gap-2">
+
+                <!-- 1️⃣ PAY NOW -->
                 <form method="post" action="{% url 'payments:upi_pay' %}">
                   {% csrf_token %}
-
-                  <input type="hidden" name="to_user_id" value="{{ s.to.id }}">
+                  <input type="hidden" name="to_user_id" value="{{ s.receiver.id }}">
                   <input type="hidden" name="amount" value="{{ s.amount }}">
-                  <input type="hidden" name="group_id" value="{{ group.id }}">
-
-                  <button type="submit" class="btn btn-sm btn-success">
+                  <button type="submit" class="btn btn-sm btn-primary">
                     Pay Now
                   </button>
                 </form>
-              {% endif %}
 
-            </li>
-            {% endfor %}
-          </ul>
-        {% else %}
-          <p class="text-muted">All settled 🎉</p>
-        {% endif %}
-      </div>
-    </div>
+                <!-- 2️⃣ MARK AS PAID -->
+                <a href="{% url 'payments:mark_as_paid' s.id %}"
+                   class="btn btn-sm btn-success">
+                  Mark as Paid
+                </a>
+
+              </div>
+
+            {% elif s.status == "PAID_REQUESTED" %}
+              <span class="badge bg-warning text-dark">
+                Waiting
+              </span>
+            {% endif %}
+
+          {% endif %}
+
+          <!-- 👤 RECEIVER VIEW -->
+          {% if user == s.receiver and s.status == "PAID_REQUESTED" %}
+            <div class="d-flex gap-2">
+              <a href="{% url 'payments:accept_payment' s.id %}"
+                 class="btn btn-sm btn-primary">
+                Accept
+              </a>
+
+              <a href="{% url 'payments:reject_payment' s.id %}"
+                 class="btn btn-sm btn-danger">
+                Reject
+              </a>
+            </div>
+          {% endif %}
+
+        </li>
+        {% endfor %}
+      </ul>
+    {% else %}
+      <p class="text-muted">All settled 🎉</p>
+    {% endif %}
+  </div>
+</div>
 
 
 

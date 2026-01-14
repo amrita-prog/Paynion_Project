@@ -75,7 +75,7 @@ def add_expense(request, group_id):
             elif expense.split_type == "custom":
                 handle_custom_split(expense, users, request.POST)
 
-            # 🔔 CREATE NOTIFICATIONS (IMPORTANT PART)
+            # CREATE NOTIFICATIONS (IMPORTANT PART)
             for member in users:
                 if member != request.user:
                     Notification.objects.create(
