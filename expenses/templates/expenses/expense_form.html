@@ -19,6 +19,15 @@
 
     <hr>
 
+    <div class="mb-3">
+    <label class="form-label">Upload Bill (AI)</label>
+    <input type="file" id="billImage" class="form-control">
+    <small class="text-muted">
+        Upload bill photo to auto-fill amount & description
+    </small>
+    </div>
+
+
     <form method="POST">
         {% csrf_token %}
 
@@ -57,7 +66,7 @@
             {% endfor %}
         </div>
 
-        <!-- 🔥 PERCENTAGE -->
+        <!-- PERCENTAGE -->
         <div id="percentage-box" class="border rounded p-3 mb-3 d-none">
             <h6 class="fw-semibold mb-2">Percentage Split</h6>
 
@@ -72,7 +81,7 @@
             {% endfor %}
         </div>
 
-        <!-- 🔥 CUSTOM -->
+        <!-- CUSTOM -->
         <div id="custom-box" class="border rounded p-3 mb-3 d-none">
             <h6 class="fw-semibold mb-2">Custom Amount Split</h6>
 
@@ -110,8 +119,9 @@
     </form>
 </div>
 
-<!-- 🔥 JS -->
-<script>
+<!-- JS -->
+
+<!-- <script>
 document.addEventListener("DOMContentLoaded", function () {
 
     const splitRadios = document.querySelectorAll("input[name='split_type']");
@@ -120,7 +130,10 @@ document.addEventListener("DOMContentLoaded", function () {
     const customBox = document.getElementById("custom-box");
     const msgBox = document.getElementById("validation-msg");
     const saveBtn = document.getElementById("save-btn");
-    const amountInput = document.getElementById("expense-amount");
+    const amountInput = document.getElementById("id_amount");
+    const descInput = document.getElementById("id_description");
+
+    /* ================= EXISTING SPLIT LOGIC ================= */
 
     function selectedUsers() {
         return Array.from(userChecks).filter(cb => cb.checked).map(cb => cb.value);
@@ -200,7 +213,241 @@ document.addEventListener("DOMContentLoaded", function () {
 
     document.querySelectorAll(".custom-input")
         .forEach(i => i.addEventListener("input", validateCustom));
+
+
+    /* ================= AI BILL SCAN (NEW) ================= */
+
+    const billInput = document.getElementById("billImage");
+
+    if (billInput) {
+        billInput.addEventListener("change", function () {
+
+            if (!this.files.length) return;
+
+            const formData = new FormData();
+            formData.append("bill_image", this.files[0]);
+
+            msgBox.innerHTML = `<span class="text-info">Scanning bill…</span>`;
+            saveBtn.disabled = true;
+
+            fetch("{% url 'expenses:scan_bill' %}", {
+                method: "POST",
+                headers: {
+                    "X-CSRFToken": "{{ csrf_token }}"
+                },
+                body: formData
+            })
+            .then(res => res.json())
+            .then(data => {
+
+                if (data.amount) {
+                    amountInput.value =
+                        data.amount.replace("₹", "").replace("Rs.", "").trim();
+                }
+
+                if (data.description) {
+                    descInput.value = data.description;
+                }
+
+                msgBox.innerHTML =
+                    `<span class="text-success">Bill scanned. Please verify details.</span>`;
+
+                saveBtn.disabled = false;
+
+                // re-run validation after auto-fill
+                if (splitType() === "custom") validateCustom();
+                if (splitType() === "percentage") validatePercentage();
+            })
+            .catch(() => {
+                msgBox.innerHTML =
+                    `<span class="text-danger">Failed to scan bill</span>`;
+                saveBtn.disabled = false;
+            });
+        });
+    }
+});
+</script> -->
+
+
+
+<script>
+document.addEventListener("DOMContentLoaded", function () {
+
+    /* ================= COMMON ELEMENTS ================= */
+
+    const splitRadios = document.querySelectorAll("input[name='split_type']");
+    const userChecks = document.querySelectorAll("input[name='split_between']");
+    const percentBox = document.getElementById("percentage-box");
+    const customBox = document.getElementById("custom-box");
+    const msgBox = document.getElementById("validation-msg");
+    const saveBtn = document.getElementById("save-btn");
+
+    const amountInput = document.getElementById("id_amount");
+    const descInput = document.getElementById("id_description");
+
+    /* ================= SPLIT LOGIC ================= */
+
+    function selectedUsers() {
+        return Array.from(userChecks)
+            .filter(cb => cb.checked)
+            .map(cb => cb.value);
+    }
+
+    function splitType() {
+        return document.querySelector("input[name='split_type']:checked")?.value;
+    }
+
+    function updateUI() {
+        const users = selectedUsers();
+        const type = splitType();
+
+        percentBox.classList.add("d-none");
+        customBox.classList.add("d-none");
+        msgBox.innerHTML = "";
+        saveBtn.disabled = false;
+
+        document
+            .querySelectorAll(".percent-row,.amount-row")
+            .forEach(row => row.classList.add("d-none"));
+
+        if (!type || users.length === 0) return;
+
+        if (type === "percentage") {
+            percentBox.classList.remove("d-none");
+            users.forEach(id => {
+                document
+                    .querySelector(`.percent-row[data-user="${id}"]`)
+                    ?.classList.remove("d-none");
+            });
+        }
+
+        if (type === "custom") {
+            customBox.classList.remove("d-none");
+            users.forEach(id => {
+                document
+                    .querySelector(`.amount-row[data-user="${id}"]`)
+                    ?.classList.remove("d-none");
+            });
+        }
+    }
+
+    function validatePercentage() {
+        let total = 0;
+        document
+            .querySelectorAll(".percent-row:not(.d-none) input")
+            .forEach(i => total += Number(i.value || 0));
+
+        if (total !== 100) {
+            msgBox.innerHTML = `<span class="text-danger">Total must be 100%</span>`;
+            saveBtn.disabled = true;
+        } else {
+            msgBox.innerHTML = `<span class="text-success">Percentage valid</span>`;
+            saveBtn.disabled = false;
+        }
+    }
+
+    function validateCustom() {
+        let total = 0;
+        document
+            .querySelectorAll(".amount-row:not(.d-none) input")
+            .forEach(i => total += Number(i.value || 0));
+
+        const amount = Number(amountInput.value || 0);
+
+        if (total !== amount) {
+            msgBox.innerHTML =
+                `<span class="text-danger">Total ₹${total} must equal ₹${amount}</span>`;
+            saveBtn.disabled = true;
+        } else {
+            msgBox.innerHTML =
+                `<span class="text-success">Amount matched</span>`;
+            saveBtn.disabled = false;
+        }
+    }
+
+    splitRadios.forEach(r => r.addEventListener("change", updateUI));
+    userChecks.forEach(c => c.addEventListener("change", updateUI));
+
+    document
+        .querySelectorAll(".percent-input")
+        .forEach(i => i.addEventListener("input", validatePercentage));
+
+    document
+        .querySelectorAll(".custom-input")
+        .forEach(i => i.addEventListener("input", validateCustom));
+
+    /* ================= AI BILL SCAN ================= */
+
+    const billInput = document.getElementById("billImage");
+
+    if (billInput) {
+        billInput.addEventListener("change", function () {
+
+            if (!this.files.length) return;
+
+            const formData = new FormData();
+            formData.append("bill", this.files[0]); // ✅ backend expects "bill"
+
+            msgBox.innerHTML =
+                `<span class="text-info">🔄 Scanning bill…</span>`;
+            saveBtn.disabled = true;
+
+            fetch("{% url 'expenses:scan_bill' %}", {
+                method: "POST",
+                headers: {
+                    "X-CSRFToken": "{{ csrf_token }}"
+                },
+                body: formData
+            })
+            .then(res => res.json())
+            .then(data => {
+
+                if (data.success) {
+
+                    // ✅ SAFETY: Ensure numeric value, never scientific notation
+                    if (data.amount !== null && data.amount !== undefined) {
+                        const numAmount = Number(data.amount);
+                        
+                        // Validate amount is a reasonable number (₹10 - ₹100,000)
+                        if (numAmount >= 10 && numAmount <= 100000 && isFinite(numAmount)) {
+                            amountInput.value = numAmount.toFixed(2);
+                        } else {
+                            throw new Error("Amount out of realistic range");
+                        }
+                    }
+
+                    if (data.description && data.description.trim()) {
+                        descInput.value = data.description.trim();
+                    }
+
+                    msgBox.innerHTML =
+                        `<span class="text-success">
+                            ✅ Bill scanned successfully. Please verify details.
+                        </span>`;
+
+                    // ✅ Re-validate after auto-fill
+                    if (splitType() === "custom") validateCustom();
+                    if (splitType() === "percentage") validatePercentage();
+
+                } else {
+                    msgBox.innerHTML =
+                        `<span class="text-danger">
+                            ❌ ${data.message || "Failed to scan bill"}
+                        </span>`;
+                }
+
+                saveBtn.disabled = false;
+            })
+            .catch(err => {
+                console.error("Bill scan error:", err);
+                msgBox.innerHTML =
+                    `<span class="text-danger">❌ Failed to scan bill</span>`;
+                saveBtn.disabled = false;
+            });
+        });
+    }
 });
 </script>
+
 
 {% endblock %}

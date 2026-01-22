@@ -11,6 +11,11 @@ from .services import (
 )
 from groups.models import Group
 from accounts.models import Notification
+import os
+import uuid
+from .ai_utils import extract_bill_data
+from django.http import JsonResponse
+from django.conf import settings
 
 User = get_user_model()
 
@@ -126,3 +131,71 @@ def edit_expense(request, expense_id):
         "expense": expense,
         "group": group,
     })
+
+
+
+@login_required
+def scan_bill(request):
+    """
+    AJAX endpoint for bill image scanning and OCR extraction.
+    
+    Expects: POST request with "bill" file field
+    Returns: JSON with success status, extracted amount & description
+    """
+    if request.method != "POST":
+        return JsonResponse({
+            "success": False,
+            "message": "Only POST requests allowed"
+        })
+    
+    if not request.FILES.get("bill"):
+        return JsonResponse({
+            "success": False,
+            "message": "No bill image provided"
+        })
+    
+    try:
+        bill = request.FILES["bill"]
+        
+        # Create temp directory if it doesn't exist
+        temp_dir = os.path.join(settings.MEDIA_ROOT, "temp")
+        if not os.path.exists(temp_dir):
+            os.makedirs(temp_dir)
+        
+        # Save uploaded file temporarily
+        import uuid
+        temp_filename = f"{uuid.uuid4()}_{bill.name}"
+        temp_path = os.path.join(temp_dir, temp_filename)
+        
+        with open(temp_path, "wb+") as f:
+            for chunk in bill.chunks():
+                f.write(chunk)
+        
+        # Extract bill data using AI
+        result = extract_bill_data(temp_path)
+        
+        # Clean up temp file (if not already cleaned by extract_bill_data)
+        if os.path.exists(temp_path):
+            try:
+                os.remove(temp_path)
+            except:
+                pass
+        
+        if not result["success"]:
+            return JsonResponse({
+                "success": False,
+                "message": result.get("message", "Failed to extract bill data")
+            })
+        
+        # Return clean JSON response
+        return JsonResponse({
+            "success": True,
+            "amount": result["amount"],  # Numeric value, not string
+            "description": result["title"]
+        })
+        
+    except Exception as e:
+        return JsonResponse({
+            "success": False,
+            "message": f"Error processing bill: {str(e)}"
+        })

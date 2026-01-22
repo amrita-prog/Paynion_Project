@@ -41,7 +41,7 @@
 
   <!-- ADD EXPENSE -->
   <div class="mb-4">
-    <a href="{% url 'add_expense' group.id %}" class="btn btn-success">
+    <a href="{% url 'expenses:add_expense' group.id %}" class="btn btn-success">
       + Add Expense
     </a>
   </div>
@@ -247,8 +247,8 @@
 
           <div class="d-flex gap-2">
             <span class="fw-semibold">₹ {{ exp.amount }}</span>
-            <a href="{% url 'edit_expense' exp.id %}" class="btn btn-sm btn-outline-primary">Edit</a>
-            <form method="post" action="{% url 'delete_expense' exp.id %}" style="display:inline;">
+            <a href="{% url 'expenses:edit_expense' exp.id %}" class="btn btn-sm btn-outline-primary">Edit</a>
+            <form method="post" action="{% url 'expenses:delete_expense' exp.id %}" style="display:inline;">
             {% csrf_token %}
             <button type="submit"
                     class="btn btn-sm btn-outline-danger"
