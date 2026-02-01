@@ -113,6 +113,7 @@ def dashboard(request):
     #  SUMMARY CARDS 
     total_groups = Group.objects.filter(members=user).count()
     total_expenses = Expense.objects.filter(paid_by=user).count()
+    groups = Group.objects.filter(members=user).order_by('-created_at')
 
     recent_expenses = (
         Expense.objects
@@ -198,17 +199,129 @@ def dashboard(request):
     paid_labels, paid_values = format_data(paid_data, "created_at__date")
     need_labels, need_values = format_data(need_to_pay_data, "expense__created_at__date")
 
+    # WEEKLY INCOME/OUTCOME DATA (Last 4 weeks)
+    four_weeks_ago = today - timedelta(days=28)
+    
+    weekly_income_qs = (
+        Expense.objects
+        .filter(paid_by=user, created_at__date__gte=four_weeks_ago)
+        .values('created_at__date')
+        .annotate(total=Sum('amount'))
+        .order_by('created_at__date')
+    )
+    
+    weekly_outcome_qs = (
+        ExpenseSplit.objects
+        .filter(user=user, expense__created_at__date__gte=four_weeks_ago)
+        .exclude(expense__paid_by=user)
+        .values('expense__created_at__date')
+        .annotate(total=Sum('amount'))
+        .order_by('expense__created_at__date')
+    )
+    
+    # Build weekly data for last 4 weeks
+    week_labels = []
+    income_by_week = [0, 0, 0, 0]
+    outcome_by_week = [0, 0, 0, 0]
+    
+    for week_num in range(3, -1, -1):
+        week_start = today - timedelta(days=week_num*7)
+        week_end = week_start + timedelta(days=6)
+        week_label = f"Week {4-week_num}"
+        week_labels.append(week_label)
+        
+        # Calculate income for this week
+        week_income = 0
+        for item in weekly_income_qs:
+            item_date = item['created_at__date']
+            if week_start <= item_date <= week_end:
+                week_income += float(item['total']) if item['total'] else 0
+        income_by_week[3-week_num] = week_income
+        
+        # Calculate outcome for this week
+        week_outcome = 0
+        for item in weekly_outcome_qs:
+            item_date = item['expense__created_at__date']
+            if week_start <= item_date <= week_end:
+                week_outcome += float(item['total']) if item['total'] else 0
+        outcome_by_week[3-week_num] = week_outcome
+
+    # Calculate totals for summary
+    total_paid = sum(float(val) if val else 0 for val in paid_values)
+    total_need_to_pay = sum(float(val) if val else 0 for val in need_values)
+    total_will_get_back = sum(float(val) if val else 0 for val in getback_values)
+
+    # CATEGORY DATA - Categorize expenses by description keywords
+    category_keywords = {
+        "Food": ["food", "lunch", "dinner", "breakfast", "pizza", "restaurant", "cafe", "snacks", "grocery", "meal"],
+        "Transport": ["transport", "uber", "taxi", "bus", "fuel", "petrol", "auto", "travel", "flight", "train"],
+        "Entertainment": ["movie", "cinema", "games", "show", "concert", "entertainment", "fun", "outing"],
+        "Shopping": ["shopping", "clothes", "dress", "shoes", "mall", "store", "purchase"],
+        "Bills": ["bill", "electricity", "water", "internet", "phone", "utility"],
+        "Other": []
+    }
+    
+    category_totals = {cat: 0 for cat in category_keywords.keys()}
+    
+    for expense in recent_expenses:
+        description_lower = expense.description.lower()
+        categorized = False
+        
+        for category, keywords in category_keywords.items():
+            if category != "Other" and any(keyword in description_lower for keyword in keywords):
+                category_totals[category] += float(expense.amount)
+                categorized = True
+                break
+        
+        if not categorized:
+            category_totals["Other"] += float(expense.amount)
+    
+    # Filter out zero categories and prepare for chart
+    category_data = []
+    colors = ["#FF6B6B", "#4ECDC4", "#45B7D1", "#FFA07A", "#98D8C8", "#F7DC6F"]
+    color_idx = 0
+    
+    for category, amount in category_totals.items():
+        if amount > 0:
+            category_data.append({
+                "name": category,
+                "amount": f"{amount:.2f}",
+                "color": colors[color_idx % len(colors)]
+            })
+            color_idx += 1
+    
+    # Prepare JSON data for pie chart
+    import json
+    category_labels = [cat["name"] for cat in category_data]
+    category_amounts = [float(cat["amount"]) for cat in category_data]
+    category_colors = [cat["color"] for cat in category_data]
+    
+    category_json = json.dumps({
+        "labels": category_labels,
+        "amounts": category_amounts,
+        "colors": category_colors
+    })
+
     context = {
         "notification": notification,   # PASS TO TEMPLATE
         "total_groups": total_groups,
         "total_expenses": total_expenses,
+        "groups": groups,
         "recent_expenses": recent_expenses,
         "week_options": week_options,
+        "total_paid": f"{total_paid:.2f}",
+        "total_need_to_pay": f"{total_need_to_pay:.2f}",
+        "total_will_get_back": f"{total_will_get_back:.2f}",
+        "category_data": category_data,
+        "category_json": category_json,
         "chart": {
             "labels": paid_labels,
             "paid": paid_values,
             "need_to_pay": need_values,
             "will_get_back": getback_values,
+            "weekly_labels": week_labels,
+            "weekly_income": income_by_week,
+            "weekly_outcome": outcome_by_week,
         }
     }
 

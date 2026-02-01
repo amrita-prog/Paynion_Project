@@ -1,0 +1,97 @@
+{% load static %}
+
+<!-- Modern Navbar -->
+<nav class="navbar navbar-expand-lg navbar-custom">
+    <div class="container-fluid px-4">
+        <!-- Logo -->
+        <a class="navbar-brand" href="{% url 'accounts:dashboard' %}">
+            <div class="navbar-brand-icon">P</div>
+            Paynion
+        </a>
+
+        <!-- Mobile Toggle -->
+        <button class="navbar-toggler" type="button" data-bs-toggle="collapse"
+                data-bs-target="#navbarNav" aria-controls="navbarNav"
+                aria-expanded="false" aria-label="Toggle navigation">
+            <span class="navbar-toggler-icon"></span>
+        </button>
+
+        <!-- Navigation Items -->
+        <div class="collapse navbar-collapse" id="navbarNav">
+            {% if user.is_authenticated %}
+            <ul class="navbar-nav">
+                <li class="nav-item">
+                    <a class="nav-link {% if 'dashboard' in request.path %}active{% endif %}"
+                       href="{% url 'accounts:dashboard' %}">
+                        <i class="fas fa-th-large"></i> Dashboard
+                    </a>
+                </li>
+
+                <li class="nav-item">
+                    <a class="nav-link {% if 'group' in request.path %}active{% endif %}"
+                       href="{% url 'groups:view_all_group' %}">
+                        <i class="fas fa-users"></i> Groups
+                    </a>
+                </li>
+
+                <li class="nav-item">
+                    <a class="nav-link {% if 'report' in request.path %}active{% endif %}"
+                       href="{% url 'accounts:report' %}">
+                        <i class="fas fa-chart-bar"></i> Analytics
+                    </a>
+                </li>
+
+                <li class="nav-item">
+                    <a class="nav-link {% if 'payment' in request.path %}active{% endif %}"
+                       href="{% url 'payments:payment_history' %}">
+                        <i class="fas fa-history"></i> History
+                    </a>
+                </li>
+
+                <li class="nav-item">
+                    <a class="nav-link {% if 'profile' in request.path or 'edit' in request.path %}active{% endif %}"
+                       href="{% url 'accounts:profile' %}">
+                        <i class="fas fa-cog"></i> Settings
+                    </a>
+                </li>
+            </ul>
+
+            <!-- Right Side Items -->
+            <div class="navbar-end-items">
+                <!-- Notification Icon -->
+                <span class="notification-icon" title="Notifications">
+                    <i class="fas fa-bell"></i>
+                </span>
+
+                <!-- Profile Dropdown -->
+                <div class="dropdown">
+                    <button class="profile-dropdown-toggle" type="button"
+                            id="profileDropdown" data-bs-toggle="dropdown"
+                            aria-expanded="false">
+                        {% if request.user.profile_image %}
+                        <img src="{{ request.user.profile_image.url }}" alt="Profile"
+                             style="width: 32px; height: 32px; border-radius: 50%; object-fit: cover;">
+                        {% else %}
+                        <i class="fas fa-user-circle" style="font-size: 1.5rem; color: #00d4ff;"></i>
+                        {% endif %}
+                    </button>
+                    <ul class="dropdown-menu dropdown-menu-end" aria-labelledby="profileDropdown">
+                        <li><span class="dropdown-item-text" style="color: #aaa;">{{ request.user.full_name }}</span></li>
+                        <li><hr class="dropdown-divider" style="border-color: rgba(255,255,255,0.1);"></li>
+                        <li><a class="dropdown-item" href="{% url 'accounts:profile' %}">
+                            <i class="fas fa-user"></i> My Profile
+                        </a></li>
+                        <li><a class="dropdown-item" href="{% url 'accounts:edit_profile' %}">
+                            <i class="fas fa-edit"></i> Edit Profile
+                        </a></li>
+                        <li><hr class="dropdown-divider" style="border-color: rgba(255,255,255,0.1);"></li>
+                        <li><a class="dropdown-item" href="{% url 'accounts:logout' %}">
+                            <i class="fas fa-sign-out-alt"></i> Logout
+                        </a></li>
+                    </ul>
+                </div>
+            </div>
+            {% endif %}
+        </div>
+    </div>
+</nav>

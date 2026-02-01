@@ -10,6 +10,15 @@
     <link rel="stylesheet"
           href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/css/bootstrap.min.css">
 
+    <!-- Font Awesome -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+
+    <!-- Cream Grid Background -->
+    <link rel="stylesheet" href="{% static 'css/grid-background.css' %}">
+    
+    <!-- Navbar Styles -->
+    <link rel="stylesheet" href="{% static 'css/navbar.css' %}">
+
     <style>
         .card-summary {
             border-left: 5px solid #0d6efd;
@@ -23,197 +32,477 @@
             border: 2px solid #fff;
             cursor: pointer;
         }
+
+        /* NEW SQUARE CARD STYLES */
+        .square-card {
+            aspect-ratio: auto;
+            min-height: 140px;
+            display: flex;
+            flex-direction: column;
+            justify-content: flex-start;
+            align-items: flex-start;
+            padding: 20px;
+            border-radius: 12px;
+            border: none;
+            background: #f8f9fa;
+            transition: all 0.3s ease;
+            text-align: left;
+            max-width: 100%;
+            box-shadow: none;
+        }
+
+        .square-card:hover {
+            transform: none;
+            background: #f0f1f3;
+            box-shadow: 0 4px 12px rgba(0, 0, 0, 0.08);
+        }
+
+        .square-card h6 {
+            font-size: 12px;
+            color: #6c757d;
+            font-weight: 500;
+            margin-bottom: 8px;
+            text-transform: none;
+            letter-spacing: 0px;
+            margin-top: auto;
+        }
+
+        .square-card-value {
+            font-size: 32px;
+            font-weight: 700;
+            color: #1a1a1a;
+            margin: 0;
+            order: 3;
+        }
+
+        .square-card-icon {
+            font-size: 32px;
+            margin-bottom: 12px;
+            opacity: 1;
+            order: 1;
+        }
+
+        .square-card.groups .square-card-icon {
+            color: #007bff;
+        }
+
+        .square-card.expenses .square-card-icon {
+            color: #ff6b6b;
+        }
+
+        .square-card.balance .square-card-icon {
+            color: #28a745;
+        }
+
+        .square-card.action-card {
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            gap: 8px;
+        }
+
+        .btn-action-sub {
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 6px;
+            padding: 10px 14px;
+            border-radius: 6px;
+            font-weight: 600;
+            text-decoration: none;
+            border: none;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            font-size: 12px;
+            text-align: center;
+        }
+
+        .btn-action-sub i {
+            font-size: 14px;
+        }
+
+        .btn-action-sub:nth-child(1) {
+            background: #17a2b8;
+            color: white;
+        }
+
+        .btn-action-sub:nth-child(1):hover {
+            background: #138496;
+            color: white;
+            text-decoration: none;
+        }
+
+        .btn-action-sub:nth-child(2) {
+            background: #a8d8d8;
+            color: #2a7a7a;
+        }
+
+        .btn-action-sub:nth-child(2):hover {
+            background: #92cccf;
+            color: #2a7a7a;
+            text-decoration: none;
+        }
+
+        .btn-action-sub:nth-child(3) {
+            background: #f5e5a8;
+            color: #7a6b2a;
+        }
+
+        .btn-action-sub:nth-child(3):hover {
+            background: #f0dfa8;
+            color: #7a6b2a;
+            text-decoration: none;
+        }
+
+        /* BUTTON STYLES */
+        .btn-action {
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 8px;
+            padding: 12px 16px;
+            border-radius: 8px;
+            font-weight: 600;
+            text-decoration: none;
+            border: none;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            font-size: 13px;
+            box-shadow: none;
+        }
+
+        .btn-action i {
+            font-size: 16px;
+        }
+
+        .btn-scan {
+            background: #17a2b8;
+            color: white;
+        }
+
+        .btn-scan:hover {
+            transform: none;
+            background: #138496;
+            box-shadow: none;
+            color: white;
+            text-decoration: none;
+        }
+
+        .btn-add-expense {
+            background: #a8d8d8;
+            color: #2a7a7a;
+        }
+
+        .btn-add-expense:hover {
+            transform: none;
+            background: #92cccf;
+            box-shadow: none;
+            color: #2a7a7a;
+            text-decoration: none;
+        }
+
+        .btn-create-group {
+            background: #a8d8d8;
+            color: #2a7a7a;
+        }
+
+        .btn-create-group:hover {
+            transform: none;
+            background: #92cccf;
+            box-shadow: none;
+            color: #2a7a7a;
+            text-decoration: none;
+        }
+
+        .btn-view-report {
+            background: #f5e5a8;
+            color: #7a6b2a;
+        }
+
+        .btn-view-report:hover {
+            transform: none;
+            background: #f0dfa8;
+            box-shadow: none;
+            color: #7a6b2a;
+            text-decoration: none;
+        }
+
+        /* LAYOUT ADJUSTMENTS */
+        .summary-cards-section {
+            display: flex;
+            gap: 16px;
+            align-items: stretch;
+            margin-bottom: 16px;
+        }
+
+        .cards-grid {
+            flex: 1;
+            display: grid;
+            grid-template-columns: repeat(4, 1fr);
+            gap: 12px;
+        }
+
+        .action-buttons {
+            display: flex;
+            flex-direction: column;
+            gap: 8px;
+            width: auto;
+        }
+
+        @media (max-width: 1200px) {
+            .cards-grid {
+                grid-template-columns: repeat(2, 1fr);
+            }
+            
+            .action-buttons {
+                width: auto;
+                flex-direction: row;
+                flex-wrap: wrap;
+            }
+        }
+
+        @media (max-width: 768px) {
+            .summary-cards-section {
+                flex-direction: column;
+            }
+
+            .cards-grid {
+                grid-template-columns: 1fr;
+            }
+
+            .action-buttons {
+                width: 100%;
+            }
+        }
+
+        /* PROGRESS BAR COLORS */
+        .bg-teal {
+            background-color: #17a2b8 !important;
+        }
     </style>
+
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/js/bootstrap.bundle.min.js"></script>
 </head>
 
-<body class="bg-light">
+<body>
 
-<!-- NAVBAR -->
-<nav class="navbar navbar-expand-lg navbar-dark bg-primary">
-    <div class="container-fluid">
-
-        <a class="navbar-brand" href="#">Paynion</a>
-
-        <div class="d-flex align-items-center gap-3">
-
-            <span class="text-white d-none d-md-inline">
-                Hello, {{ request.user.full_name }}
-            </span>
-
-            <!-- PROFILE DROPDOWN -->
-            <div class="dropdown">
-                <a class="dropdown-toggle text-decoration-none"
-                   href="#"
-                   role="button"
-                   data-bs-toggle="dropdown"
-                   aria-expanded="false">
-
-                    <img
-                      src="{% if request.user.profile_image %}
-                           {{ request.user.profile_image.url }}
-                           {% else %}
-                           {% static 'images/default-user.png' %}
-                           {% endif %}"
-                      class="profile-img"
-                      alt="Profile">
-                </a>
-
-                <ul class="dropdown-menu dropdown-menu-end">
-                    <li>
-                        <a class="dropdown-item"
-                           href="{% url 'accounts:profile' %}">
-                            My Profile
-                        </a>
-                    </li>
-                    <li><hr class="dropdown-divider"></li>
-                    <li>
-                        <a class="dropdown-item text-danger"
-                           href="{% url 'accounts:logout' %}">
-                            Logout
-                        </a>
-                    </li>
-                </ul>
-            </div>
-
-        </div>
-    </div>
-</nav>
+<!-- Include Modern Navbar -->
+{% include 'navbar.html' %}
 
 <div class="container mt-4">
 
     <h2 class="mb-4">Dashboard</h2>
 
-    <!-- SUMMARY CARDS -->
-    <div class="row">
+    <!-- SUMMARY CARDS WITH ACTION BUTTONS -->
+    <div class="summary-cards-section">
+        <!-- Cards Grid -->
+        <div class="cards-grid">
+            <!-- Total Groups Card -->
+            <div class="card square-card groups shadow-sm">
+                <div class="square-card-icon">
+                    <i class="fas fa-users"></i>
+                </div>
+                <h6>Total Groups</h6>
+                <p class="square-card-value">{{ total_groups|default:"0" }}</p>
+            </div>
 
-        <div class="col-md-4 mb-3">
-            <div class="card p-3 shadow-sm card-summary">
-                <h4>Total Groups</h4>
-                <p class="fs-4">{{ total_groups|default:"0" }}</p>
+            <!-- Total Expenses Card -->
+            <div class="card square-card expenses shadow-sm">
+                <div class="square-card-icon">
+                    <i class="fas fa-receipt"></i>
+                </div>
+                <h6>Total Expenses</h6>
+                <p class="square-card-value">{{ total_expenses|default:"0" }}</p>
+            </div>
+
+            <!-- Your Balance Card -->
+            <div class="card square-card balance shadow-sm">
+                <div class="square-card-icon">
+                    <i class="fas fa-wallet"></i>
+                </div>
+                <h6>Your Balance</h6>
+                <p class="square-card-value">₹{{ balance|default:"0" }}</p>
+            </div>
+
+            <!-- Action Buttons Card -->
+            <div class="card square-card action-card shadow-sm">
+                <a href="{% url 'groups:view_all_group' %}?from=add_expense" class="btn-action-sub">
+                    <i class="fas fa-plus"></i> Add Expense
+                </a>
+                <a href="{% url 'groups:create_group' %}" class="btn-action-sub">
+                    <i class="fas fa-plus-circle"></i> Create Group
+                </a>
+                <a href="{% url 'accounts:report' %}" class="btn-action-sub">
+                    <i class="fas fa-chart-bar"></i> View Report
+                </a>
             </div>
         </div>
-
-        <div class="col-md-4 mb-3">
-            <div class="card p-3 shadow-sm card-summary">
-                <h4>Total Expenses</h4>
-                <p class="fs-4">{{ total_expenses|default:"0" }}</p>
-            </div>
-        </div>
-
-        <div class="col-md-4 mb-3">
-            <div class="card p-3 shadow-sm card-summary">
-                <h4>Your Balance</h4>
-                <p class="fs-4">₹ {{ balance|default:"0" }}</p>
-            </div>
-        </div>
-
     </div>
 
 
-    <div class="d-flex justify-content-end mb-3">
+    <div class="d-flex justify-content-end mb-2">
       <a href="{% url 'accounts:report' %}"
         class="btn btn-outline-primary">
         View Full Report
       </a>
     </div>
 
-
-    
-
-
-    <!-- EXPENSE CHART -->
-    <div class="card shadow-sm mt-4">
-    <div class="card-body">
-
-        <div class="d-flex justify-content-between align-items-center mb-3">
-        <h5 class="mb-0">Expenses Overview</h5>
-
-        <form method="get">
-            <select name="weeks"
-                    class="form-select form-select-sm w-auto"
-                    onchange="this.form.submit()">
-            {% for opt in week_options %}
-                <option value="{{ opt.value }}"
-                {% if request.GET.weeks == opt.value|stringformat:"s" %}selected{% endif %}>
-                {{ opt.label }}
-                </option>
-            {% endfor %}
-            </select>
-        </form>
-        </div>
-
-        <canvas id="expenseChart" height="120"></canvas>
-
-        <small class="text-muted d-block mt-2">
-        Showing expenses based on selected duration
-        </small>
-
-    </div>
-    </div>
-
-
-    <!-- I WILL GET BACK CHART -->
-    <div class="card shadow-sm mt-4">
-    <div class="card-body">
-        <h5 class="mb-3">I Will Get Back</h5>
-        <canvas id="getBackChart" height="120"></canvas>
-    </div>
-    </div>
-
-    <p>{{ chart.will_get_back }}</p>
-
-
-
-
-    <!-- ACTION BUTTONS -->
-    <div class="d-flex justify-content-between my-4">
-
-        <div class="d-flex gap-2">
-            <a href="{% url 'groups:create_group' %}" class="btn btn-success">
-                + Create Group
-            </a>
-
-            <a href="{% url 'groups:view_all_group' %}"
-               class="btn btn-outline-secondary">
-                All Groups
-            </a>
-        </div>
-
-        <a href="{% url 'groups:view_all_group' %}?from=add_expense"
-           class="btn btn-primary">
-            + Add Expense
-        </a>
-
-    </div>
-
-
-    <!-- RECENT EXPENSES -->
-    <div class="card shadow-sm p-3">
-        <h4>Recent Expenses</h4>
-        <hr>
-
-        {% if recent_expenses %}
-            {% for exp in recent_expenses %}
-                <div class="d-flex justify-content-between mb-2">
+    <!-- TWO COLUMN CHARTS SECTION -->
+    <div class="row mt-2 g-3">
+        <!-- LEFT SIDE - EXPENSE FLOW CHART -->
+        <div class="col-lg-6">
+            <!-- EXPENSE FLOW CHART -->
+            <div class="card shadow-sm">
+            <div class="card-body">
+                <div class="d-flex justify-content-between align-items-center mb-3">
                     <div>
-                        <strong>{{ exp.description }}</strong>
-                        <br>
-                        <small class="text-muted">
-                            Group: {{ exp.group.name }} |
-                            ₹ {{ exp.amount }}
-                        </small>
+                        <h5 class="mb-1">Expense Flow</h5>
+                        <small class="text-muted">Analytics for the last 4 weeks</small>
                     </div>
-
-                    <small class="text-muted">
-                        {{ exp.created_at|date:"d M Y" }}
-                    </small>
+                    <div class="btn-group" role="group">
+                        <input type="radio" class="btn-check" name="flowType" id="incomeBtn" value="income" checked>
+                        <label class="btn btn-outline-secondary btn-sm" for="incomeBtn">Income</label>
+                        
+                        <input type="radio" class="btn-check" name="flowType" id="outcomeBtn" value="outcome">
+                        <label class="btn btn-outline-secondary btn-sm" for="outcomeBtn">Outcome</label>
+                    </div>
                 </div>
-                <hr>
-            {% endfor %}
-        {% else %}
-            <p class="text-muted">No recent expenses found.</p>
-        {% endif %}
+                <canvas id="expenseFlowChart" height="100"></canvas>
+            </div>
+            </div>
+        </div>
+
+        <!-- RIGHT SIDE - SPENDING CATEGORIES PIE CHART -->
+        <div class="col-lg-6">
+            <!-- SPENDING CATEGORIES CHART -->
+            <div class="card shadow-sm">
+            <div class="card-body">
+                <h5 class="mb-3">Spending Categories</h5>
+                <div class="d-flex justify-content-center mb-3">
+                    <div style="position: relative; width: 150px; height: 150px;">
+                        <canvas id="categoriesChart"></canvas>
+                        <div style="position: absolute; top: 50%; left: 50%; transform: translate(-50%, -50%); text-align: center;">
+                            <div style="font-size: 20px; font-weight: bold;">₹{{ total_paid }}</div>
+                            <div style="font-size: 10px; color: #6c757d;">TOTAL</div>
+                        </div>
+                    </div>
+                </div>
+                <div class="small">
+                    {% if category_data %}
+                        <div class="row g-2">
+                            {% for cat in category_data %}
+                            <div class="col-6">
+                                <div class="d-flex align-items-center gap-2">
+                                    <span class="badge" style="background-color: {{ cat.color }}; width: 12px; height: 12px; border-radius: 50%;"></span>
+                                    <span>{{ cat.name }}</span>
+                                </div>
+                            </div>
+                            {% endfor %}
+                        </div>
+                    {% endif %}
+                </div>
+            </div>
+            </div>
+        </div>
     </div>
+
+    <!-- TWO COLUMN CARDS SECTION -->
+    <div class="row mt-2 g-3">
+        <!-- LEFT CARD - GROUP SNAPSHOTS -->
+        <div class="col-lg-5">
+            <div class="card shadow-sm h-100">
+            <div class="card-body">
+                <div class="d-flex justify-content-between align-items-center mb-3">
+                    <h5 class="mb-0">Group Snapshots</h5>
+                    <a href="{% url 'groups:view_all_group' %}" class="text-muted small" style="text-decoration: none; font-size: 12px;">VIEW ALL</a>
+                </div>
+
+                {% if groups %}
+                    {% for group in groups|slice:":2" %}
+                    <div class="mb-3 pb-3 {% if not forloop.last %}border-bottom{% endif %}">
+                        <!-- Group Header -->
+                        <div class="d-flex justify-content-between align-items-start mb-2">
+                            <div>
+                                <h6 class="mb-0 fw-semibold" style="font-size: 14px;">{{ group.title }}</h6>
+                                <small class="text-muted">Created by {{ group.created_by.first_name }}</small>
+                            </div>
+                            <span class="badge bg-success" style="font-size: 10px;">Active</span>
+                        </div>
+
+                        <!-- Group Members Avatars -->
+                        <div class="mb-2">
+                            <div class="d-flex align-items-center gap-1">
+                                {% for member in group.members.all|slice:":3" %}
+                                <img src="{% if member.profile_image %}{{ member.profile_image.url }}{% else %}/static/images/default-user.png{% endif %}" 
+                                     class="rounded-circle border border-2 border-white" 
+                                     width="32" height="32"
+                                     style="object-fit: cover; margin-left: -8px;"
+                                     title="{{ member.full_name }}"
+                                     alt="{{ member.full_name }}">
+                                {% endfor %}
+                                {% if group.members.count > 3 %}
+                                <div class="rounded-circle bg-light d-flex align-items-center justify-content-center" 
+                                     style="width: 32px; height: 32px; margin-left: -8px; border: 2px solid white; font-size: 11px; font-weight: bold;">
+                                    +{{ group.members.count|add:"-3" }}
+                                </div>
+                                {% endif %}
+                            </div>
+                        </div>
+
+                        <!-- Progress Bar -->
+                        <div class="mb-2">
+                            <div class="progress" style="height: 6px;">
+                                <div class="progress-bar bg-teal" role="progressbar" style="width: 60%;"></div>
+                            </div>
+                        </div>
+
+                        <!-- Collection Info -->
+                        <div class="d-flex justify-content-between small">
+                            <span class="text-muted">Collected: <strong class="text-dark">₹1,200</strong></span>
+                            <span class="text-muted">Target: <strong class="text-dark">₹2,000</strong></span>
+                        </div>
+                    </div>
+                    {% endfor %}
+                {% else %}
+                    <p class="text-muted text-center my-3" style="font-size: 12px;">No groups yet</p>
+                {% endif %}
+            </div>
+            </div>
+        </div>
+
+        <!-- RIGHT CARD - RECENT EXPENSES -->
+        <div class="col-lg-7">
+            <div class="card shadow-sm h-100">
+            <div class="card-body">
+                <h5 class="mb-3">Recent Expenses</h5>
+
+                {% if recent_expenses %}
+                    {% for exp in recent_expenses|slice:":4" %}
+                    <div class="d-flex justify-content-between align-items-start mb-2 pb-2 border-bottom">
+                        <div class="d-flex align-items-center gap-2">
+                            <div class="rounded-circle bg-light d-flex align-items-center justify-content-center" style="width: 36px; height: 36px; flex-shrink: 0;">
+                                <i class="fas fa-receipt text-muted" style="font-size: 16px;"></i>
+                            </div>
+                            <div>
+                                <strong class="d-block" style="font-size: 14px;">{{ exp.description|truncatechars:15 }}</strong>
+                                <small class="text-muted" style="font-size: 12px;">{{ exp.created_at|date:"d M, H:i A" }}</small>
+                            </div>
+                        </div>
+                        <div class="text-end" style="flex-shrink: 0;">
+                            <strong class="text-danger" style="font-size: 14px;">-₹{{ exp.amount }}</strong>
+                        </div>
+                    </div>
+                    {% endfor %}
+                {% else %}
+                    <p class="text-muted text-center my-3" style="font-size: 12px;">No expenses yet</p>
+                {% endif %}
+            </div>
+            </div>
+        </div>
+    </div>
+
+
+
 
 </div>
 
@@ -348,39 +637,122 @@ new Chart(expenseCtx, {
 
 
 <script>
-const getBackCtx = document
-  .getElementById("getBackChart")
-  .getContext("2d");
+let flowChartInstance = null;
 
-new Chart(getBackCtx, {
-  type: "line",
-  data: {
-    labels: {{ chart.labels|safe }},
-    datasets: [
-      {
-        label: "I Will Get Back",
-        data: {{ chart.will_get_back|safe }},
-        fill: true,
-        tension: 0.4,
-        borderWidth: 2,
-        pointRadius: 4,
-      }
-    ]
-  },
-  options: {
-    responsive: true,
-    plugins: {
-      legend: {
-        display: true
-      }
+const flowChartData = {
+  labels: {{ chart.weekly_labels|safe }},
+  income: {{ chart.weekly_income|safe }},
+  outcome: {{ chart.weekly_outcome|safe }}
+};
+
+function initExpenseFlowChart(type = 'income') {
+  const flowCtx = document.getElementById('expenseFlowChart').getContext('2d');
+  
+  const isIncome = type === 'income';
+  const data = isIncome ? flowChartData.income : flowChartData.outcome;
+  const colors = isIncome 
+    ? ['rgba(76, 175, 80, 0.7)', 'rgba(76, 175, 80, 0.7)', 'rgba(76, 175, 80, 0.7)', 'rgba(76, 175, 80, 0.7)']
+    : ['rgba(244, 67, 54, 0.7)', 'rgba(244, 67, 54, 0.7)', 'rgba(244, 67, 54, 0.7)', 'rgba(244, 67, 54, 0.7)'];
+  
+  if (flowChartInstance) {
+    flowChartInstance.destroy();
+  }
+  
+  flowChartInstance = new Chart(flowCtx, {
+    type: 'bar',
+    data: {
+      labels: flowChartData.labels,
+      datasets: [
+        {
+          label: isIncome ? 'Income' : 'Outcome',
+          data: data,
+          backgroundColor: colors,
+          borderColor: isIncome ? 'rgba(76, 175, 80, 1)' : 'rgba(244, 67, 54, 1)',
+          borderWidth: 0,
+          borderRadius: 4
+        }
+      ]
     },
-    scales: {
-      y: {
-        beginAtZero: true
+    options: {
+      responsive: true,
+      maintainAspectRatio: true,
+      plugins: {
+        legend: {
+          display: false
+        }
+      },
+      scales: {
+        y: {
+          beginAtZero: true,
+          display: true,
+          grid: {
+            color: 'rgba(255, 255, 255, 0.1)'
+          }
+        },
+        x: {
+          grid: {
+            display: false
+          }
+        }
       }
     }
-  }
+  });
+}
+
+// Initialize with income
+initExpenseFlowChart('income');
+
+// Add event listeners for toggle buttons
+document.querySelectorAll('input[name="flowType"]').forEach(radio => {
+  radio.addEventListener('change', (e) => {
+    initExpenseFlowChart(e.target.value);
+  });
 });
+
+// SPENDING CATEGORIES PIE CHART
+const categoryData = {{ category_json|safe }};
+
+if (categoryData.labels && categoryData.labels.length > 0) {
+  const categoriesCtx = document.getElementById('categoriesChart').getContext('2d');
+  
+  new Chart(categoriesCtx, {
+    type: 'doughnut',
+    data: {
+      labels: categoryData.labels,
+      datasets: [{
+        data: categoryData.amounts,
+        backgroundColor: categoryData.colors,
+        borderColor: '#fff',
+        borderWidth: 3,
+        spacing: 2
+      }]
+    },
+    options: {
+      responsive: true,
+      maintainAspectRatio: true,
+      cutout: '65%',
+      plugins: {
+        legend: {
+          display: false
+        },
+        tooltip: {
+          backgroundColor: 'rgba(0,0,0,0.8)',
+          padding: 10,
+          titleFont: { size: 12 },
+          bodyFont: { size: 11 },
+          callbacks: {
+            label: function(context) {
+              const value = context.parsed;
+              const total = context.dataset.data.reduce((a, b) => a + b, 0);
+              const percentage = ((value / total) * 100).toFixed(1);
+              return '₹' + value.toFixed(2) + ' (' + percentage + '%)';
+            }
+          }
+        }
+      }
+    }
+  });
+}
 </script>
 
 
