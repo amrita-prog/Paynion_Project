@@ -251,19 +251,135 @@ def dashboard(request):
     total_need_to_pay = sum(float(val) if val else 0 for val in need_values)
     total_will_get_back = sum(float(val) if val else 0 for val in getback_values)
 
+    # ============================================
+    # NEW CHART DATA - "YOU OWE VS YOU ARE OWED"
+    # ============================================
+    
+    # Get period parameter (default: 4weeks)
+    chart_period = request.GET.get('chart_period', '4weeks')
+    
+    # Determine date range and labels based on period
+    if chart_period == '4days':
+        num_periods = 4
+        chart_start_date = today - timedelta(days=3)
+        period_labels = []
+        for i in range(4):
+            day = today - timedelta(days=(3-i))
+            period_labels.append(day.strftime("%a"))  # Mon, Tue, Wed, Thu
+            
+    elif chart_period == '4months':
+        num_periods = 4
+        chart_start_date = today - timedelta(days=120)  # ~4 months
+        period_labels = []
+        for i in range(4):
+            month_date = today - timedelta(days=(3-i)*30)
+            period_labels.append(month_date.strftime("%b"))  # Nov, Dec, Jan, Feb
+            
+    else:  # default: 4weeks
+        num_periods = 4
+        chart_start_date = today - timedelta(days=27)  # 4 weeks = 28 days, so 27 days back
+        period_labels = []
+        for i in range(4):
+            week_start = today - timedelta(days=(3-i)*7)
+            week_end = week_start + timedelta(days=6) if i < 3 else today
+            period_labels.append(f"{week_start.strftime('%d %b')}")  # "01 Jan", "08 Jan", etc.
+    
+    # Fetch "You Owe" data (money you need to pay to others)
+    you_owe_qs = (
+        ExpenseSplit.objects
+        .filter(user=user, expense__created_at__date__gte=chart_start_date)
+        .exclude(expense__paid_by=user)
+        .values('expense__created_at__date')
+        .annotate(total=Sum('amount'))
+        .order_by('expense__created_at__date')
+    )
+    
+    # Fetch "You Are Owed" data (money others owe you)
+    you_are_owed_qs = (
+        ExpenseSplit.objects
+        .filter(expense__paid_by=user, expense__created_at__date__gte=chart_start_date)
+        .exclude(user=user)
+        .values('expense__created_at__date')
+        .annotate(total=Sum('amount'))
+        .order_by('expense__created_at__date')
+    )
+    
+    # Initialize data arrays
+    you_owe_data = [0] * num_periods
+    you_are_owed_data = [0] * num_periods
+    
+    # Bucket data into periods with CORRECT date calculations
+    for period_idx in range(num_periods):
+        if chart_period == '4days':
+            # Each period is exactly 1 day
+            period_date = today - timedelta(days=(3 - period_idx))
+            
+            # Sum "You Owe" for this day
+            for item in you_owe_qs:
+                if item['expense__created_at__date'] == period_date:
+                    you_owe_data[period_idx] += float(item['total']) if item['total'] else 0
+            
+            # Sum "You Are Owed" for this day
+            for item in you_are_owed_qs:
+                if item['expense__created_at__date'] == period_date:
+                    you_are_owed_data[period_idx] += float(item['total']) if item['total'] else 0
+                    
+        elif chart_period == '4months':
+            # Each period is approximately 30 days
+            period_end = today - timedelta(days=(3 - period_idx) * 30)
+            period_start = period_end - timedelta(days=29)
+            
+            # Sum "You Owe" for this month period
+            for item in you_owe_qs:
+                item_date = item['expense__created_at__date']
+                if period_start <= item_date <= period_end:
+                    you_owe_data[period_idx] += float(item['total']) if item['total'] else 0
+            
+            # Sum "You Are Owed" for this month period
+            for item in you_are_owed_qs:
+                item_date = item['expense__created_at__date']
+                if period_start <= item_date <= period_end:
+                    you_are_owed_data[period_idx] += float(item['total']) if item['total'] else 0
+                    
+        else:  # 4weeks
+            # Each period is 7 days
+            period_end = today - timedelta(days=(3 - period_idx) * 7)
+            period_start = period_end - timedelta(days=6)
+            
+            # Sum "You Owe" for this week
+            for item in you_owe_qs:
+                item_date = item['expense__created_at__date']
+                if period_start <= item_date <= period_end:
+                    you_owe_data[period_idx] += float(item['total']) if item['total'] else 0
+            
+            # Sum "You Are Owed" for this week
+            for item in you_are_owed_qs:
+                item_date = item['expense__created_at__date']
+                if period_start <= item_date <= period_end:
+                    you_are_owed_data[period_idx] += float(item['total']) if item['total'] else 0
+    
+    # ============================================
+    # CATEGORY BREAKDOWN - LAST 30 DAYS
+    # ============================================
+    
+    thirty_days_ago = today - timedelta(days=30)
+    last_30_days_expenses = (
+        Expense.objects
+        .filter(paid_by=user, created_at__date__gte=thirty_days_ago)
+    )
+    
     # CATEGORY DATA - Categorize expenses by description keywords
     category_keywords = {
         "Food": ["food", "lunch", "dinner", "breakfast", "pizza", "restaurant", "cafe", "snacks", "grocery", "meal"],
-        "Transport": ["transport", "uber", "taxi", "bus", "fuel", "petrol", "auto", "travel", "flight", "train"],
-        "Entertainment": ["movie", "cinema", "games", "show", "concert", "entertainment", "fun", "outing"],
-        "Shopping": ["shopping", "clothes", "dress", "shoes", "mall", "store", "purchase"],
         "Bills": ["bill", "electricity", "water", "internet", "phone", "utility"],
+        "Travel": ["transport", "uber", "taxi", "bus", "fuel", "petrol", "auto", "travel", "flight", "train"],
+        "Shopping": ["shopping", "clothes", "dress", "shoes", "mall", "store", "purchase"],
         "Other": []
     }
     
     category_totals = {cat: 0 for cat in category_keywords.keys()}
     
-    for expense in recent_expenses:
+    for expense in last_30_days_expenses:
         description_lower = expense.description.lower()
         categorized = False
         
@@ -276,30 +392,43 @@ def dashboard(request):
         if not categorized:
             category_totals["Other"] += float(expense.amount)
     
-    # Filter out zero categories and prepare for chart
-    category_data = []
-    colors = ["#FF6B6B", "#4ECDC4", "#45B7D1", "#FFA07A", "#98D8C8", "#F7DC6F"]
-    color_idx = 0
+    # Prepare category data for chart with specific colors
+    category_colors_map = {
+        "Food": "#4ECDC4",      # Green/Teal
+        "Bills": "#FF6B6B",     # Red/Coral
+        "Travel": "#45B7D1",    # Blue
+        "Shopping": "#98D8C8",  # Mint
+        "Other": "#B0B0B0"      # Grey
+    }
     
-    for category, amount in category_totals.items():
+    category_labels = []
+    category_amounts = []
+    category_colors = []
+    total_30_days = 0
+    
+    for category in ["Food", "Bills", "Travel", "Shopping", "Other"]:
+        amount = category_totals[category]
         if amount > 0:
-            category_data.append({
-                "name": category,
-                "amount": f"{amount:.2f}",
-                "color": colors[color_idx % len(colors)]
-            })
-            color_idx += 1
+            category_labels.append(category)
+            category_amounts.append(amount)
+            category_colors.append(category_colors_map[category])
+            total_30_days += amount
     
-    # Prepare JSON data for pie chart
+    # Prepare JSON data for charts
     import json
-    category_labels = [cat["name"] for cat in category_data]
-    category_amounts = [float(cat["amount"]) for cat in category_data]
-    category_colors = [cat["color"] for cat in category_data]
     
-    category_json = json.dumps({
-        "labels": category_labels,
-        "amounts": category_amounts,
-        "colors": category_colors
+    new_charts_json = json.dumps({
+        "owe_vs_owed": {
+            "labels": period_labels,
+            "you_owe": you_owe_data,
+            "you_are_owed": you_are_owed_data
+        },
+        "category_breakdown": {
+            "labels": category_labels,
+            "amounts": category_amounts,
+            "colors": category_colors,
+            "total": round(total_30_days, 2)
+        }
     })
 
     context = {
@@ -312,8 +441,8 @@ def dashboard(request):
         "total_paid": f"{total_paid:.2f}",
         "total_need_to_pay": f"{total_need_to_pay:.2f}",
         "total_will_get_back": f"{total_will_get_back:.2f}",
-        "category_data": category_data,
-        "category_json": category_json,
+        "new_charts_json": new_charts_json,  # NEW CHARTS DATA
+        "chart_period": chart_period,        # SELECTED PERIOD
         "chart": {
             "labels": paid_labels,
             "paid": paid_values,

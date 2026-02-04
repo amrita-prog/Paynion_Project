@@ -2,541 +2,525 @@
 
 <!DOCTYPE html>
 <html lang="en">
+
 <head>
-    <meta charset="UTF-8">
-    <title>Dashboard</title>
+  <meta charset="UTF-8">
+  <title>Dashboard</title>
 
-    <!-- Bootstrap CDN -->
-    <link rel="stylesheet"
-          href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/css/bootstrap.min.css">
+  <!-- Bootstrap CDN -->
+  <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/css/bootstrap.min.css">
 
-    <!-- Font Awesome -->
-    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+  <!-- Font Awesome -->
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
 
-    <!-- Cream Grid Background -->
-    <link rel="stylesheet" href="{% static 'css/grid-background.css' %}">
-    
-    <!-- Navbar Styles -->
-    <link rel="stylesheet" href="{% static 'css/navbar.css' %}">
+  <!-- Cream Grid Background -->
+  <link rel="stylesheet" href="{% static 'css/grid-background.css' %}">
 
-    <style>
-        .card-summary {
-            border-left: 5px solid #0d6efd;
-        }
+  <!-- Navbar Styles -->
+  <link rel="stylesheet" href="{% static 'css/navbar.css' %}">
 
-        .profile-img {
-            width: 38px;
-            height: 38px;
-            object-fit: cover;
-            border-radius: 50%;
-            border: 2px solid #fff;
-            cursor: pointer;
-        }
+  <style>
+    .card-summary {
+      border-left: 5px solid #0d6efd;
+    }
 
-        /* NEW SQUARE CARD STYLES */
-        .square-card {
-            aspect-ratio: auto;
-            min-height: 140px;
-            display: flex;
-            flex-direction: column;
-            justify-content: flex-start;
-            align-items: flex-start;
-            padding: 20px;
-            border-radius: 12px;
-            border: none;
-            background: #f8f9fa;
-            transition: all 0.3s ease;
-            text-align: left;
-            max-width: 100%;
-            box-shadow: none;
-        }
+    .profile-img {
+      width: 38px;
+      height: 38px;
+      object-fit: cover;
+      border-radius: 50%;
+      border: 2px solid #fff;
+      cursor: pointer;
+    }
 
-        .square-card:hover {
-            transform: none;
-            background: #f0f1f3;
-            box-shadow: 0 4px 12px rgba(0, 0, 0, 0.08);
-        }
+    /* NEW SQUARE CARD STYLES */
+    .square-card {
+      aspect-ratio: auto;
+      min-height: 140px;
+      display: flex;
+      flex-direction: column;
+      justify-content: flex-start;
+      align-items: flex-start;
+      padding: 20px;
+      border-radius: 12px;
+      border: none;
+      background: #f8f9fa;
+      transition: all 0.3s ease;
+      text-align: left;
+      max-width: 100%;
+      box-shadow: none;
+    }
 
-        .square-card h6 {
-            font-size: 12px;
-            color: #6c757d;
-            font-weight: 500;
-            margin-bottom: 8px;
-            text-transform: none;
-            letter-spacing: 0px;
-            margin-top: auto;
-        }
+    .square-card:hover {
+      transform: none;
+      background: #f0f1f3;
+      box-shadow: 0 4px 12px rgba(0, 0, 0, 0.08);
+    }
 
-        .square-card-value {
-            font-size: 32px;
-            font-weight: 700;
-            color: #1a1a1a;
-            margin: 0;
-            order: 3;
-        }
+    .square-card h6 {
+      font-size: 12px;
+      color: #6c757d;
+      font-weight: 500;
+      margin-bottom: 8px;
+      text-transform: none;
+      letter-spacing: 0px;
+      margin-top: auto;
+    }
 
-        .square-card-icon {
-            font-size: 32px;
-            margin-bottom: 12px;
-            opacity: 1;
-            order: 1;
-        }
+    .square-card-value {
+      font-size: 32px;
+      font-weight: 700;
+      color: #1a1a1a;
+      margin: 0;
+      order: 3;
+    }
 
-        .square-card.groups .square-card-icon {
-            color: #007bff;
-        }
+    .square-card-icon {
+      font-size: 32px;
+      margin-bottom: 12px;
+      opacity: 1;
+      order: 1;
+    }
 
-        .square-card.expenses .square-card-icon {
-            color: #ff6b6b;
-        }
+    .square-card.groups .square-card-icon {
+      color: #007bff;
+    }
 
-        .square-card.balance .square-card-icon {
-            color: #28a745;
-        }
+    .square-card.expenses .square-card-icon {
+      color: #ff6b6b;
+    }
 
-        .square-card.action-card {
-            display: flex;
-            flex-direction: column;
-            justify-content: center;
-            gap: 8px;
-        }
+    .square-card.balance .square-card-icon {
+      color: #28a745;
+    }
 
-        .btn-action-sub {
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            gap: 6px;
-            padding: 10px 14px;
-            border-radius: 6px;
-            font-weight: 600;
-            text-decoration: none;
-            border: none;
-            cursor: pointer;
-            transition: all 0.3s ease;
-            font-size: 12px;
-            text-align: center;
-        }
+    .square-card.action-card {
+      display: flex;
+      flex-direction: column;
+      justify-content: center;
+      gap: 8px;
+    }
 
-        .btn-action-sub i {
-            font-size: 14px;
-        }
+    .btn-action-sub {
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      gap: 6px;
+      padding: 10px 14px;
+      border-radius: 6px;
+      font-weight: 600;
+      text-decoration: none;
+      border: none;
+      cursor: pointer;
+      transition: all 0.3s ease;
+      font-size: 12px;
+      text-align: center;
+    }
 
-        .btn-action-sub:nth-child(1) {
-            background: #17a2b8;
-            color: white;
-        }
+    .btn-action-sub i {
+      font-size: 14px;
+    }
 
-        .btn-action-sub:nth-child(1):hover {
-            background: #138496;
-            color: white;
-            text-decoration: none;
-        }
+    .btn-action-sub:nth-child(1) {
+      background: #17a2b8;
+      color: white;
+    }
 
-        .btn-action-sub:nth-child(2) {
-            background: #a8d8d8;
-            color: #2a7a7a;
-        }
+    .btn-action-sub:nth-child(1):hover {
+      background: #138496;
+      color: white;
+      text-decoration: none;
+    }
 
-        .btn-action-sub:nth-child(2):hover {
-            background: #92cccf;
-            color: #2a7a7a;
-            text-decoration: none;
-        }
+    .btn-action-sub:nth-child(2) {
+      background: #a8d8d8;
+      color: #2a7a7a;
+    }
 
-        .btn-action-sub:nth-child(3) {
-            background: #f5e5a8;
-            color: #7a6b2a;
-        }
+    .btn-action-sub:nth-child(2):hover {
+      background: #92cccf;
+      color: #2a7a7a;
+      text-decoration: none;
+    }
 
-        .btn-action-sub:nth-child(3):hover {
-            background: #f0dfa8;
-            color: #7a6b2a;
-            text-decoration: none;
-        }
+    .btn-action-sub:nth-child(3) {
+      background: #f5e5a8;
+      color: #7a6b2a;
+    }
 
-        /* BUTTON STYLES */
-        .btn-action {
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            gap: 8px;
-            padding: 12px 16px;
-            border-radius: 8px;
-            font-weight: 600;
-            text-decoration: none;
-            border: none;
-            cursor: pointer;
-            transition: all 0.3s ease;
-            font-size: 13px;
-            box-shadow: none;
-        }
+    .btn-action-sub:nth-child(3):hover {
+      background: #f0dfa8;
+      color: #7a6b2a;
+      text-decoration: none;
+    }
 
-        .btn-action i {
-            font-size: 16px;
-        }
+    /* BUTTON STYLES */
+    .btn-action {
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      gap: 8px;
+      padding: 12px 16px;
+      border-radius: 8px;
+      font-weight: 600;
+      text-decoration: none;
+      border: none;
+      cursor: pointer;
+      transition: all 0.3s ease;
+      font-size: 13px;
+      box-shadow: none;
+    }
 
-        .btn-scan {
-            background: #17a2b8;
-            color: white;
-        }
+    .btn-action i {
+      font-size: 16px;
+    }
 
-        .btn-scan:hover {
-            transform: none;
-            background: #138496;
-            box-shadow: none;
-            color: white;
-            text-decoration: none;
-        }
+    .btn-scan {
+      background: #17a2b8;
+      color: white;
+    }
 
-        .btn-add-expense {
-            background: #a8d8d8;
-            color: #2a7a7a;
-        }
+    .btn-scan:hover {
+      transform: none;
+      background: #138496;
+      box-shadow: none;
+      color: white;
+      text-decoration: none;
+    }
 
-        .btn-add-expense:hover {
-            transform: none;
-            background: #92cccf;
-            box-shadow: none;
-            color: #2a7a7a;
-            text-decoration: none;
-        }
+    .btn-add-expense {
+      background: #a8d8d8;
+      color: #2a7a7a;
+    }
 
-        .btn-create-group {
-            background: #a8d8d8;
-            color: #2a7a7a;
-        }
+    .btn-add-expense:hover {
+      transform: none;
+      background: #92cccf;
+      box-shadow: none;
+      color: #2a7a7a;
+      text-decoration: none;
+    }
 
-        .btn-create-group:hover {
-            transform: none;
-            background: #92cccf;
-            box-shadow: none;
-            color: #2a7a7a;
-            text-decoration: none;
-        }
+    .btn-create-group {
+      background: #a8d8d8;
+      color: #2a7a7a;
+    }
 
-        .btn-view-report {
-            background: #f5e5a8;
-            color: #7a6b2a;
-        }
+    .btn-create-group:hover {
+      transform: none;
+      background: #92cccf;
+      box-shadow: none;
+      color: #2a7a7a;
+      text-decoration: none;
+    }
 
-        .btn-view-report:hover {
-            transform: none;
-            background: #f0dfa8;
-            box-shadow: none;
-            color: #7a6b2a;
-            text-decoration: none;
-        }
+    .btn-view-report {
+      background: #f5e5a8;
+      color: #7a6b2a;
+    }
 
-        /* LAYOUT ADJUSTMENTS */
-        .summary-cards-section {
-            display: flex;
-            gap: 16px;
-            align-items: stretch;
-            margin-bottom: 16px;
-        }
+    .btn-view-report:hover {
+      transform: none;
+      background: #f0dfa8;
+      box-shadow: none;
+      color: #7a6b2a;
+      text-decoration: none;
+    }
 
-        .cards-grid {
-            flex: 1;
-            display: grid;
-            grid-template-columns: repeat(4, 1fr);
-            gap: 12px;
-        }
+    /* LAYOUT ADJUSTMENTS */
+    .summary-cards-section {
+      display: flex;
+      gap: 16px;
+      align-items: stretch;
+      margin-bottom: 16px;
+    }
 
-        .action-buttons {
-            display: flex;
-            flex-direction: column;
-            gap: 8px;
-            width: auto;
-        }
+    .cards-grid {
+      flex: 1;
+      display: grid;
+      grid-template-columns: repeat(4, 1fr);
+      gap: 12px;
+    }
 
-        @media (max-width: 1200px) {
-            .cards-grid {
-                grid-template-columns: repeat(2, 1fr);
-            }
-            
-            .action-buttons {
-                width: auto;
-                flex-direction: row;
-                flex-wrap: wrap;
-            }
-        }
+    .action-buttons {
+      display: flex;
+      flex-direction: column;
+      gap: 8px;
+      width: auto;
+    }
 
-        @media (max-width: 768px) {
-            .summary-cards-section {
-                flex-direction: column;
-            }
+    @media (max-width: 1200px) {
+      .cards-grid {
+        grid-template-columns: repeat(2, 1fr);
+      }
 
-            .cards-grid {
-                grid-template-columns: 1fr;
-            }
+      .action-buttons {
+        width: auto;
+        flex-direction: row;
+        flex-wrap: wrap;
+      }
+    }
 
-            .action-buttons {
-                width: 100%;
-            }
-        }
+    @media (max-width: 768px) {
+      .summary-cards-section {
+        flex-direction: column;
+      }
 
-        /* PROGRESS BAR COLORS */
-        .bg-teal {
-            background-color: #17a2b8 !important;
-        }
-    </style>
+      .cards-grid {
+        grid-template-columns: 1fr;
+      }
 
-    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/js/bootstrap.bundle.min.js"></script>
+      .action-buttons {
+        width: 100%;
+      }
+    }
+
+    /* PROGRESS BAR COLORS */
+    .bg-teal {
+      background-color: #17a2b8 !important;
+    }
+  </style>
+
+  <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/js/bootstrap.bundle.min.js"></script>
 </head>
 
 <body>
 
-<!-- Include Modern Navbar -->
-{% include 'navbar.html' %}
+  <!-- Include Modern Navbar -->
+  {% include 'navbar.html' %}
 
-<div class="container mt-4">
+  <div class="container mt-4">
 
     <h2 class="mb-4">Dashboard</h2>
 
     <!-- SUMMARY CARDS WITH ACTION BUTTONS -->
     <div class="summary-cards-section">
-        <!-- Cards Grid -->
-        <div class="cards-grid">
-            <!-- Total Groups Card -->
-            <div class="card square-card groups shadow-sm">
-                <div class="square-card-icon">
-                    <i class="fas fa-users"></i>
-                </div>
-                <h6>Total Groups</h6>
-                <p class="square-card-value">{{ total_groups|default:"0" }}</p>
-            </div>
-
-            <!-- Total Expenses Card -->
-            <div class="card square-card expenses shadow-sm">
-                <div class="square-card-icon">
-                    <i class="fas fa-receipt"></i>
-                </div>
-                <h6>Total Expenses</h6>
-                <p class="square-card-value">{{ total_expenses|default:"0" }}</p>
-            </div>
-
-            <!-- Your Balance Card -->
-            <div class="card square-card balance shadow-sm">
-                <div class="square-card-icon">
-                    <i class="fas fa-wallet"></i>
-                </div>
-                <h6>Your Balance</h6>
-                <p class="square-card-value">₹{{ balance|default:"0" }}</p>
-            </div>
-
-            <!-- Action Buttons Card -->
-            <div class="card square-card action-card shadow-sm">
-                <a href="{% url 'groups:view_all_group' %}?from=add_expense" class="btn-action-sub">
-                    <i class="fas fa-plus"></i> Add Expense
-                </a>
-                <a href="{% url 'groups:create_group' %}" class="btn-action-sub">
-                    <i class="fas fa-plus-circle"></i> Create Group
-                </a>
-                <a href="{% url 'accounts:report' %}" class="btn-action-sub">
-                    <i class="fas fa-chart-bar"></i> View Report
-                </a>
-            </div>
+      <!-- Cards Grid -->
+      <div class="cards-grid">
+        <!-- Total Groups Card -->
+        <div class="card square-card groups shadow-sm">
+          <div class="square-card-icon">
+            <i class="fas fa-users"></i>
+          </div>
+          <h6>Total Groups</h6>
+          <p class="square-card-value">{{ total_groups|default:"0" }}</p>
         </div>
+
+        <!-- Total Expenses Card -->
+        <div class="card square-card expenses shadow-sm">
+          <div class="square-card-icon">
+            <i class="fas fa-receipt"></i>
+          </div>
+          <h6>Total Expenses</h6>
+          <p class="square-card-value">{{ total_expenses|default:"0" }}</p>
+        </div>
+
+        <!-- Your Balance Card -->
+        <div class="card square-card balance shadow-sm">
+          <div class="square-card-icon">
+            <i class="fas fa-wallet"></i>
+          </div>
+          <h6>Your Balance</h6>
+          <p class="square-card-value">₹{{ balance|default:"0" }}</p>
+        </div>
+
+        <!-- Action Buttons Card -->
+        <div class="card square-card action-card shadow-sm">
+          <a href="{% url 'groups:view_all_group' %}?from=add_expense" class="btn-action-sub">
+            <i class="fas fa-plus"></i> Add Expense
+          </a>
+          <a href="{% url 'groups:create_group' %}" class="btn-action-sub">
+            <i class="fas fa-plus-circle"></i> Create Group
+          </a>
+          <a href="{% url 'accounts:report' %}" class="btn-action-sub">
+            <i class="fas fa-chart-bar"></i> View Report
+          </a>
+        </div>
+      </div>
     </div>
 
 
     <div class="d-flex justify-content-end mb-2">
-      <a href="{% url 'accounts:report' %}"
-        class="btn btn-outline-primary">
+      <a href="{% url 'accounts:report' %}" class="btn btn-outline-primary">
         View Full Report
       </a>
     </div>
 
-    <!-- TWO COLUMN CHARTS SECTION -->
-    <div class="row mt-2 g-3">
-        <!-- LEFT SIDE - EXPENSE FLOW CHART -->
-        <div class="col-lg-6">
-            <!-- EXPENSE FLOW CHART -->
-            <div class="card shadow-sm">
-            <div class="card-body">
-                <div class="d-flex justify-content-between align-items-center mb-3">
-                    <div>
-                        <h5 class="mb-1">Expense Flow</h5>
-                        <small class="text-muted">Analytics for the last 4 weeks</small>
-                    </div>
-                    <div class="btn-group" role="group">
-                        <input type="radio" class="btn-check" name="flowType" id="incomeBtn" value="income" checked>
-                        <label class="btn btn-outline-secondary btn-sm" for="incomeBtn">Income</label>
-                        
-                        <input type="radio" class="btn-check" name="flowType" id="outcomeBtn" value="outcome">
-                        <label class="btn btn-outline-secondary btn-sm" for="outcomeBtn">Outcome</label>
-                    </div>
-                </div>
-                <canvas id="expenseFlowChart" height="100"></canvas>
+    <!-- NEW TWO COLUMN CHARTS SECTION -->
+    <div class="row mt-3 g-3">
+      <!-- LEFT CHART - YOU OWE VS YOU ARE OWED -->
+      <div class="col-lg-6">
+        <div class="card shadow-sm">
+          <div class="card-body">
+            <div class="d-flex justify-content-between align-items-center mb-3">
+              <div>
+                <h5 class="mb-1">You Have to Pay vs You Will Get Back</h5>
+                <small class="text-muted">Track your settlements</small>
+              </div>
+              <select id="chartPeriodFilter" class="form-select form-select-sm" style="width: auto;">
+                <option value="4days">Last 4 Days</option>
+                <option value="4weeks" selected>Last 4 Weeks</option>
+                <option value="4months">Last 4 Months</option>
+              </select>
             </div>
-            </div>
+            <canvas id="oweVsOwedChart" height="100"></canvas>
+          </div>
         </div>
+      </div>
 
-        <!-- RIGHT SIDE - SPENDING CATEGORIES PIE CHART -->
-        <div class="col-lg-6">
-            <!-- SPENDING CATEGORIES CHART -->
-            <div class="card shadow-sm">
-            <div class="card-body">
-                <h5 class="mb-3">Spending Categories</h5>
-                <div class="d-flex justify-content-center mb-3">
-                    <div style="position: relative; width: 150px; height: 150px;">
-                        <canvas id="categoriesChart"></canvas>
-                        <div style="position: absolute; top: 50%; left: 50%; transform: translate(-50%, -50%); text-align: center;">
-                            <div style="font-size: 20px; font-weight: bold;">₹{{ total_paid }}</div>
-                            <div style="font-size: 10px; color: #6c757d;">TOTAL</div>
-                        </div>
-                    </div>
+      <!-- RIGHT CHART - EXPENSE BREAKDOWN -->
+      <div class="col-lg-6">
+        <div class="card shadow-sm">
+          <div class="card-body">
+            <h5 class="mb-1">Expense Breakdown</h5>
+            <small class="text-muted">By category (Last 30 days)</small>
+            <div class="d-flex justify-content-center mb-3 mt-3">
+              <div style="position: relative; width: 180px; height: 180px;">
+                <canvas id="categoryBreakdownChart"></canvas>
+                <div
+                  style="position: absolute; top: 50%; left: 50%; transform: translate(-50%, -50%); text-align: center;">
+                  <div style="font-size: 22px; font-weight: bold;" id="totalCategoryAmount">₹0.00</div>
+                  <div style="font-size: 10px; color: #6c757d;">TOTAL</div>
                 </div>
-                <div class="small">
-                    {% if category_data %}
-                        <div class="row g-2">
-                            {% for cat in category_data %}
-                            <div class="col-6">
-                                <div class="d-flex align-items-center gap-2">
-                                    <span class="badge" style="background-color: {{ cat.color }}; width: 12px; height: 12px; border-radius: 50%;"></span>
-                                    <span>{{ cat.name }}</span>
-                                </div>
-                            </div>
-                            {% endfor %}
-                        </div>
-                    {% endif %}
-                </div>
+              </div>
             </div>
+            <div class="small text-center" id="categoryLegend">
+              <!-- Category legend will be populated by JavaScript -->
             </div>
+          </div>
         </div>
+      </div>
     </div>
+
 
     <!-- TWO COLUMN CARDS SECTION -->
     <div class="row mt-2 g-3">
-        <!-- LEFT CARD - GROUP SNAPSHOTS -->
-        <div class="col-lg-5">
-            <div class="card shadow-sm h-100">
-            <div class="card-body">
-                <div class="d-flex justify-content-between align-items-center mb-3">
-                    <h5 class="mb-0">Group Snapshots</h5>
-                    <a href="{% url 'groups:view_all_group' %}" class="text-muted small" style="text-decoration: none; font-size: 12px;">VIEW ALL</a>
+      <!-- LEFT CARD - GROUP SNAPSHOTS -->
+      <div class="col-lg-5">
+        <div class="card shadow-sm h-100">
+          <div class="card-body">
+            <div class="d-flex justify-content-between align-items-center mb-3">
+              <h5 class="mb-0">Group Snapshots</h5>
+              <a href="{% url 'groups:view_all_group' %}" class="text-muted small"
+                style="text-decoration: none; font-size: 12px;">VIEW ALL</a>
+            </div>
+
+            {% if groups %}
+            {% for group in groups|slice:":2" %}
+            <div class="mb-3 pb-3 {% if not forloop.last %}border-bottom{% endif %}">
+              <!-- Group Header -->
+              <div class="d-flex justify-content-between align-items-start mb-2">
+                <div>
+                  <h6 class="mb-0 fw-semibold" style="font-size: 14px;">{{ group.title }}</h6>
+                  <small class="text-muted">Created by {{ group.created_by.first_name }}</small>
                 </div>
+                <span class="badge bg-success" style="font-size: 10px;">Active</span>
+              </div>
 
-                {% if groups %}
-                    {% for group in groups|slice:":2" %}
-                    <div class="mb-3 pb-3 {% if not forloop.last %}border-bottom{% endif %}">
-                        <!-- Group Header -->
-                        <div class="d-flex justify-content-between align-items-start mb-2">
-                            <div>
-                                <h6 class="mb-0 fw-semibold" style="font-size: 14px;">{{ group.title }}</h6>
-                                <small class="text-muted">Created by {{ group.created_by.first_name }}</small>
-                            </div>
-                            <span class="badge bg-success" style="font-size: 10px;">Active</span>
-                        </div>
+              <!-- Group Members Avatars -->
+              <div class="mb-2">
+                <div class="d-flex align-items-center gap-1">
+                  {% for member in group.members.all|slice:":3" %}
+                  <img
+                    src="{% if member.profile_image %}{{ member.profile_image.url }}{% else %}/static/images/default-user.png{% endif %}"
+                    class="rounded-circle border border-2 border-white" width="32" height="32"
+                    style="object-fit: cover; margin-left: -8px;" title="{{ member.full_name }}"
+                    alt="{{ member.full_name }}">
+                  {% endfor %}
+                  {% if group.members.count > 3 %}
+                  <div class="rounded-circle bg-light d-flex align-items-center justify-content-center"
+                    style="width: 32px; height: 32px; margin-left: -8px; border: 2px solid white; font-size: 11px; font-weight: bold;">
+                    +{{ group.members.count|add:"-3" }}
+                  </div>
+                  {% endif %}
+                </div>
+              </div>
 
-                        <!-- Group Members Avatars -->
-                        <div class="mb-2">
-                            <div class="d-flex align-items-center gap-1">
-                                {% for member in group.members.all|slice:":3" %}
-                                <img src="{% if member.profile_image %}{{ member.profile_image.url }}{% else %}/static/images/default-user.png{% endif %}" 
-                                     class="rounded-circle border border-2 border-white" 
-                                     width="32" height="32"
-                                     style="object-fit: cover; margin-left: -8px;"
-                                     title="{{ member.full_name }}"
-                                     alt="{{ member.full_name }}">
-                                {% endfor %}
-                                {% if group.members.count > 3 %}
-                                <div class="rounded-circle bg-light d-flex align-items-center justify-content-center" 
-                                     style="width: 32px; height: 32px; margin-left: -8px; border: 2px solid white; font-size: 11px; font-weight: bold;">
-                                    +{{ group.members.count|add:"-3" }}
-                                </div>
-                                {% endif %}
-                            </div>
-                        </div>
+              <!-- Progress Bar -->
+              <div class="mb-2">
+                <div class="progress" style="height: 6px;">
+                  <div class="progress-bar bg-teal" role="progressbar" style="width: 60%;"></div>
+                </div>
+              </div>
 
-                        <!-- Progress Bar -->
-                        <div class="mb-2">
-                            <div class="progress" style="height: 6px;">
-                                <div class="progress-bar bg-teal" role="progressbar" style="width: 60%;"></div>
-                            </div>
-                        </div>
-
-                        <!-- Collection Info -->
-                        <div class="d-flex justify-content-between small">
-                            <span class="text-muted">Collected: <strong class="text-dark">₹1,200</strong></span>
-                            <span class="text-muted">Target: <strong class="text-dark">₹2,000</strong></span>
-                        </div>
-                    </div>
-                    {% endfor %}
-                {% else %}
-                    <p class="text-muted text-center my-3" style="font-size: 12px;">No groups yet</p>
-                {% endif %}
+              <!-- Collection Info -->
+              <div class="d-flex justify-content-between small">
+                <span class="text-muted">Collected: <strong class="text-dark">₹1,200</strong></span>
+                <span class="text-muted">Target: <strong class="text-dark">₹2,000</strong></span>
+              </div>
             </div>
-            </div>
+            {% endfor %}
+            {% else %}
+            <p class="text-muted text-center my-3" style="font-size: 12px;">No groups yet</p>
+            {% endif %}
+          </div>
         </div>
+      </div>
 
-        <!-- RIGHT CARD - RECENT EXPENSES -->
-        <div class="col-lg-7">
-            <div class="card shadow-sm h-100">
-            <div class="card-body">
-                <h5 class="mb-3">Recent Expenses</h5>
+      <!-- RIGHT CARD - RECENT EXPENSES -->
+      <div class="col-lg-7">
+        <div class="card shadow-sm h-100">
+          <div class="card-body">
+            <h5 class="mb-3">Recent Expenses</h5>
 
-                {% if recent_expenses %}
-                    {% for exp in recent_expenses|slice:":4" %}
-                    <div class="d-flex justify-content-between align-items-start mb-2 pb-2 border-bottom">
-                        <div class="d-flex align-items-center gap-2">
-                            <div class="rounded-circle bg-light d-flex align-items-center justify-content-center" style="width: 36px; height: 36px; flex-shrink: 0;">
-                                <i class="fas fa-receipt text-muted" style="font-size: 16px;"></i>
-                            </div>
-                            <div>
-                                <strong class="d-block" style="font-size: 14px;">{{ exp.description|truncatechars:15 }}</strong>
-                                <small class="text-muted" style="font-size: 12px;">{{ exp.created_at|date:"d M, H:i A" }}</small>
-                            </div>
-                        </div>
-                        <div class="text-end" style="flex-shrink: 0;">
-                            <strong class="text-danger" style="font-size: 14px;">-₹{{ exp.amount }}</strong>
-                        </div>
-                    </div>
-                    {% endfor %}
-                {% else %}
-                    <p class="text-muted text-center my-3" style="font-size: 12px;">No expenses yet</p>
-                {% endif %}
+            {% if recent_expenses %}
+            {% for exp in recent_expenses|slice:":4" %}
+            <div class="d-flex justify-content-between align-items-start mb-2 pb-2 border-bottom">
+              <div class="d-flex align-items-center gap-2">
+                <div class="rounded-circle bg-light d-flex align-items-center justify-content-center"
+                  style="width: 36px; height: 36px; flex-shrink: 0;">
+                  <i class="fas fa-receipt text-muted" style="font-size: 16px;"></i>
+                </div>
+                <div>
+                  <strong class="d-block" style="font-size: 14px;">{{ exp.description|truncatechars:15 }}</strong>
+                  <small class="text-muted" style="font-size: 12px;">{{ exp.created_at|date:"d M, H:i A" }}</small>
+                </div>
+              </div>
+              <div class="text-end" style="flex-shrink: 0;">
+                <strong class="text-danger" style="font-size: 14px;">-₹{{ exp.amount }}</strong>
+              </div>
             </div>
-            </div>
+            {% endfor %}
+            {% else %}
+            <p class="text-muted text-center my-3" style="font-size: 12px;">No expenses yet</p>
+            {% endif %}
+          </div>
         </div>
+      </div>
     </div>
 
 
 
 
-</div>
+  </div>
 
-</div>
+  </div>
 
 
-<!-- Notification -->
+  <!-- Notification -->
 
-{% if notification %}
-<div class="toast-container position-fixed top-0 end-0 p-3" style="z-index:9999;">
-  <div id="notifyToast"
-       class="toast text-bg-primary border-0"
-       role="alert">
-    <div class="d-flex">
-      <div class="toast-body">
-        🔔 {{ notification.message }}
+  {% if notification %}
+  <div class="toast-container position-fixed top-0 end-0 p-3" style="z-index:9999;">
+    <div id="notifyToast" class="toast text-bg-primary border-0" role="alert">
+      <div class="d-flex">
+        <div class="toast-body">
+          🔔 {{ notification.message }}
+        </div>
+        <button type="button" class="btn-close btn-close-white me-2 m-auto" data-bs-dismiss="toast"></button>
       </div>
-      <button type="button"
-              class="btn-close btn-close-white me-2 m-auto"
-              data-bs-dismiss="toast"></button>
     </div>
   </div>
-</div>
-{% endif %}
+  {% endif %}
 
 
 
 
-<!-- Bootstrap JS -->
-<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/js/bootstrap.bundle.min.js"></script>
+  <!-- Bootstrap JS -->
+  <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/js/bootstrap.bundle.min.js"></script>
 
-<script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+  <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
 
-<!-- <script>
+  <!-- <script>
 
 const chartData = {
   labels: {{ chart.labels|safe }},
@@ -595,187 +579,361 @@ document.addEventListener("DOMContentLoaded", function () {
 </script> 
 {% endif %} -->
 
-<script>
-const expenseChartData = {
-  labels: {{ chart.labels|safe }},
-  paid: {{ chart.paid|safe }},
-  need_to_pay: {{ chart.need_to_pay|safe }},
+  <script>
+    const expenseChartData = {
+      labels: {{ chart.labels| safe }},
+    paid: { { chart.paid | safe } },
+    need_to_pay: { { chart.need_to_pay | safe } },
 };
 
-const expenseCtx = document
-  .getElementById("expenseChart")
-  .getContext("2d");
+    const expenseCtx = document
+      .getElementById("expenseChart")
+      .getContext("2d");
 
-new Chart(expenseCtx, {
-  type: "bar",
-  data: {
-    labels: expenseChartData.labels,
-    datasets: [
-      {
-        label: "Paid by Me",
-        data: expenseChartData.paid,
-      },
-      {
-        label: "I Need To Pay",
-        data: expenseChartData.need_to_pay,
-      }
-    ]
-  },
-  options: {
-    responsive: true,
-    plugins: {
-      legend: { position: "top" }
-    },
-    scales: {
-      y: {
-        beginAtZero: true
-      }
-    }
-  }
-});
-</script>
-
-
-<script>
-let flowChartInstance = null;
-
-const flowChartData = {
-  labels: {{ chart.weekly_labels|safe }},
-  income: {{ chart.weekly_income|safe }},
-  outcome: {{ chart.weekly_outcome|safe }}
-};
-
-function initExpenseFlowChart(type = 'income') {
-  const flowCtx = document.getElementById('expenseFlowChart').getContext('2d');
-  
-  const isIncome = type === 'income';
-  const data = isIncome ? flowChartData.income : flowChartData.outcome;
-  const colors = isIncome 
-    ? ['rgba(76, 175, 80, 0.7)', 'rgba(76, 175, 80, 0.7)', 'rgba(76, 175, 80, 0.7)', 'rgba(76, 175, 80, 0.7)']
-    : ['rgba(244, 67, 54, 0.7)', 'rgba(244, 67, 54, 0.7)', 'rgba(244, 67, 54, 0.7)', 'rgba(244, 67, 54, 0.7)'];
-  
-  if (flowChartInstance) {
-    flowChartInstance.destroy();
-  }
-  
-  flowChartInstance = new Chart(flowCtx, {
-    type: 'bar',
-    data: {
-      labels: flowChartData.labels,
-      datasets: [
-        {
-          label: isIncome ? 'Income' : 'Outcome',
-          data: data,
-          backgroundColor: colors,
-          borderColor: isIncome ? 'rgba(76, 175, 80, 1)' : 'rgba(244, 67, 54, 1)',
-          borderWidth: 0,
-          borderRadius: 4
-        }
-      ]
-    },
-    options: {
-      responsive: true,
-      maintainAspectRatio: true,
-      plugins: {
-        legend: {
-          display: false
-        }
-      },
-      scales: {
-        y: {
-          beginAtZero: true,
-          display: true,
-          grid: {
-            color: 'rgba(255, 255, 255, 0.1)'
+    new Chart(expenseCtx, {
+      type: "bar",
+      data: {
+        labels: expenseChartData.labels,
+        datasets: [
+          {
+            label: "Paid by Me",
+            data: expenseChartData.paid,
+          },
+          {
+            label: "I Need To Pay",
+            data: expenseChartData.need_to_pay,
           }
+        ]
+      },
+      options: {
+        responsive: true,
+        plugins: {
+          legend: { position: "top" }
         },
-        x: {
-          grid: {
-            display: false
+        scales: {
+          y: {
+            beginAtZero: true
           }
         }
       }
-    }
-  });
-}
+    });
+  </script>
 
-// Initialize with income
-initExpenseFlowChart('income');
 
-// Add event listeners for toggle buttons
-document.querySelectorAll('input[name="flowType"]').forEach(radio => {
-  radio.addEventListener('change', (e) => {
-    initExpenseFlowChart(e.target.value);
-  });
-});
+  <script>
+    let flowChartInstance = null;
 
-// SPENDING CATEGORIES PIE CHART
-const categoryData = {{ category_json|safe }};
+    const flowChartData = {
+      labels: {{ chart.weekly_labels| safe }},
+    income: { { chart.weekly_income | safe } },
+    outcome: { { chart.weekly_outcome | safe } }
+};
 
-if (categoryData.labels && categoryData.labels.length > 0) {
-  const categoriesCtx = document.getElementById('categoriesChart').getContext('2d');
-  
-  new Chart(categoriesCtx, {
-    type: 'doughnut',
-    data: {
-      labels: categoryData.labels,
-      datasets: [{
-        data: categoryData.amounts,
-        backgroundColor: categoryData.colors,
-        borderColor: '#fff',
-        borderWidth: 3,
-        spacing: 2
-      }]
-    },
-    options: {
-      responsive: true,
-      maintainAspectRatio: true,
-      cutout: '65%',
-      plugins: {
-        legend: {
-          display: false
+    function initExpenseFlowChart(type = 'income') {
+      const flowCtx = document.getElementById('expenseFlowChart').getContext('2d');
+
+      const isIncome = type === 'income';
+      const data = isIncome ? flowChartData.income : flowChartData.outcome;
+      const colors = isIncome
+        ? ['rgba(76, 175, 80, 0.7)', 'rgba(76, 175, 80, 0.7)', 'rgba(76, 175, 80, 0.7)', 'rgba(76, 175, 80, 0.7)']
+        : ['rgba(244, 67, 54, 0.7)', 'rgba(244, 67, 54, 0.7)', 'rgba(244, 67, 54, 0.7)', 'rgba(244, 67, 54, 0.7)'];
+
+      if (flowChartInstance) {
+        flowChartInstance.destroy();
+      }
+
+      flowChartInstance = new Chart(flowCtx, {
+        type: 'bar',
+        data: {
+          labels: flowChartData.labels,
+          datasets: [
+            {
+              label: isIncome ? 'Income' : 'Outcome',
+              data: data,
+              backgroundColor: colors,
+              borderColor: isIncome ? 'rgba(76, 175, 80, 1)' : 'rgba(244, 67, 54, 1)',
+              borderWidth: 0,
+              borderRadius: 4
+            }
+          ]
         },
-        tooltip: {
-          backgroundColor: 'rgba(0,0,0,0.8)',
-          padding: 10,
-          titleFont: { size: 12 },
-          bodyFont: { size: 11 },
-          callbacks: {
-            label: function(context) {
-              const value = context.parsed;
-              const total = context.dataset.data.reduce((a, b) => a + b, 0);
-              const percentage = ((value / total) * 100).toFixed(1);
-              return '₹' + value.toFixed(2) + ' (' + percentage + '%)';
+        options: {
+          responsive: true,
+          maintainAspectRatio: true,
+          plugins: {
+            legend: {
+              display: false
+            }
+          },
+          scales: {
+            y: {
+              beginAtZero: true,
+              display: true,
+              grid: {
+                color: 'rgba(255, 255, 255, 0.1)'
+              }
+            },
+            x: {
+              grid: {
+                display: false
+              }
             }
           }
         }
+      });
+    }
+
+    // Initialize with income
+    initExpenseFlowChart('income');
+
+    // Add event listeners for toggle buttons
+    document.querySelectorAll('input[name="flowType"]').forEach(radio => {
+      radio.addEventListener('change', (e) => {
+        initExpenseFlowChart(e.target.value);
+      });
+    });
+
+    // SPENDING CATEGORIES PIE CHART
+    const categoryData = {{ category_json| safe }};
+
+    if (categoryData.labels && categoryData.labels.length > 0) {
+      const categoriesCtx = document.getElementById('categoriesChart').getContext('2d');
+
+      new Chart(categoriesCtx, {
+        type: 'doughnut',
+        data: {
+          labels: categoryData.labels,
+          datasets: [{
+            data: categoryData.amounts,
+            backgroundColor: categoryData.colors,
+            borderColor: '#fff',
+            borderWidth: 3,
+            spacing: 2
+          }]
+        },
+        options: {
+          responsive: true,
+          maintainAspectRatio: true,
+          cutout: '65%',
+          plugins: {
+            legend: {
+              display: false
+            },
+            tooltip: {
+              backgroundColor: 'rgba(0,0,0,0.8)',
+              padding: 10,
+              titleFont: { size: 12 },
+              bodyFont: { size: 11 },
+              callbacks: {
+                label: function (context) {
+                  const value = context.parsed;
+                  const total = context.dataset.data.reduce((a, b) => a + b, 0);
+                  const percentage = ((value / total) * 100).toFixed(1);
+                  return '₹' + value.toFixed(2) + ' (' + percentage + '%)';
+                }
+              }
+            }
+          }
+        }
+      });
+    }
+  </script>
+
+
+  {% if notification %}
+  <script>
+    document.addEventListener("DOMContentLoaded", function () {
+
+      const toastEl = document.getElementById("notifyToast");
+      if (!toastEl) return;
+
+      const toast = new bootstrap.Toast(toastEl, { delay: 4000 });
+      toast.show();
+
+      fetch("{% url 'accounts:mark_notification_read' notification.id %}", {
+        method: "POST",
+        headers: {
+          "X-CSRFToken": "{{ csrf_token }}"
+        }
+      });
+
+    });
+  </script>
+  {% endif %}
+
+  <!-- NEW CHARTS JAVASCRIPT -->
+  <script>
+    // Parse chart data from backend
+    const chartsData = {{ new_charts_json| safe }};
+
+    // ============================================
+    // CHART 1: YOU OWE VS YOU ARE OWED (BAR CHART)
+    // ============================================
+
+    const oweVsOwedCtx = document.getElementById('oweVsOwedChart').getContext('2d');
+    let oweVsOwedChartInstance = null;
+
+    function initOweVsOwedChart(data) {
+      if (oweVsOwedChartInstance) {
+        oweVsOwedChartInstance.destroy();
       }
+
+      oweVsOwedChartInstance = new Chart(oweVsOwedCtx, {
+        type: 'bar',
+        data: {
+          labels: data.labels,
+          datasets: [
+            {
+              label: 'You Have to Pay',
+              data: data.you_owe,
+              backgroundColor: '#FF6B6B',
+              borderColor: '#FF6B6B',
+              borderWidth: 0,
+              borderRadius: 4
+            },
+            {
+              label: 'You Will Get Back',
+              data: data.you_are_owed,
+              backgroundColor: '#4ECDC4',
+              borderColor: '#4ECDC4',
+              borderWidth: 0,
+              borderRadius: 4
+            }
+          ]
+        },
+        options: {
+          responsive: true,
+          maintainAspectRatio: true,
+          plugins: {
+            legend: {
+              display: true,
+              position: 'bottom',
+              labels: {
+                boxWidth: 12,
+                padding: 10,
+                font: { size: 11 }
+              }
+            },
+            tooltip: {
+              backgroundColor: 'rgba(0,0,0,0.8)',
+              padding: 10,
+              callbacks: {
+                label: function (context) {
+                  return context.dataset.label + ': ₹' + context.parsed.y.toFixed(2);
+                }
+              }
+            }
+          },
+          scales: {
+            y: {
+              beginAtZero: true,
+              ticks: {
+                callback: function (value) {
+                  return '₹' + value;
+                }
+              }
+            },
+            x: {
+              grid: {
+                display: false
+              }
+            }
+          }
+        }
+      });
     }
-  });
-}
-</script>
 
+    // Initialize chart with data
+    initOweVsOwedChart(chartsData.owe_vs_owed);
 
-{% if notification %}
-<script>
-document.addEventListener("DOMContentLoaded", function () {
+    // ============================================
+    // PERIOD FILTER HANDLER (AJAX)
+    // ============================================
 
-  const toastEl = document.getElementById("notifyToast");
-  if (!toastEl) return;
+    // Set dropdown to match URL parameter on page load
+    const urlParams = new URLSearchParams(window.location.search);
+    const currentPeriod = urlParams.get('chart_period') || '4weeks';
+    document.getElementById('chartPeriodFilter').value = currentPeriod;
 
-  const toast = new bootstrap.Toast(toastEl, { delay: 4000 });
-  toast.show();
+    document.getElementById('chartPeriodFilter').addEventListener('change', function (e) {
+      const selectedPeriod = e.target.value;
+      const currentUrl = new URL(window.location.href);
+      currentUrl.searchParams.set('chart_period', selectedPeriod);
 
-  fetch("{% url 'accounts:mark_notification_read' notification.id %}", {
-    method: "POST",
-    headers: {
-      "X-CSRFToken": "{{ csrf_token }}"
+      // Reload page with new period parameter
+      window.location.href = currentUrl.toString();
+    });
+
+    // ============================================
+    // CHART 2: EXPENSE BREAKDOWN (DONUT CHART)
+    // ============================================
+
+    const categoryCtx = document.getElementById('categoryBreakdownChart').getContext('2d');
+
+    // Update total amount display
+    document.getElementById('totalCategoryAmount').textContent = '₹' + chartsData.category_breakdown.total.toFixed(2);
+
+    // Create donut chart
+    if (chartsData.category_breakdown.labels.length > 0) {
+      new Chart(categoryCtx, {
+        type: 'doughnut',
+        data: {
+          labels: chartsData.category_breakdown.labels,
+          datasets: [{
+            data: chartsData.category_breakdown.amounts,
+            backgroundColor: chartsData.category_breakdown.colors,
+            borderColor: '#fff',
+            borderWidth: 3,
+            spacing: 2
+          }]
+        },
+        options: {
+          responsive: true,
+          maintainAspectRatio: true,
+          cutout: '65%',
+          plugins: {
+            legend: {
+              display: false
+            },
+            tooltip: {
+              backgroundColor: 'rgba(0,0,0,0.8)',
+              padding: 10,
+              titleFont: { size: 12 },
+              bodyFont: { size: 11 },
+              callbacks: {
+                label: function (context) {
+                  const value = context.parsed;
+                  const total = context.dataset.data.reduce((a, b) => a + b, 0);
+                  const percentage = ((value / total) * 100).toFixed(1);
+                  return '₹' + value.toFixed(2) + ' (' + percentage + '%)';
+                }
+              }
+            }
+          }
+        }
+      });
+
+      // Create category legend
+      const legendContainer = document.getElementById('categoryLegend');
+      let legendHTML = '<div class="row g-2">';
+
+      chartsData.category_breakdown.labels.forEach((label, idx) => {
+        const color = chartsData.category_breakdown.colors[idx];
+        legendHTML += `
+          <div class="col-auto">
+            <span class="badge" style="background-color: ${color}; width: 12px; height: 12px; border-radius: 50%; display: inline-block;"></span>
+            <span style="font-size: 11px; margin-left: 4px;">${label}</span>
+          </div>
+        `;
+      });
+
+      legendHTML += '</div>';
+      legendContainer.innerHTML = legendHTML;
+    } else {
+      // No data state
+      document.getElementById('categoryLegend').innerHTML = '<p class="text-muted" style="font-size: 12px;">No expenses in the last 30 days</p>';
     }
-  });
-
-});
-</script>
-{% endif %}
+  </script>
 
 
 
@@ -783,4 +941,5 @@ document.addEventListener("DOMContentLoaded", function () {
 
 
 </body>
+
 </html>
