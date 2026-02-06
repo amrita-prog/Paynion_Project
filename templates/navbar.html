@@ -1,6 +1,367 @@
 {% load static %}
 
-<!-- Modern Navbar -->
+<style>
+  /* Glassmorphic Navbar */
+  .navbar-custom {
+    background: rgba(255, 255, 255, 0.60) !important;
+    backdrop-filter: blur(30px) !important;
+    -webkit-backdrop-filter: blur(30px) !important;
+    border-bottom: none !important;
+    border-radius: 0 0 28px 28px !important;
+    box-shadow: inset 0 1px 0 rgba(255, 255, 255, 0.8), inset 0 -1px 0 rgba(0, 0, 0, 0.03) !important;
+    padding: 0.75rem 0 !important;
+    margin: 0 !important;
+    position: sticky !important;
+    top: 0 !important;
+    z-index: 1000 !important;
+    border: 1px solid rgba(255, 255, 255, 0.25) !important;
+    border-top: 1px solid rgba(255, 255, 255, 0.4) !important;
+  }
+
+  .navbar-custom::before {
+    content: '';
+    position: absolute;
+    top: 0;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    background: linear-gradient(135deg, rgba(20, 184, 166, 0.02) 0%, rgba(6, 182, 212, 0.02) 100%) !important;
+    pointer-events: none !important;
+    border-radius: 0 0 28px 28px !important;
+  }
+
+  /* Brand Logo */
+  .navbar-brand {
+    display: flex;
+    align-items: center;
+    gap: 0.75rem;
+    font-weight: 700;
+    font-size: 1.5rem;
+    color: #111827 !important;
+    text-decoration: none;
+    transition: all 0.3s;
+    position: relative;
+  }
+
+  .navbar-brand:hover {
+    transform: translateY(-2px);
+  }
+
+  .navbar-brand-icon {
+    width: 40px;
+    height: 40px;
+    background: linear-gradient(135deg, #14b8a6 0%, #06b6d4 100%);
+    border-radius: 10px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    color: white;
+    font-weight: 700;
+    font-size: 1.25rem;
+    box-shadow: none !important;
+  }
+
+  /* Navigation Items */
+  .navbar-nav {
+    gap: 0.5rem;
+    margin-left: 2rem;
+  }
+
+  .nav-link {
+    color: #6b7280 !important;
+    font-weight: 500;
+    font-size: 0.95rem;
+    padding: 0.625rem 1rem !important;
+    border-radius: 8px;
+    transition: all 0.2s;
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+    position: relative;
+  }
+
+  .nav-link i {
+    font-size: 1rem;
+    opacity: 0.7;
+  }
+
+  .nav-link:hover {
+    color: #14b8a6 !important;
+    background: rgba(20, 184, 166, 0.08);
+  }
+
+  .nav-link:hover i {
+    opacity: 1;
+  }
+
+  .nav-link.active {
+    color: #14b8a6 !important;
+    background: rgba(20, 184, 166, 0.12);
+    font-weight: 600;
+  }
+
+  .nav-link.active i {
+    opacity: 1;
+  }
+
+  .nav-link.active::after {
+    content: '';
+    position: absolute;
+    bottom: -0.75rem;
+    left: 50%;
+    transform: translateX(-50%);
+    width: 30px;
+    height: 3px;
+    background: linear-gradient(90deg, #14b8a6, #06b6d4);
+    border-radius: 10px;
+  }
+
+  /* Right Side Items */
+  .navbar-end-items {
+    margin-left: auto;
+    display: flex;
+    align-items: center;
+    gap: 1.25rem;
+  }
+
+  /* Notification Icon */
+  .notification-icon {
+    position: relative;
+    width: 40px;
+    height: 40px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    background: rgba(20, 184, 166, 0.08);
+    border-radius: 10px;
+    cursor: pointer;
+    transition: all 0.2s;
+  }
+
+  .notification-icon:hover {
+    background: rgba(20, 184, 166, 0.15);
+    transform: translateY(-2px);
+  }
+
+  .notification-icon i {
+    color: #14b8a6;
+    font-size: 1.1rem;
+  }
+
+  .notification-icon::after {
+    content: '';
+    position: absolute;
+    top: 8px;
+    right: 8px;
+    width: 8px;
+    height: 8px;
+    background: #ef4444;
+    border-radius: 50%;
+    border: 2px solid rgba(255, 255, 255, 0.85);
+  }
+
+  /* Settings Icon - Now acts as profile menu trigger */
+  .settings-icon {
+    position: relative;
+    width: 40px;
+    height: 40px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    background: rgba(20, 184, 166, 0.08);
+    border-radius: 10px;
+    cursor: pointer;
+    transition: all 0.2s;
+    border: none;
+  }
+
+  .settings-icon:hover {
+    background: rgba(20, 184, 166, 0.15);
+    transform: translateY(-2px);
+  }
+
+  .settings-icon i {
+    color: #14b8a6;
+    font-size: 1.1rem;
+  }
+
+  /* Profile Dropdown Toggle */
+  .profile-dropdown-toggle {
+    background: transparent;
+    border: none;
+    padding: 0;
+    cursor: pointer;
+    transition: all 0.2s;
+  }
+
+  .profile-dropdown-toggle:hover {
+    transform: translateY(-2px);
+  }
+
+  .profile-dropdown-toggle img {
+    width: 40px !important;
+    height: 40px !important;
+    border-radius: 50%;
+    object-fit: cover;
+    border: 2px solid rgba(20, 184, 166, 0.3);
+    transition: all 0.2s;
+  }
+
+  .profile-dropdown-toggle:hover img {
+    border-color: #14b8a6;
+    box-shadow: 0 4px 12px rgba(20, 184, 166, 0.3);
+  }
+
+  .profile-dropdown-toggle i {
+    color: #14b8a6;
+    font-size: 2.5rem;
+    transition: all 0.2s;
+  }
+
+  .profile-dropdown-toggle:hover i {
+    transform: scale(1.1);
+  }
+
+  /* Dropdown Menu */
+  .dropdown-menu {
+    background: rgba(255, 255, 255, 0.95);
+    backdrop-filter: blur(20px);
+    -webkit-backdrop-filter: blur(20px);
+    border: 1px solid rgba(255, 255, 255, 0.3);
+    box-shadow: 0 10px 40px rgba(0, 0, 0, 0.1);
+    border-radius: 12px;
+    padding: 0.5rem;
+    min-width: 200px;
+    margin-top: 0.5rem !important;
+  }
+
+  .dropdown-item-text {
+    color: #374151 !important;
+    font-weight: 600;
+    padding: 0.75rem 1rem;
+    font-size: 0.95rem;
+  }
+
+  .dropdown-divider {
+    border-color: rgba(0, 0, 0, 0.05) !important;
+    margin: 0.5rem 0;
+  }
+
+  .dropdown-item {
+    color: #6b7280 !important;
+    font-weight: 500;
+    padding: 0.625rem 1rem;
+    border-radius: 8px;
+    transition: all 0.2s;
+    display: flex;
+    align-items: center;
+    gap: 0.75rem;
+  }
+
+  .dropdown-item:hover {
+    background: rgba(20, 184, 166, 0.08);
+    color: #14b8a6 !important;
+  }
+
+  .dropdown-item i {
+    width: 20px;
+    font-size: 1rem;
+  }
+
+  /* Mobile Toggler */
+  .navbar-toggler {
+    border: none;
+    padding: 0.5rem;
+  }
+
+  .navbar-toggler:focus {
+    box-shadow: none;
+  }
+
+  .navbar-toggler-icon {
+    background-image: url("data:image/svg+xml,%3csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 30 30'%3e%3cpath stroke='rgba(20, 184, 166, 1)' stroke-linecap='round' stroke-miterlimit='10' stroke-width='2' d='M4 7h22M4 15h22M4 23h22'/%3e%3c/svg%3e");
+  }
+
+  /* User Info Section in Dropdown */
+  .user-info-section {
+    display: flex;
+    align-items: center;
+    gap: 0.75rem;
+    padding: 0.75rem 1rem;
+    margin-bottom: 0.5rem;
+    background: rgba(20, 184, 166, 0.05);
+    border-radius: 8px;
+  }
+
+  .user-info-avatar {
+    width: 44px;
+    height: 44px;
+    border-radius: 50%;
+    object-fit: cover;
+    border: 2px solid #14b8a6;
+  }
+
+  .user-info-text {
+    flex: 1;
+  }
+
+  .user-info-name {
+    font-weight: 600;
+    color: #111827;
+    font-size: 0.95rem;
+    margin: 0;
+  }
+
+  .user-info-email {
+    font-size: 0.75rem;
+    color: #6b7280;
+    margin: 0;
+  }
+
+  /* Responsive Design */
+  @media (max-width: 991px) {
+    .navbar-custom {
+      border-radius: 0 0 16px 16px;
+      margin: 0.5rem 0.5rem 0 0.5rem;
+    }
+
+    .navbar-nav {
+      margin-left: 0;
+      margin-top: 1rem;
+      gap: 0.25rem;
+    }
+
+    .nav-link.active::after {
+      display: none;
+    }
+
+    .navbar-end-items {
+      margin-left: 0;
+      margin-top: 1rem;
+      padding-top: 1rem;
+      border-top: 1px solid rgba(0, 0, 0, 0.05);
+    }
+  }
+
+  @media (max-width: 576px) {
+    .navbar-custom {
+      border-radius: 0 0 12px 12px;
+      margin: 0.25rem 0.25rem 0 0.25rem;
+    }
+
+    .navbar-brand {
+      font-size: 1.25rem;
+    }
+
+    .navbar-brand-icon {
+      width: 36px;
+      height: 36px;
+      font-size: 1.1rem;
+    }
+  }
+</style>
+
+<!-- Modern Glassmorphic Navbar -->
 <nav class="navbar navbar-expand-lg navbar-custom">
     <div class="container-fluid px-4">
         <!-- Logo -->
@@ -47,13 +408,6 @@
                         <i class="fas fa-history"></i> History
                     </a>
                 </li>
-
-                <li class="nav-item">
-                    <a class="nav-link {% if 'profile' in request.path or 'edit' in request.path %}active{% endif %}"
-                       href="{% url 'accounts:profile' %}">
-                        <i class="fas fa-cog"></i> Settings
-                    </a>
-                </li>
             </ul>
 
             <!-- Right Side Items -->
@@ -63,28 +417,47 @@
                     <i class="fas fa-bell"></i>
                 </span>
 
+                <!-- Settings Icon (links to profile) -->
+                <a href="{% url 'accounts:profile' %}" class="settings-icon" title="Settings">
+                    <i class="fas fa-cog"></i>
+                </a>
+
                 <!-- Profile Dropdown -->
                 <div class="dropdown">
                     <button class="profile-dropdown-toggle" type="button"
                             id="profileDropdown" data-bs-toggle="dropdown"
                             aria-expanded="false">
                         {% if request.user.profile_image %}
-                        <img src="{{ request.user.profile_image.url }}" alt="Profile"
-                             style="width: 32px; height: 32px; border-radius: 50%; object-fit: cover;">
+                        <img src="{{ request.user.profile_image.url }}" alt="Profile">
                         {% else %}
-                        <i class="fas fa-user-circle" style="font-size: 1.5rem; color: #00d4ff;"></i>
+                        <i class="fas fa-user-circle"></i>
                         {% endif %}
                     </button>
                     <ul class="dropdown-menu dropdown-menu-end" aria-labelledby="profileDropdown">
-                        <li><span class="dropdown-item-text" style="color: #aaa;">{{ request.user.full_name }}</span></li>
-                        <li><hr class="dropdown-divider" style="border-color: rgba(255,255,255,0.1);"></li>
+                        <!-- User Info Section -->
+                        <li>
+                            <div class="user-info-section">
+                                {% if request.user.profile_image %}
+                                <img src="{{ request.user.profile_image.url }}" alt="Profile" class="user-info-avatar">
+                                {% else %}
+                                <div style="width: 44px; height: 44px; background: linear-gradient(135deg, #14b8a6, #06b6d4); border-radius: 50%; display: flex; align-items: center; justify-content: center; color: white; font-weight: 700; font-size: 1.25rem;">
+                                    {{ request.user.full_name|slice:":1"|upper }}
+                                </div>
+                                {% endif %}
+                                <div class="user-info-text">
+                                    <p class="user-info-name">{{ request.user.full_name }}</p>
+                                    <p class="user-info-email">{{ request.user.email }}</p>
+                                </div>
+                            </div>
+                        </li>
+                        <li><hr class="dropdown-divider"></li>
                         <li><a class="dropdown-item" href="{% url 'accounts:profile' %}">
                             <i class="fas fa-user"></i> My Profile
                         </a></li>
                         <li><a class="dropdown-item" href="{% url 'accounts:edit_profile' %}">
                             <i class="fas fa-edit"></i> Edit Profile
                         </a></li>
-                        <li><hr class="dropdown-divider" style="border-color: rgba(255,255,255,0.1);"></li>
+                        <li><hr class="dropdown-divider"></li>
                         <li><a class="dropdown-item" href="{% url 'accounts:logout' %}">
                             <i class="fas fa-sign-out-alt"></i> Logout
                         </a></li>

@@ -51,14 +51,79 @@
     margin-bottom: 0.5rem;
   }
   .form-control, .form-select {
-    border-radius: 10px;
-    border: 1px solid #dee2e6;
-    padding: 0.75rem 1rem;
-    transition: all 0.2s;
+    border-radius: 14px;
+    border: 1.5px solid rgba(20, 184, 166, 0.2);
+    padding: 0.95rem 1.125rem;
+    background: linear-gradient(135deg, rgba(255, 255, 255, 0.85) 0%, rgba(255, 255, 255, 0.75) 100%);
+    backdrop-filter: blur(12px);
+    -webkit-backdrop-filter: blur(12px);
+    font-size: 1rem;
+    color: #2d3436;
+    font-weight: 500;
+    box-shadow: inset 0 1px 2px rgba(255, 255, 255, 0.6), inset 0 -1px 2px rgba(0, 0, 0, 0.02);
+  }
+  
+  /* Direct input field styling for Django forms */
+  input[type="text"], 
+  input[type="number"], 
+  input[type="email"], 
+  input[type="password"],
+  input[type="date"],
+  textarea,
+  select {
+    border-radius: 14px !important;
+    border: 1.5px solid rgba(20, 184, 166, 0.2) !important;
+    padding: 0.95rem 1.125rem !important;
+    background: linear-gradient(135deg, rgba(255, 255, 255, 0.85) 0%, rgba(255, 255, 255, 0.75) 100%) !important;
+    backdrop-filter: blur(12px) !important;
+    -webkit-backdrop-filter: blur(12px) !important;
+    font-size: 1rem !important;
+    color: #2d3436 !important;
+    font-weight: 500 !important;
+    box-shadow: inset 0 1px 2px rgba(255, 255, 255, 0.6), inset 0 -1px 2px rgba(0, 0, 0, 0.02) !important;
+  }
+  
+  input[type="text"]::placeholder, 
+  input[type="number"]::placeholder, 
+  input[type="email"]::placeholder, 
+  input[type="password"]::placeholder,
+  textarea::placeholder {
+    color: rgba(109, 123, 136, 0.5) !important;
+    font-weight: 400 !important;
+  }
+  
+  input[type="text"]:focus, 
+  input[type="number"]:focus, 
+  input[type="email"]:focus, 
+  input[type="password"]:focus,
+  input[type="date"]:focus,
+  textarea:focus,
+  select:focus {
+    box-shadow: inset 0 1px 3px rgba(255, 255, 255, 0.8), inset 0 -1px 3px rgba(0, 0, 0, 0.03), 0 0 0 3px rgba(20, 184, 166, 0.15) !important;
+    border-color: #14b8a6 !important;
+    background: linear-gradient(135deg, rgba(255, 255, 255, 0.95) 0%, rgba(255, 255, 255, 0.9) 100%) !important;
+    outline: none !important;
+  }
+  
+  /* Remove hover effects */
+  input:hover,
+  textarea:hover,
+  select:hover,
+  .form-control:hover,
+  .form-select:hover {
+    border-color: rgba(20, 184, 166, 0.2) !important;
+    background: linear-gradient(135deg, rgba(255, 255, 255, 0.85) 0%, rgba(255, 255, 255, 0.75) 100%) !important;
+  }
+  
+  .form-control::placeholder {
+    color: rgba(109, 123, 136, 0.5);
+    font-weight: 400;
   }
   .form-control:focus, .form-select:focus {
-    box-shadow: 0 0 0 3px rgba(52, 152, 219, 0.1);
-    border-color: #3498db;
+    box-shadow: inset 0 1px 3px rgba(255, 255, 255, 0.8), inset 0 -1px 3px rgba(0, 0, 0, 0.03), 0 0 0 3px rgba(20, 184, 166, 0.15);
+    border-color: #14b8a6;
+    background: linear-gradient(135deg, rgba(255, 255, 255, 0.95) 0%, rgba(255, 255, 255, 0.9) 100%);
+    outline: none;
   }
   .form-check-input:checked {
     background-color: #3498db;
@@ -114,24 +179,17 @@
     border-radius: 8px;
     padding: 10px 24px;
     font-weight: 600;
-    transition: all 0.2s;
   }
   .btn-success {
-    background-color: #27ae60;
-    border-color: #27ae60;
-  }
-  .btn-success:hover {
-    background-color: #219150;
-    border-color: #219150;
+    background-color: #14b8a6;
+    border-color: #14b8a6;
+    color: white;
   }
   .btn-secondary {
-    background-color: #e9ecef;
-    border-color: #e9ecef;
+    background-color: rgba(222, 226, 230, 0.6);
+    border-color: rgba(222, 226, 230, 0.8);
     color: #6c757d;
-  }
-  .btn-secondary:hover {
-    background-color: #dee2e6;
-    color: #495057;
+    backdrop-filter: blur(10px);
   }
 
 
@@ -139,21 +197,19 @@
 
 .split-card {
   cursor: pointer;
-  transition: all 0.2s ease;
-}
-
-.split-card:hover {
-  background: #f8f9fa;
-  border-color: #0d6efd;
+  border: 1px solid rgba(222, 226, 230, 0.6) !important;
+  background: rgba(255, 255, 255, 0.7) !important;
+  backdrop-filter: blur(10px);
+  -webkit-backdrop-filter: blur(10px);
+  box-shadow: none !important;
 }
 
 .split-card input[type="checkbox"] {
-  transform: scale(1.1);
   cursor: pointer;
 }
 
 .split-card input[type="checkbox"]:checked + span {
-  color: #0d6efd;
+  color: #14b8a6;
   font-weight: 600;
 }
 
@@ -220,7 +276,7 @@
                     <div class="row g-3">
                         {% for radio in form.split_type %}
                         <div class="col-md-4">
-                            <div class="card h-100 border-0 bg-light" style="cursor: pointer; transition: 0.2s;">
+                            <div class="card h-100 border-0" style="background: rgba(255, 255, 255, 0.7); backdrop-filter: blur(10px);">
                                 <div class="card-body p-3 d-flex align-items-center gap-2">
                                     {{ radio.tag }}
                                     <label class="form-check-label mb-0 fw-medium">{{ radio.choice_label }}</label>
