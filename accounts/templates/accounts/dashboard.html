@@ -20,10 +20,53 @@
   <link rel="stylesheet" href="{% static 'css/navbar.css' %}">
 
   <style>
-    .card-summary {
-      border-left: 5px solid #0d6efd;
+    /* =========================================
+       THEME & COLORS (Soft Modern Paynion Theme)
+       ========================================= */
+    body {
+      background-color: #f8f9fa;
+      background-image: radial-gradient(#e9ecef 1px, transparent 1px);
+      background-size: 20px 20px;
+      min-height: 100vh;
+      font-family: 'Segoe UI', system-ui, -apple-system, sans-serif;
+      color: #2d3436;
     }
 
+    /* Navbar Override */
+    .navbar {
+      background-color: #ffffff !important;
+      border-bottom: 1px solid #e9ecef;
+      box-shadow: 0 2px 4px rgba(0,0,0,0.02);
+      padding-top: 1rem;
+      padding-bottom: 1rem;
+    }
+    .nav-link {
+      color: #6c757d;
+      font-weight: 500;
+      padding: 0.5rem 1rem !important;
+    }
+    .nav-link.active, .nav-link:hover {
+      color: #2d3436;
+    }
+    .nav-link.active {
+      border-bottom: 2px solid #3498db;
+    }
+
+    /* Card Base Styles */
+    .card {
+      border: none;
+      border-radius: 12px;
+      background: #fff;
+      box-shadow: 0 4px 12px rgba(0,0,0,0.03);
+      margin-bottom: 24px;
+      transition: transform 0.2s ease;
+    }
+    .card:hover {
+      transform: translateY(-2px);
+    }
+    .card-body {
+      padding: 24px;
+    }
     .profile-img {
       width: 38px;
       height: 38px;
@@ -33,251 +76,235 @@
       cursor: pointer;
     }
 
-    /* NEW SQUARE CARD STYLES */
+    /* =========================================
+       TOP SECTION: SQUARE CARDS & ACTIONS
+       ========================================= */
+    .summary-cards-section {
+      display: flex;
+      gap: 20px;
+      align-items: stretch;
+      margin-bottom: 30px;
+    }
+
+    .cards-grid {
+      flex: 1;
+      display: grid;
+      grid-template-columns: repeat(3, 1fr); /* 3 Equal Cards */
+      gap: 20px;
+    }
+
+    /* Square Card Design */
     .square-card {
       aspect-ratio: auto;
       min-height: 140px;
       display: flex;
       flex-direction: column;
-      justify-content: flex-start;
+      justify-content: center; /* Center content */
       align-items: flex-start;
-      padding: 20px;
+      padding: 20px 24px;
       border-radius: 12px;
       border: none;
-      background: #f8f9fa;
+      background: #fff;
       transition: all 0.3s ease;
       text-align: left;
-      max-width: 100%;
-      box-shadow: none;
+      box-shadow: 0 4px 12px rgba(0,0,0,0.03); /* Match main card shadow */
+      position: relative;
+      overflow: hidden;
     }
 
     .square-card:hover {
-      transform: none;
-      background: #f0f1f3;
-      box-shadow: 0 4px 12px rgba(0, 0, 0, 0.08);
+      transform: translateY(-4px);
+      box-shadow: 0 8px 20px rgba(0,0,0,0.08);
     }
 
     .square-card h6 {
-      font-size: 12px;
+      font-size: 0.9rem;
       color: #6c757d;
-      font-weight: 500;
+      font-weight: 600;
       margin-bottom: 8px;
-      text-transform: none;
-      letter-spacing: 0px;
-      margin-top: auto;
+      text-transform: uppercase;
+      letter-spacing: 0.5px;
     }
 
     .square-card-value {
-      font-size: 32px;
+      font-size: 2rem;
       font-weight: 700;
-      color: #1a1a1a;
+      color: #2d3436;
       margin: 0;
-      order: 3;
+      line-height: 1.1;
     }
 
     .square-card-icon {
-      font-size: 32px;
-      margin-bottom: 12px;
-      opacity: 1;
-      order: 1;
+      position: absolute;
+      top: 20px;
+      right: 20px;
+      font-size: 2rem;
+      opacity: 0.15; /* Subtle background icon */
     }
 
-    .square-card.groups .square-card-icon {
-      color: #007bff;
+    .square-card.groups .square-card-icon { color: #3498db; }
+    .square-card.expenses .square-card-icon { color: #ff6b6b; }
+    .square-card.balance .square-card-icon { color: #27ae60; }
+
+    /* Action Buttons Card */
+    .action-card-container {
+      width: 280px; /* Fixed width for action buttons column */
+      flex-shrink: 0;
     }
 
-    .square-card.expenses .square-card-icon {
-      color: #ff6b6b;
-    }
-
-    .square-card.balance .square-card-icon {
-      color: #28a745;
-    }
-
-    .square-card.action-card {
+    .action-card {
+      height: 100%;
       display: flex;
       flex-direction: column;
       justify-content: center;
-      gap: 8px;
+      gap: 12px;
+      padding: 10px;
     }
 
     .btn-action-sub {
       display: flex;
       align-items: center;
       justify-content: center;
-      gap: 6px;
-      padding: 10px 14px;
-      border-radius: 6px;
-      font-weight: 600;
-      text-decoration: none;
-      border: none;
-      cursor: pointer;
-      transition: all 0.3s ease;
-      font-size: 12px;
-      text-align: center;
-    }
-
-    .btn-action-sub i {
-      font-size: 14px;
-    }
-
-    .btn-action-sub:nth-child(1) {
-      background: #17a2b8;
-      color: white;
-    }
-
-    .btn-action-sub:nth-child(1):hover {
-      background: #138496;
-      color: white;
-      text-decoration: none;
-    }
-
-    .btn-action-sub:nth-child(2) {
-      background: #a8d8d8;
-      color: #2a7a7a;
-    }
-
-    .btn-action-sub:nth-child(2):hover {
-      background: #92cccf;
-      color: #2a7a7a;
-      text-decoration: none;
-    }
-
-    .btn-action-sub:nth-child(3) {
-      background: #f5e5a8;
-      color: #7a6b2a;
-    }
-
-    .btn-action-sub:nth-child(3):hover {
-      background: #f0dfa8;
-      color: #7a6b2a;
-      text-decoration: none;
-    }
-
-    /* BUTTON STYLES */
-    .btn-action {
-      display: flex;
-      align-items: center;
-      justify-content: center;
-      gap: 8px;
-      padding: 12px 16px;
+      gap: 10px;
+      padding: 14px;
       border-radius: 8px;
       font-weight: 600;
       text-decoration: none;
       border: none;
       cursor: pointer;
-      transition: all 0.3s ease;
-      font-size: 13px;
-      box-shadow: none;
+      transition: all 0.2s ease;
+      font-size: 0.9rem;
+      box-shadow: 0 2px 4px rgba(0,0,0,0.05);
     }
 
-    .btn-action i {
-      font-size: 16px;
-    }
+    .btn-action-sub i { font-size: 1.1rem; }
 
-    .btn-scan {
-      background: #17a2b8;
-      color: white;
-    }
+    .btn-action-sub:nth-child(1) { background: #3498db; color: white; }
+    .btn-action-sub:nth-child(1):hover { background: #2980b9; color: white; }
 
-    .btn-scan:hover {
-      transform: none;
-      background: #138496;
-      box-shadow: none;
-      color: white;
-      text-decoration: none;
-    }
+    .btn-action-sub:nth-child(2) { background: #2ecc71; color: white; }
+    .btn-action-sub:nth-child(2):hover { background: #27ae60; color: white; }
 
-    .btn-add-expense {
-      background: #a8d8d8;
-      color: #2a7a7a;
-    }
+    .btn-action-sub:nth-child(3) { background: #f1c40f; color: #2d3436; }
+    .btn-action-sub:nth-child(3):hover { background: #f39c12; color: #2d3436; }
 
-    .btn-add-expense:hover {
-      transform: none;
-      background: #92cccf;
-      box-shadow: none;
-      color: #2a7a7a;
-      text-decoration: none;
+    /* =========================================
+       CHARTS SECTION
+       ========================================= */
+    .chart-container {
+      position: relative;
+      height: 280px;
+      width: 100%;
     }
-
-    .btn-create-group {
-      background: #a8d8d8;
-      color: #2a7a7a;
+    .chart-header h5 {
+      font-weight: 600;
+      color: #2d3436;
+      margin-bottom: 0;
     }
+    .chart-header small { color: #6c757d; font-size: 0.85rem; }
 
-    .btn-create-group:hover {
-      transform: none;
-      background: #92cccf;
-      box-shadow: none;
-      color: #2a7a7a;
-      text-decoration: none;
-    }
-
-    .btn-view-report {
-      background: #f5e5a8;
-      color: #7a6b2a;
-    }
-
-    .btn-view-report:hover {
-      transform: none;
-      background: #f0dfa8;
-      box-shadow: none;
-      color: #7a6b2a;
-      text-decoration: none;
-    }
-
-    /* LAYOUT ADJUSTMENTS */
-    .summary-cards-section {
+    /* =========================================
+       BOTTOM SECTION: GROUPS & EXPENSES
+       ========================================= */
+    .section-title {
+      font-size: 1.1rem;
+      font-weight: 600;
+      color: #2d3436;
+      margin-bottom: 1.2rem;
       display: flex;
-      gap: 16px;
-      align-items: stretch;
-      margin-bottom: 16px;
+      justify-content: space-between;
+      align-items: center;
     }
-
-    .cards-grid {
-      flex: 1;
-      display: grid;
-      grid-template-columns: repeat(4, 1fr);
-      gap: 12px;
+    .section-title a {
+      font-size: 0.85rem;
+      font-weight: 500;
+      color: #3498db;
+      text-decoration: none;
     }
+    .section-title a:hover { text-decoration: underline; }
 
-    .action-buttons {
+    /* Group Snapshots Item */
+    .group-item {
+      padding: 16px;
+      border: 1px solid #f1f3f5;
+      border-radius: 10px;
+      margin-bottom: 12px;
+      background: #fff;
+      transition: border-color 0.2s;
+    }
+    .group-item:hover { border-color: #dee2e6; }
+    .group-item:last-child { margin-bottom: 0; }
+    
+    .member-avatars img {
+      width: 32px;
+      height: 32px;
+      border-radius: 50%;
+      border: 2px solid #fff;
+      object-fit: cover;
+      margin-left: -10px;
+    }
+    .member-avatars img:first-child { margin-left: 0; }
+    
+    .progress { height: 6px; background-color: #f1f3f5; border-radius: 3px; }
+    .progress-bar { border-radius: 3px; }
+
+    /* Recent Expenses Row */
+    .expense-row {
       display: flex;
-      flex-direction: column;
-      gap: 8px;
-      width: auto;
+      align-items: center;
+      padding: 14px 0;
+      border-bottom: 1px solid #f1f3f5;
+    }
+    .expense-row:last-child { border-bottom: none; }
+    
+    .expense-icon {
+      width: 40px;
+      height: 40px;
+      border-radius: 10px;
+      background-color: #f8f9fa;
+      color: #6c757d;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      margin-right: 16px;
+      flex-shrink: 0;
+    }
+    .expense-details h6 {
+      margin: 0;
+      font-size: 0.95rem;
+      font-weight: 600;
+      color: #2d3436;
+    }
+    .expense-details small {
+      font-size: 0.8rem;
+      color: #adb5bd;
+    }
+    .expense-amount {
+      margin-left: auto;
+      font-weight: 700;
+      font-size: 0.95rem;
+      color: #e74c3c;
     }
 
-    @media (max-width: 1200px) {
-      .cards-grid {
-        grid-template-columns: repeat(2, 1fr);
-      }
-
-      .action-buttons {
-        width: auto;
-        flex-direction: row;
-        flex-wrap: wrap;
-      }
-    }
-
-    @media (max-width: 768px) {
+    /* Responsive */
+    @media (max-width: 991px) {
       .summary-cards-section {
         flex-direction: column;
       }
-
       .cards-grid {
-        grid-template-columns: 1fr;
+        grid-template-columns: repeat(2, 1fr);
       }
-
-      .action-buttons {
+      .action-card-container {
         width: 100%;
       }
+      .action-card {
+        flex-direction: row;
+        flex-wrap: wrap;
+      }
+      .btn-action-sub { flex: 1; }
     }
-
-    /* PROGRESS BAR COLORS */
-    .bg-teal {
-      background-color: #17a2b8 !important;
+    @media (max-width: 576px) {
+      .cards-grid { grid-template-columns: 1fr; }
     }
   </style>
 
@@ -291,68 +318,60 @@
 
   <div class="container mt-4">
 
-    <h2 class="mb-4">Dashboard</h2>
+    <h2 class="fw-bold mb-4 text-dark">Dashboard</h2>
 
-    <!-- SUMMARY CARDS WITH ACTION BUTTONS -->
+    <!-- TOP SECTION: 3 CARDS + ACTION BUTTONS -->
     <div class="summary-cards-section">
-      <!-- Cards Grid -->
+      <!-- 3 Equal Cards Grid -->
       <div class="cards-grid">
-        <!-- Total Groups Card -->
+        <!-- I Need to Pay Card -->
         <div class="card square-card groups shadow-sm">
-          <div class="square-card-icon">
-            <i class="fas fa-users"></i>
-          </div>
-          <h6>Total Groups</h6>
-          <p class="square-card-value">{{ total_groups|default:"0" }}</p>
+          <div class="square-card-icon"><i class="fas fa-arrow-up"></i></div>
+          <h6>I Need to Pay</h6>
+          <p class="square-card-value">{{ total_pay|default:"₹0.00" }}</p>
         </div>
 
-        <!-- Total Expenses Card -->
+        <!-- I Will Get Back Card -->
         <div class="card square-card expenses shadow-sm">
-          <div class="square-card-icon">
-            <i class="fas fa-receipt"></i>
-          </div>
-          <h6>Total Expenses</h6>
-          <p class="square-card-value">{{ total_expenses|default:"0" }}</p>
+          <div class="square-card-icon"><i class="fas fa-arrow-down"></i></div>
+          <h6>I Will Get Back</h6>
+          <p class="square-card-value">{{ total_get|default:"₹0.00" }}</p>
         </div>
 
-        <!-- Your Balance Card -->
+        <!-- Total Spending Card -->
         <div class="card square-card balance shadow-sm">
-          <div class="square-card-icon">
-            <i class="fas fa-wallet"></i>
-          </div>
-          <h6>Your Balance</h6>
-          <p class="square-card-value">₹{{ balance|default:"0" }}</p>
+          <div class="square-card-icon"><i class="fas fa-chart-pie"></i></div>
+          <h6>Total Spending</h6>
+          <p class="square-card-value">{{ total_spending|default:"₹0.00" }}</p>
         </div>
+      </div>
 
-        <!-- Action Buttons Card -->
-        <div class="card square-card action-card shadow-sm">
-          <a href="{% url 'groups:view_all_group' %}?from=add_expense" class="btn-action-sub">
-            <i class="fas fa-plus"></i> Add Expense
-          </a>
-          <a href="{% url 'groups:create_group' %}" class="btn-action-sub">
-            <i class="fas fa-plus-circle"></i> Create Group
-          </a>
-          <a href="{% url 'accounts:report' %}" class="btn-action-sub">
-            <i class="fas fa-chart-bar"></i> View Report
-          </a>
+      <!-- Action Buttons (Right Side, Fixed Width) -->
+      <div class="action-card-container">
+        <div class="card shadow-sm">
+          <div class="card-body action-card">
+            <a href="{% url 'groups:view_all_group' %}?from=add_expense" class="btn-action-sub">
+              <i class="fas fa-plus"></i> Add Expense
+            </a>
+            <a href="{% url 'groups:create_group' %}" class="btn-action-sub">
+              <i class="fas fa-users"></i> Create Group
+            </a>
+            <a href="{% url 'accounts:report' %}" class="btn-action-sub">
+              <i class="fas fa-chart-bar"></i> View Report
+            </a>
+          </div>
         </div>
       </div>
     </div>
 
 
-    <div class="d-flex justify-content-end mb-2">
-      <a href="{% url 'accounts:report' %}" class="btn btn-outline-primary">
-        View Full Report
-      </a>
-    </div>
-
-    <!-- NEW TWO COLUMN CHARTS SECTION -->
-    <div class="row mt-3 g-3">
-      <!-- LEFT CHART - YOU OWE VS YOU ARE OWED -->
+    <!-- CHARTS SECTION -->
+    <div class="row mt-2 g-3">
+      <!-- LEFT CHART -->
       <div class="col-lg-6">
         <div class="card shadow-sm">
           <div class="card-body">
-            <div class="d-flex justify-content-between align-items-center mb-3">
+            <div class="d-flex justify-content-between align-items-center mb-3 chart-header">
               <div>
                 <h5 class="mb-1">You Have to Pay vs You Will Get Back</h5>
                 <small class="text-muted">Track your settlements</small>
@@ -363,29 +382,32 @@
                 <option value="4months">Last 4 Months</option>
               </select>
             </div>
-            <canvas id="oweVsOwedChart" height="100"></canvas>
+            <div class="chart-container">
+              <canvas id="oweVsOwedChart"></canvas>
+            </div>
           </div>
         </div>
       </div>
 
-      <!-- RIGHT CHART - EXPENSE BREAKDOWN -->
+      <!-- RIGHT CHART -->
       <div class="col-lg-6">
         <div class="card shadow-sm">
           <div class="card-body">
-            <h5 class="mb-1">Expense Breakdown</h5>
-            <small class="text-muted">By category (Last 30 days)</small>
-            <div class="d-flex justify-content-center mb-3 mt-3">
-              <div style="position: relative; width: 180px; height: 180px;">
+            <div class="chart-header mb-3">
+              <h5 class="mb-1">Expense Breakdown</h5>
+              <small class="text-muted">By category (Last 30 days)</small>
+            </div>
+            <div class="d-flex justify-content-center align-items-center" style="min-height: 240px;">
+              <div style="position: relative; width: 220px; height: 220px;">
                 <canvas id="categoryBreakdownChart"></canvas>
-                <div
-                  style="position: absolute; top: 50%; left: 50%; transform: translate(-50%, -50%); text-align: center;">
-                  <div style="font-size: 22px; font-weight: bold;" id="totalCategoryAmount">₹0.00</div>
-                  <div style="font-size: 10px; color: #6c757d;">TOTAL</div>
+                <div style="position: absolute; top: 50%; left: 50%; transform: translate(-50%, -50%); text-align: center;">
+                  <div style="font-size: 1.4rem; font-weight: 700; color: #2d3436;" id="totalCategoryAmount">₹0.00</div>
+                  <div style="font-size: 0.75rem; color: #6c757d; font-weight: 500;">TOTAL</div>
                 </div>
               </div>
             </div>
-            <div class="small text-center" id="categoryLegend">
-              <!-- Category legend will be populated by JavaScript -->
+            <div class="text-center mt-2" id="categoryLegend">
+              <!-- Legend populated by JS -->
             </div>
           </div>
         </div>
@@ -393,96 +415,88 @@
     </div>
 
 
-    <!-- TWO COLUMN CARDS SECTION -->
+    <!-- BOTTOM SECTION: GROUPS & EXPENSES -->
     <div class="row mt-2 g-3">
-      <!-- LEFT CARD - GROUP SNAPSHOTS -->
-      <div class="col-lg-5">
+      <!-- GROUP SNAPSHOTS -->
+      <div class="col-lg-6">
         <div class="card shadow-sm h-100">
           <div class="card-body">
-            <div class="d-flex justify-content-between align-items-center mb-3">
-              <h5 class="mb-0">Group Snapshots</h5>
-              <a href="{% url 'groups:view_all_group' %}" class="text-muted small"
-                style="text-decoration: none; font-size: 12px;">VIEW ALL</a>
+            <div class="section-title">
+              <span>Group Snapshots</span>
+              <a href="{% url 'groups:view_all_group' %}">View All</a>
             </div>
 
             {% if groups %}
-            {% for group in groups|slice:":2" %}
-            <div class="mb-3 pb-3 {% if not forloop.last %}border-bottom{% endif %}">
-              <!-- Group Header -->
-              <div class="d-flex justify-content-between align-items-start mb-2">
-                <div>
-                  <h6 class="mb-0 fw-semibold" style="font-size: 14px;">{{ group.title }}</h6>
-                  <small class="text-muted">Created by {{ group.created_by.first_name }}</small>
-                </div>
-                <span class="badge bg-success" style="font-size: 10px;">Active</span>
-              </div>
-
-              <!-- Group Members Avatars -->
-              <div class="mb-2">
-                <div class="d-flex align-items-center gap-1">
-                  {% for member in group.members.all|slice:":3" %}
-                  <img
-                    src="{% if member.profile_image %}{{ member.profile_image.url }}{% else %}/static/images/default-user.png{% endif %}"
-                    class="rounded-circle border border-2 border-white" width="32" height="32"
-                    style="object-fit: cover; margin-left: -8px;" title="{{ member.full_name }}"
-                    alt="{{ member.full_name }}">
-                  {% endfor %}
-                  {% if group.members.count > 3 %}
-                  <div class="rounded-circle bg-light d-flex align-items-center justify-content-center"
-                    style="width: 32px; height: 32px; margin-left: -8px; border: 2px solid white; font-size: 11px; font-weight: bold;">
-                    +{{ group.members.count|add:"-3" }}
+            <div class="group-list">
+              {% for group in groups|slice:":3" %}
+              <div class="group-item">
+                <div class="d-flex justify-content-between align-items-start mb-2">
+                  <div>
+                    <h6 class="fw-semibold mb-1 text-dark">{{ group.title }}</h6>
+                    <small class="text-muted">Created by {{ group.created_by.first_name }}</small>
                   </div>
-                  {% endif %}
+                  <span class="badge bg-success bg-opacity-10 text-success" style="font-size: 0.75rem;">Active</span>
+                </div>
+
+                <div class="d-flex align-items-center justify-content-between">
+                  <div class="member-avatars d-flex align-items-center">
+                    {% for member in group.members.all|slice:":3" %}
+                      {% if member.profile_image %}
+                      <img src="{{ member.profile_image.url }}" alt="{{ member.full_name }}" title="{{ member.full_name }}">
+                      {% else %}
+                      <img src="{% static 'images/default-user.png' %}" alt="User" title="{{ member.full_name }}">
+                      {% endif %}
+                    {% endfor %}
+                    {% if group.members.count > 3 %}
+                    <div class="rounded-circle bg-light d-flex align-items-center justify-content-center text-muted fw-bold" style="width: 32px; height: 32px; margin-left: -10px; font-size: 0.75rem;">
+                      +{{ group.members.count|add:"-3" }}
+                    </div>
+                    {% endif %}
+                  </div>
+                  
+                  <small class="text-muted fw-bold">₹1,200 / ₹2,000</small>
+                </div>
+                
+                <!-- Progress Bar -->
+                <div class="progress mt-2">
+                  <div class="progress-bar bg-info" role="progressbar" style="width: 60%;"></div>
                 </div>
               </div>
-
-              <!-- Progress Bar -->
-              <div class="mb-2">
-                <div class="progress" style="height: 6px;">
-                  <div class="progress-bar bg-teal" role="progressbar" style="width: 60%;"></div>
-                </div>
-              </div>
-
-              <!-- Collection Info -->
-              <div class="d-flex justify-content-between small">
-                <span class="text-muted">Collected: <strong class="text-dark">₹1,200</strong></span>
-                <span class="text-muted">Target: <strong class="text-dark">₹2,000</strong></span>
-              </div>
+              {% endfor %}
             </div>
-            {% endfor %}
             {% else %}
-            <p class="text-muted text-center my-3" style="font-size: 12px;">No groups yet</p>
+            <p class="text-muted text-center py-4">No groups yet</p>
             {% endif %}
           </div>
         </div>
       </div>
 
-      <!-- RIGHT CARD - RECENT EXPENSES -->
-      <div class="col-lg-7">
+      <!-- RECENT EXPENSES -->
+      <div class="col-lg-6">
         <div class="card shadow-sm h-100">
           <div class="card-body">
-            <h5 class="mb-3">Recent Expenses</h5>
+            <div class="section-title">
+              <span>Recent Expenses</span>
+              <a href="{% url 'accounts:my_expenses' %}">View All</a>
+            </div>
 
             {% if recent_expenses %}
-            {% for exp in recent_expenses|slice:":4" %}
-            <div class="d-flex justify-content-between align-items-start mb-2 pb-2 border-bottom">
-              <div class="d-flex align-items-center gap-2">
-                <div class="rounded-circle bg-light d-flex align-items-center justify-content-center"
-                  style="width: 36px; height: 36px; flex-shrink: 0;">
-                  <i class="fas fa-receipt text-muted" style="font-size: 16px;"></i>
+            <div class="expense-list">
+              {% for exp in recent_expenses|slice:":4" %}
+              <div class="expense-row">
+                <div class="expense-icon">
+                  <i class="fas fa-receipt"></i>
                 </div>
-                <div>
-                  <strong class="d-block" style="font-size: 14px;">{{ exp.description|truncatechars:15 }}</strong>
-                  <small class="text-muted" style="font-size: 12px;">{{ exp.created_at|date:"d M, H:i A" }}</small>
+                <div class="expense-details">
+                  <h6>{{ exp.description|truncatechars:20 }}</h6>
+                  <small>{{ exp.created_at|date:"d M, h:i A" }} • {{ exp.paid_by.first_name }}</small>
                 </div>
+                <div class="expense-amount">-₹{{ exp.amount }}</div>
               </div>
-              <div class="text-end" style="flex-shrink: 0;">
-                <strong class="text-danger" style="font-size: 14px;">-₹{{ exp.amount }}</strong>
-              </div>
+              {% endfor %}
             </div>
-            {% endfor %}
             {% else %}
-            <p class="text-muted text-center my-3" style="font-size: 12px;">No expenses yet</p>
+            <p class="text-muted text-center py-4">No expenses yet</p>
             {% endif %}
           </div>
         </div>
@@ -493,9 +507,6 @@
 
 
   </div>
-
-  </div>
-
 
   <!-- Notification -->
 
@@ -803,7 +814,7 @@ document.addEventListener("DOMContentLoaded", function () {
         },
         options: {
           responsive: true,
-          maintainAspectRatio: true,
+          maintainAspectRatio: false,
           plugins: {
             legend: {
               display: true,
@@ -827,16 +838,12 @@ document.addEventListener("DOMContentLoaded", function () {
           scales: {
             y: {
               beginAtZero: true,
-              ticks: {
-                callback: function (value) {
-                  return '₹' + value;
-                }
-              }
+              grid: { color: '#f1f3f5', drawBorder: false },
+              ticks: { font: { size: 10 } }
             },
             x: {
-              grid: {
-                display: false
-              }
+              grid: { display: false },
+              ticks: { font: { size: 10 } }
             }
           }
         }
@@ -889,8 +896,8 @@ document.addEventListener("DOMContentLoaded", function () {
         },
         options: {
           responsive: true,
-          maintainAspectRatio: true,
-          cutout: '65%',
+          maintainAspectRatio: false,
+          cutout: '70%',
           plugins: {
             legend: {
               display: false
@@ -915,14 +922,14 @@ document.addEventListener("DOMContentLoaded", function () {
 
       // Create category legend
       const legendContainer = document.getElementById('categoryLegend');
-      let legendHTML = '<div class="row g-2">';
+      let legendHTML = '<div class="d-flex flex-wrap justify-content-center gap-3">';
 
       chartsData.category_breakdown.labels.forEach((label, idx) => {
         const color = chartsData.category_breakdown.colors[idx];
         legendHTML += `
-          <div class="col-auto">
-            <span class="badge" style="background-color: ${color}; width: 12px; height: 12px; border-radius: 50%; display: inline-block;"></span>
-            <span style="font-size: 11px; margin-left: 4px;">${label}</span>
+          <div class="d-flex align-items-center">
+            <span style="width: 10px; height: 10px; border-radius: 50%; background-color: ${color}; display: inline-block; margin-right: 6px;"></span>
+            <span style="font-size: 0.85rem; color: #6c757d;">${label}</span>
           </div>
         `;
       });
@@ -934,6 +941,7 @@ document.addEventListener("DOMContentLoaded", function () {
       document.getElementById('categoryLegend').innerHTML = '<p class="text-muted" style="font-size: 12px;">No expenses in the last 30 days</p>';
     }
   </script>
+
 
 
 

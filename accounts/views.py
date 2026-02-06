@@ -431,6 +431,29 @@ def dashboard(request):
         }
     })
 
+    # DASHBOARD SUMMARY CARDS CALCULATIONS
+    # Calculate I Need to Pay (sum of absolute values of all negative balances)
+    all_need_to_pay = ExpenseSplit.objects.filter(
+        user=user
+    ).exclude(
+        expense__paid_by=user
+    ).aggregate(total=Sum('amount'))['total'] or 0
+    total_pay = float(all_need_to_pay)
+
+    # Calculate I Will Get Back (sum of all positive balances)
+    all_will_get_back = ExpenseSplit.objects.filter(
+        expense__paid_by=user
+    ).exclude(
+        user=user
+    ).aggregate(total=Sum('amount'))['total'] or 0
+    total_get = float(all_will_get_back)
+
+    # Calculate Total Spending (sum of all related expense amounts)
+    all_expenses_total = Expense.objects.filter(
+        paid_by=user
+    ).aggregate(total=Sum('amount'))['total'] or 0
+    total_spending = float(all_expenses_total)
+
     context = {
         "notification": notification,   # PASS TO TEMPLATE
         "total_groups": total_groups,
@@ -441,6 +464,9 @@ def dashboard(request):
         "total_paid": f"{total_paid:.2f}",
         "total_need_to_pay": f"{total_need_to_pay:.2f}",
         "total_will_get_back": f"{total_will_get_back:.2f}",
+        "total_pay": f"₹{total_pay:.2f}",
+        "total_get": f"₹{total_get:.2f}",
+        "total_spending": f"₹{total_spending:.2f}",
         "new_charts_json": new_charts_json,  # NEW CHARTS DATA
         "chart_period": chart_period,        # SELECTED PERIOD
         "chart": {
