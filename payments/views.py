@@ -4,6 +4,7 @@ from django.shortcuts import redirect, get_object_or_404, render
 from django.contrib.auth.decorators import login_required
 from django.contrib.auth import get_user_model
 from django.utils import timezone
+from django.db.models import Sum
 from .models import Settlement, PaymentHistory
 import qrcode
 import io
@@ -147,6 +148,22 @@ def payment_history(request):
         "paid_by", "received_by", "settlement", "settlement__group"
     ).order_by("-confirmed_at")
 
+    # Calculate totals for the summary cards
+    total_inflow = PaymentHistory.objects.filter(
+        received_by=request.user
+    ).aggregate(total=Sum('amount'))['total'] or 0
+
+    total_outflow = PaymentHistory.objects.filter(
+        paid_by=request.user
+    ).aggregate(total=Sum('amount'))['total'] or 0
+
+    pending_count = Settlement.objects.filter(
+        status="PENDING"
+    ).count()
+
     return render(request, "payments/payment_history.html", {
-        "history": history
+        "history": history,
+        "total_inflow": total_inflow,
+        "total_outflow": total_outflow,
+        "pending_count": pending_count
     })

@@ -397,7 +397,7 @@
     </a>
   </div>
 
-  <!-- Search and Filters -->
+  <!-- Search Bar -->
   <div class="search-filter-section">
     <div class="search-box">
       <svg class="search-icon" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
@@ -409,19 +409,6 @@
         class="search-input" 
         placeholder="Search groups by name or purpose..."
       />
-    </div>
-    <div class="filter-group">
-      <select class="filter-dropdown">
-        <option>Status: Active</option>
-        <option>Status: All</option>
-        <option>Status: Planning</option>
-        <option>Status: Settled</option>
-      </select>
-      <select class="filter-dropdown">
-        <option>Sort: Recent</option>
-        <option>Sort: Name</option>
-        <option>Sort: Members</option>
-      </select>
     </div>
   </div>
 
@@ -518,5 +505,55 @@
   {% endif %}
 
 </div>
+
+<script>
+  // Search functionality for groups - Only search by group title
+  const searchInput = document.querySelector('.search-input');
+  const groupCards = document.querySelectorAll('.group-card');
+  const groupsGrid = document.querySelector('.groups-grid');
+  const emptyState = document.querySelector('.empty-state');
+
+  if (searchInput) {
+    searchInput.addEventListener('keyup', function() {
+      const searchTerm = this.value.toLowerCase().trim();
+      let visibleCount = 0;
+
+      groupCards.forEach(card => {
+        // Get only group title text
+        const groupTitle = card.querySelector('.group-title') ? card.querySelector('.group-title').textContent.toLowerCase() : '';
+
+        // Check if search term matches group title only
+        if (groupTitle.includes(searchTerm) || searchTerm === '') {
+          card.style.display = '';
+          visibleCount++;
+        } else {
+          card.style.display = 'none';
+        }
+      });
+
+      // Show/hide empty state based on results
+      if (visibleCount === 0 && groupCards.length > 0 && searchTerm !== '') {
+        if (groupsGrid) {
+          groupsGrid.style.display = 'none';
+        }
+        if (emptyState) {
+          emptyState.style.display = 'block';
+          emptyState.innerHTML = `
+            <div class="empty-state-icon">🔍</div>
+            <h3>No Groups Found</h3>
+            <p>No groups match your search. Try a different search term.</p>
+          `;
+        }
+      } else if (visibleCount > 0 || searchTerm === '') {
+        if (groupsGrid) {
+          groupsGrid.style.display = 'grid';
+        }
+        if (emptyState && !emptyState.querySelector('.empty-state-icon')?.textContent.includes('📊')) {
+          emptyState.style.display = 'none';
+        }
+      }
+    });
+  }
+</script>
 
 {% endblock %}
