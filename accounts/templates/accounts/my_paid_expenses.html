@@ -4,31 +4,196 @@
 {% block content %}
 <div class="container mt-4">
 
-  <h4 class="mb-3">Expenses Paid by Me</h4>
+  <h4 class="mb-4" style="font-weight: 600; color: #2d3748;">Expenses Paid by Me</h4>
 
   {% if expenses %}
     {% for exp in expenses %}
-      <div class="card shadow-sm mb-3">
+      <div class="expense-card card shadow-sm mb-3">
         <div class="card-body">
-          <h6>{{ exp.description }}</h6>
-
-          <p class="mb-1 text-muted">
-            Group: {{ exp.group.title }}
-          </p>
-
-          <p class="mb-1">
-            Amount: <strong>₹ {{ exp.amount }}</strong>
-          </p>
-
-          <small class="text-muted">
-            {{ exp.created_at|date:"d M Y" }}
-          </small>
+          <div class="expense-card-content">
+            <div class="expense-main">
+              <h6 class="expense-title">{{ exp.description }}</h6>
+              <p class="expense-group">
+                <span class="label-text">Group:</span> 
+                <span class="group-name">{{ exp.group.title }}</span>
+              </p>
+            </div>
+            
+            <div class="expense-meta">
+              <p class="expense-amount">
+                <span class="label-text">Amount:</span> 
+                <span class="amount-value">₹ {{ exp.amount }}</span>
+              </p>
+              <small class="expense-date">
+                {{ exp.created_at|date:"d M Y" }}
+              </small>
+            </div>
+          </div>
         </div>
       </div>
     {% endfor %}
   {% else %}
-    <p class="text-muted">No expenses found.</p>
+    <div class="empty-state">
+      <p class="text-muted">No expenses found.</p>
+    </div>
   {% endif %}
 
 </div>
+
+<style>
+  /* Container styling */
+  .container {
+    max-width: 1200px;
+    padding-bottom: 2rem;
+  }
+
+  /* Expense card styling */
+  .expense-card {
+    border: 1px solid #e2e8f0;
+    border-radius: 8px;
+    transition: all 0.2s ease;
+    background: #ffffff;
+  }
+
+  .expense-card:hover {
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.08) !important;
+    transform: translateY(-2px);
+  }
+
+  .expense-card .card-body {
+    padding: 1.25rem 1.5rem;
+  }
+
+  /* Flexbox layout for card content */
+  .expense-card-content {
+    display: flex;
+    justify-content: space-between;
+    align-items: flex-start;
+    gap: 1.5rem;
+  }
+
+  /* Main content area (left side) */
+  .expense-main {
+    flex: 1;
+    min-width: 0;
+  }
+
+  .expense-title {
+    font-size: 1.1rem;
+    font-weight: 600;
+    color: #1a202c;
+    margin-bottom: 0.5rem;
+    word-wrap: break-word;
+  }
+
+  .expense-group {
+    margin-bottom: 0;
+    font-size: 0.95rem;
+    color: #718096;
+  }
+
+  /* Meta area (right side) */
+  .expense-meta {
+    display: flex;
+    flex-direction: column;
+    align-items: flex-end;
+    text-align: right;
+    gap: 0.25rem;
+  }
+
+  .expense-amount {
+    margin-bottom: 0.25rem;
+    font-size: 0.95rem;
+  }
+
+  .amount-value {
+    font-size: 1.15rem;
+    font-weight: 700;
+    color: #2d3748;
+    display: inline-block;
+    margin-left: 0.25rem;
+  }
+
+  .expense-date {
+    color: #a0aec0;
+    font-size: 0.875rem;
+    display: block;
+    margin-top: 0.25rem;
+  }
+
+  /* Label styling */
+  .label-text {
+    color: #718096;
+    font-size: 0.9rem;
+  }
+
+  .group-name {
+    color: #4a5568;
+    font-weight: 500;
+  }
+
+  /* Empty state */
+  .empty-state {
+    text-align: center;
+    padding: 3rem 1rem;
+    background: #f7fafc;
+    border-radius: 8px;
+    border: 1px dashed #cbd5e0;
+  }
+
+  .empty-state .text-muted {
+    font-size: 1rem;
+    color: #a0aec0;
+  }
+
+  /* Responsive design */
+  @media (max-width: 768px) {
+    .expense-card-content {
+      flex-direction: column;
+      gap: 1rem;
+    }
+
+    .expense-meta {
+      align-items: flex-start;
+      text-align: left;
+      width: 100%;
+      border-top: 1px solid #e2e8f0;
+      padding-top: 1rem;
+      margin-top: 0.5rem;
+    }
+
+    .expense-amount {
+      width: 100%;
+    }
+
+    .amount-value {
+      float: right;
+    }
+
+    .expense-date {
+      width: 100%;
+      text-align: left;
+      margin-top: 0.5rem;
+    }
+  }
+
+  @media (max-width: 576px) {
+    .container {
+      padding-left: 1rem;
+      padding-right: 1rem;
+    }
+
+    .expense-card .card-body {
+      padding: 1rem;
+    }
+
+    .expense-title {
+      font-size: 1rem;
+    }
+
+    .amount-value {
+      font-size: 1.05rem;
+    }
+  }
+</style>
 {% endblock %}
