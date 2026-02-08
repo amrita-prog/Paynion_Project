@@ -1,4 +1,5 @@
 from django.shortcuts import render, redirect, get_object_or_404
+from django.db import models
 from django.contrib.auth.decorators import login_required
 from django.contrib import messages
 from django.contrib.auth import get_user_model
@@ -71,11 +72,35 @@ def delete_group(request, group_id):
 
 @login_required
 def view_all_group(request):
-    groups = Group.objects.filter(members=request.user)
+    user_groups = Group.objects.filter(members=request.user)
     show_add_expense = request.GET.get("from") == "add_expense"
 
+    groups_data = []
+
+    for group in user_groups:
+        # 1. Total Spending (All expenses in this group)
+        total_spending = group.expenses.aggregate(total=models.Sum('amount'))['total'] or 0
+
+        # 2. User's Net Balance in this group
+        # Calculate balances for the whole group
+        group_balances = calculate_group_balances(group)
+        # Get current user's balance from that dictionary
+        net_balance = group_balances.get(request.user, 0)
+
+        # 3. Members Preview (All members, or limited set)
+        members = group.members.all()
+
+        groups_data.append({
+            "group": group,
+            "total_spending": total_spending,
+            "net_balance": net_balance,
+            "abs_net_balance": abs(net_balance),
+            "members": members,
+            "member_count": members.count()
+        })
+
     return render(request, "groups/all_groups.html", {
-        "groups": groups,
+        "groups_data": groups_data,
         "show_add_expense": show_add_expense
     })
 

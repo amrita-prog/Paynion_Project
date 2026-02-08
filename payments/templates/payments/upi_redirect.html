@@ -1,26 +1,384 @@
 <!DOCTYPE html>
-<html>
+<html lang="en">
+
 <head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>Complete Payment</title>
+  <style>
+    * {
+      margin: 0;
+      padding: 0;
+      box-sizing: border-box;
+    }
+
+    body {
+      font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, 'Helvetica Neue', Arial, sans-serif;
+      background: linear-gradient(135deg, #f5f7fa 0%, #e8ecf1 100%);
+      min-height: 100vh;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      padding: 20px;
+    }
+
+    .payment-container {
+      background: #ffffff;
+      border-radius: 20px;
+      box-shadow: 0 20px 60px rgba(0, 0, 0, 0.12);
+      max-width: 1000px;
+      width: 100%;
+      overflow: hidden;
+    }
+
+    .payment-wrapper {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 0;
+      min-height: 500px;
+    }
+
+    /* Left Side - Payment Details */
+    .payment-details {
+      padding: 50px 40px;
+      display: flex;
+      flex-direction: column;
+      justify-content: center;
+      background: linear-gradient(135deg, #ffffff 0%, #f8fafc 100%);
+      border-right: 1px solid #e2e8f0;
+    }
+
+    .icon {
+      width: 70px;
+      height: 70px;
+      background: linear-gradient(135deg, #16a34a 0%, #15803d 100%);
+      border-radius: 50%;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 2.2rem;
+      margin-bottom: 30px;
+    }
+
+    .payment-title {
+      font-size: 1.75rem;
+      font-weight: 700;
+      color: #1a202c;
+      margin-bottom: 12px;
+      line-height: 1.3;
+    }
+
+    .payment-subtitle {
+      font-size: 1rem;
+      color: #64748b;
+      margin-bottom: 30px;
+    }
+
+    .amount-section {
+      background: linear-gradient(135deg, #ecfdf5 0%, #d1fae5 100%);
+      border: 2px solid #86efac;
+      border-radius: 12px;
+      padding: 24px;
+      margin-bottom: 24px;
+    }
+
+    .amount-label {
+      font-size: 0.875rem;
+      font-weight: 600;
+      color: #065f46;
+      text-transform: uppercase;
+      letter-spacing: 0.5px;
+      margin-bottom: 8px;
+    }
+
+    .payment-amount {
+      font-size: 3rem;
+      font-weight: 800;
+      color: #16a34a;
+      letter-spacing: -1px;
+      margin-bottom: 16px;
+    }
+
+    .receiver-section {
+      display: flex;
+      align-items: center;
+      gap: 12px;
+      padding-top: 16px;
+      border-top: 1px solid #86efac;
+    }
+
+    .receiver-icon {
+      width: 40px;
+      height: 40px;
+      background: #16a34a;
+      border-radius: 50%;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      color: white;
+      font-weight: 600;
+      font-size: 1.1rem;
+    }
+
+    .receiver-info {
+      flex: 1;
+    }
+
+    .receiver-label {
+      font-size: 0.75rem;
+      color: #065f46;
+      text-transform: uppercase;
+      letter-spacing: 0.5px;
+      margin-bottom: 2px;
+    }
+
+    .receiver-name {
+      font-size: 1.1rem;
+      font-weight: 600;
+      color: #1a202c;
+    }
+
+    .mobile-notice {
+      background: #e0f2fe;
+      border: 1px solid #bae6fd;
+      border-radius: 10px;
+      padding: 14px 18px;
+      font-size: 0.9rem;
+      color: #0c4a6e;
+      display: flex;
+      align-items: center;
+      gap: 10px;
+    }
+
+    .mobile-notice::before {
+      content: "📱";
+      font-size: 1.2rem;
+    }
+
+    /* Right Side - QR Code */
+    .qr-section {
+      padding: 50px 40px;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      background: #fafbfc;
+    }
+
+    .desktop-badge {
+      background: #f1f5f9;
+      color: #475569;
+      padding: 8px 16px;
+      border-radius: 20px;
+      font-size: 0.875rem;
+      font-weight: 600;
+      margin-bottom: 24px;
+      display: inline-flex;
+      align-items: center;
+      gap: 8px;
+    }
+
+    .desktop-badge::before {
+      content: "🖥️";
+      font-size: 1rem;
+    }
+
+    .desktop-title {
+      font-size: 1.4rem;
+      font-weight: 700;
+      color: #1a202c;
+      margin-bottom: 8px;
+      text-align: center;
+    }
+
+    .desktop-subtitle {
+      font-size: 0.95rem;
+      color: #64748b;
+      margin-bottom: 30px;
+      text-align: center;
+    }
+
+    .qr-container {
+      padding: 24px;
+      background: #ffffff;
+      border: 3px solid #e2e8f0;
+      border-radius: 16px;
+      box-shadow: 0 8px 24px rgba(0, 0, 0, 0.08);
+      margin-bottom: 24px;
+    }
+
+    .qr-code {
+      width: 240px;
+      height: 240px;
+      display: block;
+      border-radius: 8px;
+    }
+
+    .instructions {
+      padding: 18px 22px;
+      background: #ffffff;
+      border: 1px solid #e2e8f0;
+      border-radius: 10px;
+      font-size: 0.875rem;
+      color: #64748b;
+      line-height: 1.6;
+      text-align: center;
+      max-width: 320px;
+    }
+
+    /* Responsive design */
+    @media (max-width: 968px) {
+      .payment-wrapper {
+        grid-template-columns: 1fr;
+      }
+
+      .payment-details {
+        border-right: none;
+        border-bottom: 1px solid #e2e8f0;
+        padding: 40px 30px;
+      }
+
+      .qr-section {
+        padding: 40px 30px;
+      }
+
+      .payment-amount {
+        font-size: 2.5rem;
+      }
+
+      .qr-code {
+        width: 220px;
+        height: 220px;
+      }
+    }
+
+    @media (max-width: 576px) {
+      .payment-container {
+        border-radius: 12px;
+      }
+
+      .payment-details,
+      .qr-section {
+        padding: 30px 20px;
+      }
+
+      .icon {
+        width: 60px;
+        height: 60px;
+        font-size: 2rem;
+        margin-bottom: 20px;
+      }
+
+      .payment-title {
+        font-size: 1.4rem;
+      }
+
+      .payment-amount {
+        font-size: 2.2rem;
+      }
+
+      .desktop-title {
+        font-size: 1.2rem;
+      }
+
+      .qr-code {
+        width: 200px;
+        height: 200px;
+      }
+
+      .qr-container {
+        padding: 20px;
+      }
+
+      .receiver-section {
+        flex-direction: column;
+        align-items: flex-start;
+        gap: 8px;
+      }
+    }
+
+    /* Loading animation */
+    @keyframes pulse {
+
+      0%,
+      100% {
+        opacity: 1;
+      }
+
+      50% {
+        opacity: 0.7;
+      }
+    }
+
+    .mobile-notice {
+      animation: pulse 2s ease-in-out infinite;
+    }
+
+    /* Hover effects */
+    .qr-container:hover {
+      transform: scale(1.02);
+      box-shadow: 0 12px 32px rgba(0, 0, 0, 0.12);
+      background-color: #f0f9ff;
+      border-color: #bae6fd;
+      transition: all 0.3s ease;
+    }
+  </style>
 </head>
-<body style="text-align:center; padding:30px;">
 
-<h3>Pay ₹{{ payment.amount }} to {{ payment.receiver.full_name }}</h3>
+<body>
+  <div class="payment-container">
+    <div class="payment-wrapper">
 
-<p>On mobile, UPI app will open automatically.</p>
+      <!-- Left Side - Payment Details -->
+      <div class="payment-details">
+        <div class="icon">💳</div>
 
-<script>
-  if (/Android|iPhone|iPad/i.test(navigator.userAgent)) {
-    window.location.href = "{{ upi_link }}";
-  }
-</script>
+        <h1 class="payment-title">Complete Your Payment</h1>
+        <p class="payment-subtitle">Secure UPI payment gateway</p>
 
-<hr>
+        <div class="amount-section">
+          <div class="amount-label">Amount to Pay</div>
+          <div class="payment-amount">₹{{ payment.amount }}</div>
 
-<h5>Desktop User?</h5>
-<p>Scan QR using your UPI app</p>
+          <div class="receiver-section">
+            <div class="receiver-icon">{{ payment.receiver.full_name|slice:":1"|upper }}</div>
+            <div class="receiver-info">
+              <div class="receiver-label">Paying to</div>
+              <div class="receiver-name">{{ payment.receiver.full_name }}</div>
+            </div>
+          </div>
+        </div>
 
-<img src="data:image/png;base64,{{ qr_code }}" width="220">
+        <div class="mobile-notice">
+          On mobile, UPI app will open automatically.
+        </div>
+      </div>
 
+      <!-- Right Side - QR Code Section -->
+      <div class="qr-section">
+        <div class="desktop-badge">Desktop User</div>
+
+        <h2 class="desktop-title">Scan QR Code</h2>
+        <p class="desktop-subtitle">Use your UPI app to scan and pay</p>
+
+        <div class="qr-container">
+          <img src="data:image/png;base64,{{ qr_code }}" alt="UPI QR Code" class="qr-code">
+        </div>
+
+        <div class="instructions">
+          Open any UPI app (Google Pay, PhonePe, Paytm, etc.) and scan the QR code to complete the payment.
+        </div>
+      </div>
+
+    </div>
+  </div>
+
+  <!-- Auto-redirect script -->
+  <script>
+    if (/Android|iPhone|iPad/i.test(navigator.userAgent)) {
+      window.location.href = "{{ upi_link }}";
+    }
+  </script>
 </body>
+
 </html>

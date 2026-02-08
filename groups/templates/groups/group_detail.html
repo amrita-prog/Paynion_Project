@@ -3,31 +3,28 @@
 
 {% block content %}
 <style>
-  /* Grid Background */
-  body {
-    background-color: #f8f9fa;
-    background-image: radial-gradient(#e9ecef 1px, transparent 1px);
-    background-size: 20px 20px;
-    min-height: 100vh;
-    font-family: 'Segoe UI', system-ui, -apple-system, sans-serif;
-  }
+  /* Background is standardized in grid-background.css */
 
   /* Navbar Styling (Consistent with reference) */
   .navbar {
     background-color: #ffffff !important;
     border-bottom: 1px solid #e9ecef;
-    box-shadow: 0 2px 4px rgba(0,0,0,0.02);
+    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.02);
     padding-top: 1rem;
     padding-bottom: 1rem;
   }
+
   .nav-link {
     color: #6c757d;
     font-weight: 500;
     padding: 0.5rem 1rem !important;
   }
-  .nav-link.active, .nav-link:hover {
+
+  .nav-link.active,
+  .nav-link:hover {
     color: #2d3436;
   }
+
   .nav-link.active {
     border-bottom: 2px solid #3498db;
   }
@@ -37,21 +34,26 @@
     font-weight: 700;
     color: #2d3436;
   }
+
   .group-header p {
     color: #6c757d;
   }
+
   .btn-outline-primary {
     border-color: #3498db;
     color: #3498db;
   }
+
   .btn-outline-primary:hover {
     background-color: #3498db;
     color: white;
   }
+
   .btn-outline-danger {
     border-color: #e74c3c;
     color: #e74c3c;
   }
+
   .btn-outline-danger:hover {
     background-color: #e74c3c;
     color: white;
@@ -72,10 +74,11 @@
     border: none;
     border-radius: 12px;
     background: #fff;
-    box-shadow: 0 4px 12px rgba(0,0,0,0.03);
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.03);
     margin-bottom: 24px;
     overflow: hidden;
   }
+
   .card-body {
     padding: 24px;
   }
@@ -97,6 +100,7 @@
     justify-content: space-between;
     align-items: center;
   }
+
   .member-item:last-child {
     border-bottom: none;
   }
@@ -109,9 +113,20 @@
     padding: 12px 0;
     border-bottom: 1px solid #f8f9fa;
   }
-  .balance-item:last-child { border-bottom: none; }
-  .balance-text-success { color: #27ae60; font-weight: 600; }
-  .balance-text-danger { color: #e74c3c; font-weight: 600; }
+
+  .balance-item:last-child {
+    border-bottom: none;
+  }
+
+  .balance-text-success {
+    color: #27ae60;
+    font-weight: 600;
+  }
+
+  .balance-text-danger {
+    color: #e74c3c;
+    font-weight: 600;
+  }
 
   /* Settlements - Card Style */
   .settlement-item {
@@ -120,12 +135,15 @@
     border-radius: 10px;
     padding: 16px;
     margin-bottom: 16px;
-    box-shadow: 0 2px 4px rgba(0,0,0,0.02);
+    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.02);
     transition: all 0.2s ease;
   }
+
   .settlement-item:hover {
-    border-color: #dee2e6;
-    box-shadow: 0 4px 8px rgba(0,0,0,0.04);
+    transform: translateY(-6px);
+    box-shadow: 0 12px 24px rgba(0, 0, 0, 0.12);
+    background-color: #f0f9ff;
+    border-color: #bae6fd;
   }
 
   /* Expenses */
@@ -137,15 +155,19 @@
     background: #fff;
     transition: all 0.2s;
   }
+
   .expense-item:hover {
-    border-color: #dee2e6;
-    transform: translateY(-2px);
-    box-shadow: 0 6px 16px rgba(0,0,0,0.05);
+    transform: translateY(-6px);
+    box-shadow: 0 12px 24px rgba(0, 0, 0, 0.12);
+    background-color: #f0f9ff;
+    border-color: #bae6fd;
   }
+
   .expense-meta {
     font-size: 0.85rem;
     color: #adb5bd;
   }
+
   .split-list {
     margin-top: 12px;
     padding-left: 0;
@@ -153,6 +175,7 @@
     font-size: 0.9rem;
     color: #495057;
   }
+
   .split-list li {
     margin-bottom: 6px;
     display: flex;
@@ -167,6 +190,7 @@
     border: 1px solid #dee2e6;
     padding: 10px 15px;
   }
+
   .form-control:focus {
     box-shadow: 0 0 0 3px rgba(52, 152, 219, 0.1);
     border-color: #3498db;
@@ -200,9 +224,9 @@
   <div class="d-flex justify-content-between align-items-center mb-4">
     {% if request.user == group.created_by %}
     <form method="post" action="{% url 'groups:send_invite' group.id %}" class="d-flex gap-2">
-        {% csrf_token %}
-        <input type="email" name="email" placeholder="Enter email" class="form-control" style="width: 250px;" required>
-        <button class="btn btn-primary">Send Invite</button>
+      {% csrf_token %}
+      <input type="email" name="email" placeholder="Enter email" class="form-control" style="width: 250px;" required>
+      <button class="btn btn-primary">Send Invite</button>
     </form>
     {% else %}
     <div></div> <!-- Spacer -->
@@ -216,7 +240,7 @@
   <div class="row">
     <!-- LEFT COLUMN: Members, Settlements, Balances -->
     <div class="col-md-4">
-      
+
       <!-- 1. MEMBERS -->
       <div class="card shadow-sm mb-4">
         <div class="card-body">
@@ -225,7 +249,8 @@
           {% if request.user == group.created_by %}
           <form method="POST" action="{% url 'groups:add_member' group.id %}" class="d-flex gap-2 mb-3">
             {% csrf_token %}
-            <input type="email" name="email" class="form-control form-control-sm" placeholder="Add member email" required>
+            <input type="email" name="email" class="form-control form-control-sm" placeholder="Add member email"
+              required>
             <button class="btn btn-outline-success btn-sm">Add</button>
           </form>
           {% endif %}
@@ -236,15 +261,14 @@
               <div class="d-flex align-items-center gap-2">
                 <!-- Real Profile Photo Logic -->
                 {% if member.profile_photo %}
-                  <img src="{{ member.profile_photo.url }}" class="user-avatar" alt="{{ member.full_name }}">
+                <img src="{{ member.profile_photo.url }}" class="user-avatar" alt="{{ member.full_name }}">
                 {% endif %}
                 <span class="text-secondary">{{ member.full_name }}</span>
               </div>
 
               {% if request.user == group.created_by and member != request.user %}
               <a href="{% url 'groups:remove_member' group.id member.id %}"
-                 class="text-danger small text-decoration-none"
-                 onclick="return confirm('Remove this member?');">
+                class="text-danger small text-decoration-none" onclick="return confirm('Remove this member?');">
                 Remove
               </a>
               {% endif %}
@@ -260,69 +284,73 @@
           <h5 class="section-title">Suggested Settlements</h5>
 
           {% if settlements %}
-            <div class="settlement-list">
-              {% for s in settlements %}
-              <div class="settlement-item">
-                <div class="d-flex justify-content-between align-items-start w-100 mb-2">
-                  <div class="w-100">
-                    <div class="mb-1 text-secondary small">
-                      <strong>{{ s.payer.full_name }}</strong> 
-                      pays 
-                      <strong>{{ s.receiver.full_name }}</strong>
-                    </div>
-                    <div class="d-flex justify-content-between align-items-end mb-2">
-                        <span class="fw-bold text-dark fs-4">₹{{ s.amount|floatformat:2 }}</span>
-                        {% if s.status == "PENDING" %}
-                            <span class="badge bg-light text-secondary border">Pending</span>
-                        {% endif %}
-                    </div>
+          <div class="settlement-list">
+            {% for s in settlements %}
 
-                    {% if s.status == "PAID_REQUESTED" %}
-                      <div class="alert alert-warning py-1 px-2 small mb-0 d-flex align-items-center gap-2">
-                        <i class="bi bi-clock"></i>
-                        <span>Waiting for confirmation ({{ s.payment_mode }})</span>
-                      </div>
+            <div class="settlement-item">
+              <div class="d-flex justify-content-between align-items-start w-100 mb-2">
+                <div class="w-100">
+                  <div class="mb-1 text-secondary small">
+                    <strong>{{ s.payer.full_name }}</strong>
+                    pays
+                    <strong>{{ s.receiver.full_name }}</strong>
+                  </div>
+                  <div class="d-flex justify-content-between align-items-end mb-2">
+                    <span class="fw-bold text-dark fs-4">₹{{ s.amount|floatformat:2 }}</span>
+                    {% if s.status == "PENDING" %}
+                    <span class="badge bg-light text-secondary border">Pending</span>
                     {% endif %}
                   </div>
-                </div>
 
-                <!-- ACTION BUTTONS -->
-                <div class="mt-2 pt-2 border-top">
-                  <!-- PAYER VIEW -->
-                  {% if user == s.payer %}
-                    {% if s.status == "PENDING" %}
-                      <div class="d-grid gap-2">
-                        <form method="post" action="{% url 'payments:upi_pay' %}">
-                          {% csrf_token %}
-                          <input type="hidden" name="to_user_id" value="{{ s.receiver.id }}">
-                          <input type="hidden" name="amount" value="{{ s.amount }}">
-                          <button type="submit" class="btn btn-primary btn-sm w-100">
-                            Pay Now
-                          </button>
-                        </form>
-                        <button class="btn btn-outline-success btn-sm w-100" data-bs-toggle="modal" data-bs-target="#markPaidModal{{ s.id }}">
-                          Mark as Paid
-                        </button>
-                      </div>
-                    {% endif %}
-                  {% endif %}
-
-                  <!-- RECEIVER VIEW -->
-                  {% if user == s.receiver and s.status == "PAID_REQUESTED" %}
-                    <div class="d-flex gap-2">
-                      <a href="{% url 'payments:accept_payment' s.id %}" class="btn btn-sm btn-primary flex-fill text-center">
-                        Accept
-                      </a>
-                      <a href="{% url 'payments:reject_payment' s.id %}" class="btn btn-sm btn-outline-danger flex-fill text-center">
-                        Reject
-                      </a>
-                    </div>
+                  {% if s.status == "PAID_REQUESTED" %}
+                  <div class="alert alert-warning py-1 px-2 small mb-0 d-flex align-items-center gap-2">
+                    <i class="bi bi-clock"></i>
+                    <span>Waiting for confirmation ({{ s.payment_mode }})</span>
+                  </div>
                   {% endif %}
                 </div>
               </div>
 
-              <!-- MODAL -->
-              <div class="modal fade" id="markPaidModal{{ s.id }}" tabindex="-1">
+              <!-- ACTION BUTTONS -->
+              <div class="mt-2 pt-2 border-top">
+                <!-- PAYER VIEW -->
+                {% if user == s.payer %}
+                {% if s.status == "PENDING" %}
+                <div class="d-grid gap-2">
+                  <form method="post" action="{% url 'payments:upi_pay' %}">
+                    {% csrf_token %}
+                    <input type="hidden" name="to_user_id" value="{{ s.receiver.id }}">
+                    <input type="hidden" name="amount" value="{{ s.amount }}">
+                    <button type="submit" class="btn btn-primary btn-sm w-100">
+                      Pay Now
+                    </button>
+                  </form>
+                  <button class="btn btn-outline-success btn-sm w-100" data-bs-toggle="modal"
+                    data-bs-target="#markPaidModal{{ s.id }}">
+                    Mark as Paid
+                  </button>
+                </div>
+                {% endif %}
+                {% endif %}
+
+                <!-- RECEIVER VIEW -->
+                {% if user == s.receiver and s.status == "PAID_REQUESTED" %}
+                <div class="d-flex gap-2">
+                  <a href="{% url 'payments:accept_payment' s.id %}"
+                    class="btn btn-sm btn-primary flex-fill text-center">
+                    Accept
+                  </a>
+                  <a href="{% url 'payments:reject_payment' s.id %}"
+                    class="btn btn-sm btn-outline-danger flex-fill text-center">
+                    Reject
+                  </a>
+                </div>
+                {% endif %}
+              </div>
+            </div>
+
+            <!-- MODAL -->
+            <!-- <div class="modal fade" id="markPaidModal{{ s.id }}" tabindex="-1">
                 <div class="modal-dialog">
                   <div class="modal-content">
                     <form method="post" action="{% url 'payments:mark_as_paid' s.id %}">
@@ -346,14 +374,14 @@
                     </form>
                   </div>
                 </div>
-              </div>
-              {% endfor %}
-            </div>
+              </div> -->
+            {% endfor %}
+          </div>
           {% else %}
-            <div class="text-center py-4 text-muted">
-              <i class="bi bi-check-circle-fill text-success fs-1 mb-2 d-block"></i>
-              All settled up! 🎉
-            </div>
+          <div class="text-center py-4 text-muted">
+            <i class="bi bi-check-circle-fill text-success fs-1 mb-2 d-block"></i>
+            All settled up! 🎉
+          </div>
           {% endif %}
         </div>
       </div>
@@ -365,23 +393,22 @@
 
           <div class="balance-list">
             {% for user, balance in balances.items %}
-              <div class="balance-item">
-                <div class="d-flex align-items-center gap-2">
-                  <!-- Real Profile Photo Logic -->
-                  {% if user.profile_photo %}
-                    <img src="{{ user.profile_photo.url }}" class="user-avatar" alt="{{ user.full_name }}">
-                  {% endif %}
-                  <span class="fw-medium">{{ user.full_name }}</span>
-                </div>
-
-                {% if balance > 0 %}
-                  <span class="balance-text-success">+₹{{ balance|floatformat:2 }}</span>
-                {% elif balance < 0 %}
-                  <span class="balance-text-danger">-₹{{ balance|floatformat:2 }}</span>
-                {% else %}
-                  <span class="text-muted">₹0.00</span>
+            <div class="balance-item">
+              <div class="d-flex align-items-center gap-2">
+                <!-- Real Profile Photo Logic -->
+                {% if user.profile_photo %}
+                <img src="{{ user.profile_photo.url }}" class="user-avatar" alt="{{ user.full_name }}">
                 {% endif %}
+                <span class="fw-medium">{{ user.full_name }}</span>
               </div>
+
+              {% if balance > 0 %}
+              <span class="balance-text-success">+₹{{ balance|floatformat:2 }}</span>
+              {% elif balance < 0 %} <span class="balance-text-danger">-₹{{ balance|floatformat:2 }}</span>
+                {% else %}
+                <span class="text-muted">₹0.00</span>
+                {% endif %}
+            </div>
             {% endfor %}
           </div>
         </div>
@@ -412,7 +439,7 @@
 
               <!-- Meta -->
               <div class="text-muted small">
-                Paid by {{ exp.paid_by.full_name }} • 
+                Paid by {{ exp.paid_by.full_name }} •
                 {{ exp.created_at|date:"d M Y" }}
               </div>
 
@@ -431,20 +458,16 @@
               <div class="d-flex gap-2 justify-content-end">
 
                 <!-- Edit -->
-                <a href="{% url 'expenses:edit_expense' exp.id %}"
-                  class="btn btn-sm btn-outline-primary px-2 py-0">
+                <a href="{% url 'expenses:edit_expense' exp.id %}" class="btn btn-sm btn-outline-primary px-2 py-0">
                   Edit
                 </a>
 
                 <!-- Delete -->
-                <form method="post"
-                      action="{% url 'expenses:delete_expense' exp.id %}"
-                      style="display:inline;">
+                <form method="post" action="{% url 'expenses:delete_expense' exp.id %}" style="display:inline;">
                   {% csrf_token %}
 
-                  <button type="submit"
-                          class="btn btn-sm btn-outline-danger px-2 py-0"
-                          onclick="return confirm('Delete this expense?');">
+                  <button type="submit" class="btn btn-sm btn-outline-danger px-2 py-0"
+                    onclick="return confirm('Delete this expense?');">
                     Delete
                   </button>
 
@@ -470,4 +493,54 @@
     </div>
   </div>
 </div>
+
+<!-- ALL MODALS -->
+{% for s in settlements %}
+
+<div class="modal fade" id="markPaidModal{{ s.id }}" tabindex="-1">
+  <div class="modal-dialog modal-dialog-centered">
+    <div class="modal-content">
+
+      <form method="post" action="{% url 'payments:mark_as_paid' s.id %}">
+        {% csrf_token %}
+
+        <div class="modal-header">
+          <h5 class="modal-title">Confirm Payment</h5>
+          <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+        </div>
+
+        <div class="modal-body">
+
+          <p>
+            Confirm payment of
+            <strong>₹{{ s.amount }}</strong>
+            to
+            <strong>{{ s.receiver.full_name }}</strong>?
+          </p>
+
+          <label class="form-label">Payment Mode</label>
+
+          <select name="payment_mode" class="form-select" required>
+            <option value="UPI">UPI</option>
+            <option value="CASH">Cash</option>
+            <option value="BANK_TRANSFER">Bank Transfer</option>
+          </select>
+
+        </div>
+
+        <div class="modal-footer">
+          <button type="submit" class="btn btn-success w-100">
+            Confirm Paid
+          </button>
+        </div>
+
+      </form>
+
+    </div>
+  </div>
+</div>
+
+{% endfor %}
+<!-- END MODALS -->
+
 {% endblock %}

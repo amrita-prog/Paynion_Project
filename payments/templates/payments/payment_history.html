@@ -4,11 +4,8 @@
   /* =========================================
      THEME & COLORS (Paynion Dashboard Theme)
      ========================================= */
+  /* Background is standardized in grid-background.css */
   body {
-    background-color: #f8f9fa;
-    background-image: radial-gradient(#e9ecef 1px, transparent 1px);
-    background-size: 20px 20px;
-    min-height: 100vh;
     font-family: 'Segoe UI', system-ui, -apple-system, sans-serif;
     color: #2d3436;
   }
@@ -73,8 +70,10 @@
   }
 
   .summary-card:hover {
-    transform: translateY(-4px);
-    box-shadow: 0 8px 20px rgba(0, 0, 0, 0.08);
+    transform: translateY(-6px);
+    box-shadow: 0 12px 24px rgba(0, 0, 0, 0.12);
+    background-color: #f0f9ff;
+    border: 1px solid #bae6fd;
   }
 
   .summary-card.inflow {
@@ -394,16 +393,16 @@
               <div class="user-cell">
                 <div class="user-avatar">
                   {% if p.paid_by == request.user %}
-                    {{ request.user.full_name|slice:":1"|upper }}
+                  {{ request.user.full_name|slice:":1"|upper }}
                   {% else %}
-                    {{ p.paid_by.full_name|slice:":1"|upper }}
+                  {{ p.paid_by.full_name|slice:":1"|upper }}
                   {% endif %}
                 </div>
                 <span class="user-name">
                   {% if p.paid_by == request.user %}
-                    Me
+                  Me
                   {% else %}
-                    {{ p.paid_by.full_name }}
+                  {{ p.paid_by.full_name }}
                   {% endif %}
                 </span>
               </div>
@@ -412,16 +411,16 @@
               <div class="user-cell">
                 <div class="user-avatar">
                   {% if p.received_by == request.user %}
-                    {{ request.user.full_name|slice:":1"|upper }}
+                  {{ request.user.full_name|slice:":1"|upper }}
                   {% else %}
-                    {{ p.received_by.full_name|slice:":1"|upper }}
+                  {{ p.received_by.full_name|slice:":1"|upper }}
                   {% endif %}
                 </div>
                 <span class="user-name">
                   {% if p.received_by == request.user %}
-                    Me
+                  Me
                   {% else %}
-                    {{ p.received_by.full_name }}
+                  {{ p.received_by.full_name }}
                   {% endif %}
                 </span>
               </div>

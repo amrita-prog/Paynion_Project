@@ -19,10 +19,8 @@
     --radius: 16px;
   }
 
+  /* Background is standardized in grid-background.css */
   body {
-    background-color: var(--bg-body);
-    background-image: radial-gradient(#e5e7eb 1px, transparent 1px);
-    background-size: 24px 24px;
     font-family: 'Inter', system-ui, -apple-system, sans-serif;
     color: var(--text-main);
   }
@@ -36,10 +34,14 @@
     margin-bottom: 24px;
     transition: transform 0.2s ease, box-shadow 0.2s ease;
   }
+
   .card:hover {
-    transform: translateY(-2px);
-    box-shadow: 0 10px 15px -3px rgba(0, 0, 0, 0.05);
+    transform: translateY(-6px);
+    box-shadow: 0 12px 24px rgba(0, 0, 0, 0.12);
+    background-color: #f0f9ff;
+    border-color: #bae6fd;
   }
+
   .card-header {
     background: transparent;
     border-bottom: 1px solid var(--border-color);
@@ -50,6 +52,7 @@
     justify-content: space-between;
     align-items: center;
   }
+
   .card-body {
     padding: 24px;
   }
@@ -65,10 +68,14 @@
     position: relative;
     overflow: hidden;
   }
+
   .stat-card:hover {
-    transform: translateY(-5px);
-    box-shadow: 0 20px 25px -5px rgba(0, 0, 0, 0.05);
+    transform: translateY(-6px);
+    box-shadow: 0 12px 24px rgba(0, 0, 0, 0.12);
+    background-color: #f0f9ff;
+    border-color: #bae6fd;
   }
+
   .stat-card::before {
     content: '';
     position: absolute;
@@ -77,10 +84,22 @@
     width: 4px;
     height: 100%;
   }
-  .stat-card.blue::before { background-color: var(--primary); }
-  .stat-card.red::before { background-color: var(--danger); }
-  .stat-card.green::before { background-color: var(--success); }
-  .stat-card.dark::before { background-color: #374151; }
+
+  .stat-card.blue::before {
+    background-color: var(--primary);
+  }
+
+  .stat-card.red::before {
+    background-color: var(--danger);
+  }
+
+  .stat-card.green::before {
+    background-color: var(--success);
+  }
+
+  .stat-card.dark::before {
+    background-color: #374151;
+  }
 
   .stat-label {
     font-size: 0.8rem;
@@ -89,12 +108,14 @@
     color: var(--text-muted);
     font-weight: 600;
   }
+
   .stat-value {
     font-size: 1.75rem;
     font-weight: 800;
     margin-top: 8px;
     color: var(--text-main);
   }
+
   .stat-icon {
     position: absolute;
     bottom: -10px;
@@ -111,6 +132,7 @@
     border-collapse: separate;
     border-spacing: 0;
   }
+
   .table-custom thead th {
     background-color: #f9fafb;
     color: var(--text-muted);
@@ -121,12 +143,15 @@
     text-align: left;
     border-bottom: 1px solid var(--border-color);
   }
+
   .table-custom tbody tr {
     transition: background-color 0.2s;
   }
+
   .table-custom tbody tr:hover {
     background-color: #f9fafb;
   }
+
   .table-custom td {
     padding: 16px;
     border-bottom: 1px solid var(--border-color);
@@ -134,6 +159,7 @@
     vertical-align: middle;
     font-size: 0.9rem;
   }
+
   .table-custom tr:last-child td {
     border-bottom: none;
   }
@@ -146,10 +172,26 @@
     font-size: 0.75rem;
     text-transform: uppercase;
   }
-  .badge-primary { background: var(--primary-light); color: var(--primary); }
-  .badge-success { background: #d1fae5; color: var(--success); }
-  .badge-danger { background: #fee2e2; color: var(--danger); }
-  .badge-secondary { background: #f3f4f6; color: var(--text-muted); }
+
+  .badge-primary {
+    background: var(--primary-light);
+    color: var(--primary);
+  }
+
+  .badge-success {
+    background: #d1fae5;
+    color: var(--success);
+  }
+
+  .badge-danger {
+    background: #fee2e2;
+    color: var(--danger);
+  }
+
+  .badge-secondary {
+    background: #f3f4f6;
+    color: var(--text-muted);
+  }
 
   /* --- FORMS & BUTTONS --- */
   .form-control-sm {
@@ -158,11 +200,13 @@
     padding: 8px 12px;
     font-size: 0.9rem;
   }
+
   .form-control-sm:focus {
     border-color: var(--primary);
     box-shadow: 0 0 0 3px var(--primary-light);
     outline: none;
   }
+
   .btn-modern {
     border-radius: 8px;
     font-weight: 600;
@@ -171,10 +215,27 @@
     transition: all 0.2s;
     border: none;
   }
-  .btn-primary-modern { background: var(--primary); color: white; }
-  .btn-primary-modern:hover { background: #4338ca; color: white; }
-  .btn-outline-modern { background: transparent; border: 1px solid #d1d5db; color: var(--text-muted); }
-  .btn-outline-modern:hover { background: #f3f4f6; color: var(--text-main); }
+
+  .btn-primary-modern {
+    background: var(--primary);
+    color: white;
+  }
+
+  .btn-primary-modern:hover {
+    background: #4338ca;
+    color: white;
+  }
+
+  .btn-outline-modern {
+    background: transparent;
+    border: 1px solid #d1d5db;
+    color: var(--text-muted);
+  }
+
+  .btn-outline-modern:hover {
+    background: #f3f4f6;
+    color: var(--text-main);
+  }
 
   /* --- CHARTS --- */
   .chart-container {
@@ -189,9 +250,8 @@
   <!-- PAGE HEADER -->
   <div class="d-flex justify-content-between align-items-center mb-4">
     <h2 class="fw-bold" style="color: var(--text-main);">Analytics Report</h2>
-    <a href="{% url 'accounts:report_pdf' %}"
-       class="btn btn-modern btn-outline-modern">
-       <i class="fas fa-file-pdf me-2"></i>Download PDF
+    <a href="{% url 'accounts:report_pdf' %}" class="btn btn-modern btn-outline-modern">
+      <i class="fas fa-file-pdf me-2"></i>Download PDF
     </a>
   </div>
 
@@ -271,7 +331,7 @@
       Detailed Expense Report
     </div>
     <div class="card-body">
-      
+
       <!-- Filter Form -->
       <form method="get" class="row g-3 align-items-end mb-4 p-3 bg-light rounded-3">
         <div class="col-md-3 col-6">
@@ -288,7 +348,7 @@
           </button>
         </div>
         <div class="col-md-4 col-12 text-end">
-           <small class="text-muted">Showing filtered results below</small>
+          <small class="text-muted">Showing filtered results below</small>
         </div>
       </form>
 
@@ -318,7 +378,8 @@
               <td>{{ exp.description }}</td>
               <td>
                 <div class="d-flex align-items-center gap-2">
-                  <div class="rounded-circle bg-primary text-white d-flex align-items-center justify-content-center" style="width: 28px; height: 28px; font-size: 0.75rem;">
+                  <div class="rounded-circle bg-primary text-white d-flex align-items-center justify-content-center"
+                    style="width: 28px; height: 28px; font-size: 0.75rem;">
                     {{ exp.paid_by.first_name|first }}
                   </div>
                   <span>{{ exp.paid_by.full_name }}</span>
@@ -329,9 +390,9 @@
               </td>
               <td class="text-center">
                 {% if exp.paid_by == user %}
-                  <span class="badge-soft badge-primary">Paid by Me</span>
+                <span class="badge-soft badge-primary">Paid by Me</span>
                 {% else %}
-                  <span class="badge-soft badge-secondary">Involved</span>
+                <span class="badge-soft badge-secondary">Involved</span>
                 {% endif %}
               </td>
             </tr>
@@ -355,36 +416,43 @@
 <!-- SCRIPTS -->
 <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
 <script>
-document.addEventListener("DOMContentLoaded", function () {
+  document.addEventListener("DOMContentLoaded", function () {
 
-  // ================= VIEW MORE LOGIC =================
-  const rows = document.querySelectorAll(".expense-row");
-  const btn = document.getElementById("viewMoreBtn");
-  let visibleCount = 0;
-  const STEP = 5;
+    // ================= VIEW MORE LOGIC =================
+    const rows = document.querySelectorAll(".expense-row");
+    const btn = document.getElementById("viewMoreBtn");
+    let visibleCount = 0;
+    const STEP = 5;
 
-  function showMore() {
-    for (let i = visibleCount; i < visibleCount + STEP && i < rows.length; i++) {
-      rows[i].classList.remove("d-none");
-      rows[i].style.animation = "fadeIn 0.5s ease forwards";
+    function showMore() {
+      for (let i = visibleCount; i < visibleCount + STEP && i < rows.length; i++) {
+        rows[i].classList.remove("d-none");
+        rows[i].style.animation = "fadeIn 0.5s ease forwards";
+      }
+      visibleCount += STEP;
+      if (visibleCount >= rows.length) {
+        btn.style.display = "none";
+      }
     }
-    visibleCount += STEP;
-    if (visibleCount >= rows.length) {
-      btn.style.display = "none";
-    }
-  }
 
-  // Initial load
-  showMore();
-  if (btn) btn.addEventListener("click", showMore);
+    // Initial load
+    showMore();
+    if (btn) btn.addEventListener("click", showMore);
 
-});
+  });
 </script>
 
 <style>
   @keyframes fadeIn {
-    from { opacity: 0; transform: translateY(10px); }
-    to { opacity: 1; transform: translateY(0); }
+    from {
+      opacity: 0;
+      transform: translateY(10px);
+    }
+
+    to {
+      opacity: 1;
+      transform: translateY(0);
+    }
   }
 </style>
 

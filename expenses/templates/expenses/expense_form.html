@@ -3,226 +3,235 @@
 
 {% block content %}
 <style>
-  /* Consistent Theme Styling */
-  body {
-    background-color: #f8f9fa;
-    background-image: radial-gradient(#e9ecef 1px, transparent 1px);
-    background-size: 20px 20px;
-    min-height: 100vh;
-    font-family: 'Segoe UI', system-ui, -apple-system, sans-serif;
-  }
+    /* Background is standardized in grid-background.css */
 
-  .page-header {
-    margin-bottom: 2rem;
-  }
-  .page-header h3 {
-    font-weight: 700;
-    color: #2d3436;
-    margin-bottom: 0.5rem;
-  }
-  .page-header p {
-    color: #6c757d;
-    margin: 0;
-  }
-  .header-divider {
-    height: 1px;
-    background-color: #e9ecef;
-    margin: 1.5rem 0 2rem 0;
-    border: none;
-  }
+    .page-header {
+        margin-bottom: 2rem;
+    }
 
-  /* Card Styling */
-  .card {
-    border: none;
-    border-radius: 16px;
-    background: #fff;
-    box-shadow: 0 4px 12px rgba(0,0,0,0.03);
-    margin-bottom: 24px;
-  }
-  .card-body {
-    padding: 24px;
-  }
+    .page-header h3 {
+        font-weight: 700;
+        color: #2d3436;
+        margin-bottom: 0.5rem;
+    }
 
-  /* Form Styling */
-  .form-label {
-    font-weight: 600;
-    color: #2d3436;
-    font-size: 0.95rem;
-    margin-bottom: 0.5rem;
-  }
-  .form-control, .form-select {
-    border-radius: 14px;
-    border: 1.5px solid rgba(20, 184, 166, 0.2);
-    padding: 0.95rem 1.125rem;
-    background: linear-gradient(135deg, rgba(255, 255, 255, 0.85) 0%, rgba(255, 255, 255, 0.75) 100%);
-    backdrop-filter: blur(12px);
-    -webkit-backdrop-filter: blur(12px);
-    font-size: 1rem;
-    color: #2d3436;
-    font-weight: 500;
-    box-shadow: inset 0 1px 2px rgba(255, 255, 255, 0.6), inset 0 -1px 2px rgba(0, 0, 0, 0.02);
-  }
-  
-  /* Direct input field styling for Django forms */
-  input[type="text"], 
-  input[type="number"], 
-  input[type="email"], 
-  input[type="password"],
-  input[type="date"],
-  textarea,
-  select {
-    border-radius: 14px !important;
-    border: 1.5px solid rgba(20, 184, 166, 0.2) !important;
-    padding: 0.95rem 1.125rem !important;
-    background: linear-gradient(135deg, rgba(255, 255, 255, 0.85) 0%, rgba(255, 255, 255, 0.75) 100%) !important;
-    backdrop-filter: blur(12px) !important;
-    -webkit-backdrop-filter: blur(12px) !important;
-    font-size: 1rem !important;
-    color: #2d3436 !important;
-    font-weight: 500 !important;
-    box-shadow: inset 0 1px 2px rgba(255, 255, 255, 0.6), inset 0 -1px 2px rgba(0, 0, 0, 0.02) !important;
-  }
-  
-  input[type="text"]::placeholder, 
-  input[type="number"]::placeholder, 
-  input[type="email"]::placeholder, 
-  input[type="password"]::placeholder,
-  textarea::placeholder {
-    color: rgba(109, 123, 136, 0.5) !important;
-    font-weight: 400 !important;
-  }
-  
-  input[type="text"]:focus, 
-  input[type="number"]:focus, 
-  input[type="email"]:focus, 
-  input[type="password"]:focus,
-  input[type="date"]:focus,
-  textarea:focus,
-  select:focus {
-    box-shadow: inset 0 1px 3px rgba(255, 255, 255, 0.8), inset 0 -1px 3px rgba(0, 0, 0, 0.03), 0 0 0 3px rgba(20, 184, 166, 0.15) !important;
-    border-color: #14b8a6 !important;
-    background: linear-gradient(135deg, rgba(255, 255, 255, 0.95) 0%, rgba(255, 255, 255, 0.9) 100%) !important;
-    outline: none !important;
-  }
-  
-  /* Remove hover effects */
-  input:hover,
-  textarea:hover,
-  select:hover,
-  .form-control:hover,
-  .form-select:hover {
-    border-color: rgba(20, 184, 166, 0.2) !important;
-    background: linear-gradient(135deg, rgba(255, 255, 255, 0.85) 0%, rgba(255, 255, 255, 0.75) 100%) !important;
-  }
-  
-  .form-control::placeholder {
-    color: rgba(109, 123, 136, 0.5);
-    font-weight: 400;
-  }
-  .form-control:focus, .form-select:focus {
-    box-shadow: inset 0 1px 3px rgba(255, 255, 255, 0.8), inset 0 -1px 3px rgba(0, 0, 0, 0.03), 0 0 0 3px rgba(20, 184, 166, 0.15);
-    border-color: #14b8a6;
-    background: linear-gradient(135deg, rgba(255, 255, 255, 0.95) 0%, rgba(255, 255, 255, 0.9) 100%);
-    outline: none;
-  }
-  .form-check-input:checked {
-    background-color: #3498db;
-    border-color: #3498db;
-  }
-  .form-check-label {
-    color: #495057;
-    font-weight: 500;
-  }
+    .page-header p {
+        color: #6c757d;
+        margin: 0;
+    }
 
-  /* AI Scan Section - Compact Design */
-  .ai-scan-card {
-    border: 2px dashed #3498db;
-    background-color: #f0f7fb;
-  }
-  .ai-scan-header {
-    display: flex;
-    align-items: center;
-    gap: 10px;
-    margin-bottom: 12px;
-  }
-  .ai-scan-header i {
-    color: #3498db;
-    font-size: 1.1rem;
-  }
-  .ai-scan-header h6 {
-    margin: 0;
-    color: #2d3436;
-    font-weight: 700;
-    font-size: 1rem;
-  }
-  .ai-scan-desc {
-    font-size: 0.85rem;
-    color: #6c757d;
-    margin-bottom: 0;
-  }
+    .header-divider {
+        height: 1px;
+        background-color: #e9ecef;
+        margin: 1.5rem 0 2rem 0;
+        border: none;
+    }
 
-  /* Split Boxes */
-  .split-box {
-    background-color: #f8f9fa;
-    border: 1px solid #e9ecef;
-    border-radius: 12px;
-    padding: 20px;
-  }
-  .split-box h6 {
-    color: #2d3436;
-    font-weight: 600;
-    margin-bottom: 1rem;
-  }
+    /* Card Styling */
+    .card {
+        border: none;
+        border-radius: 16px;
+        background: #fff;
+        box-shadow: 0 4px 12px rgba(0, 0, 0, 0.03);
+        margin-bottom: 24px;
+    }
 
-  /* Buttons */
-  .btn {
-    border-radius: 8px;
-    padding: 10px 24px;
-    font-weight: 600;
-  }
-  .btn-success {
-    background-color: #14b8a6;
-    border-color: #14b8a6;
-    color: white;
-  }
-  .btn-secondary {
-    background-color: rgba(222, 226, 230, 0.6);
-    border-color: rgba(222, 226, 230, 0.8);
-    color: #6c757d;
-    backdrop-filter: blur(10px);
-  }
+    .card-body {
+        padding: 24px;
+    }
+
+    /* Form Styling */
+    .form-label {
+        font-weight: 600;
+        color: #2d3436;
+        font-size: 0.95rem;
+        margin-bottom: 0.5rem;
+    }
+
+    .form-control,
+    .form-select {
+        border-radius: 14px;
+        border: 1.5px solid rgba(20, 184, 166, 0.2);
+        padding: 0.95rem 1.125rem;
+        background: linear-gradient(135deg, rgba(255, 255, 255, 0.85) 0%, rgba(255, 255, 255, 0.75) 100%);
+        backdrop-filter: blur(12px);
+        -webkit-backdrop-filter: blur(12px);
+        font-size: 1rem;
+        color: #2d3436;
+        font-weight: 500;
+        box-shadow: inset 0 1px 2px rgba(255, 255, 255, 0.6), inset 0 -1px 2px rgba(0, 0, 0, 0.02);
+    }
+
+    /* Direct input field styling for Django forms */
+    input[type="text"],
+    input[type="number"],
+    input[type="email"],
+    input[type="password"],
+    input[type="date"],
+    textarea,
+    select {
+        border-radius: 14px !important;
+        border: 1.5px solid rgba(20, 184, 166, 0.2) !important;
+        padding: 0.95rem 1.125rem !important;
+        background: linear-gradient(135deg, rgba(255, 255, 255, 0.85) 0%, rgba(255, 255, 255, 0.75) 100%) !important;
+        backdrop-filter: blur(12px) !important;
+        -webkit-backdrop-filter: blur(12px) !important;
+        font-size: 1rem !important;
+        color: #2d3436 !important;
+        font-weight: 500 !important;
+        box-shadow: inset 0 1px 2px rgba(255, 255, 255, 0.6), inset 0 -1px 2px rgba(0, 0, 0, 0.02) !important;
+    }
+
+    input[type="text"]::placeholder,
+    input[type="number"]::placeholder,
+    input[type="email"]::placeholder,
+    input[type="password"]::placeholder,
+    textarea::placeholder {
+        color: rgba(109, 123, 136, 0.5) !important;
+        font-weight: 400 !important;
+    }
+
+    input[type="text"]:focus,
+    input[type="number"]:focus,
+    input[type="email"]:focus,
+    input[type="password"]:focus,
+    input[type="date"]:focus,
+    textarea:focus,
+    select:focus {
+        box-shadow: inset 0 1px 3px rgba(255, 255, 255, 0.8), inset 0 -1px 3px rgba(0, 0, 0, 0.03), 0 0 0 3px rgba(20, 184, 166, 0.15) !important;
+        border-color: #14b8a6 !important;
+        background: linear-gradient(135deg, rgba(255, 255, 255, 0.95) 0%, rgba(255, 255, 255, 0.9) 100%) !important;
+        outline: none !important;
+    }
+
+    /* Remove hover effects */
+    input:hover,
+    textarea:hover,
+    select:hover,
+    .form-control:hover,
+    .form-select:hover {
+        border-color: rgba(20, 184, 166, 0.2) !important;
+        background: linear-gradient(135deg, rgba(255, 255, 255, 0.85) 0%, rgba(255, 255, 255, 0.75) 100%) !important;
+    }
+
+    .form-control::placeholder {
+        color: rgba(109, 123, 136, 0.5);
+        font-weight: 400;
+    }
+
+    .form-control:focus,
+    .form-select:focus {
+        box-shadow: inset 0 1px 3px rgba(255, 255, 255, 0.8), inset 0 -1px 3px rgba(0, 0, 0, 0.03), 0 0 0 3px rgba(20, 184, 166, 0.15);
+        border-color: #14b8a6;
+        background: linear-gradient(135deg, rgba(255, 255, 255, 0.95) 0%, rgba(255, 255, 255, 0.9) 100%);
+        outline: none;
+    }
+
+    .form-check-input:checked {
+        background-color: #3498db;
+        border-color: #3498db;
+    }
+
+    .form-check-label {
+        color: #495057;
+        font-weight: 500;
+    }
+
+    /* AI Scan Section - Compact Design */
+    .ai-scan-card {
+        border: 2px dashed #3498db;
+        background-color: #f0f7fb;
+    }
+
+    .ai-scan-header {
+        display: flex;
+        align-items: center;
+        gap: 10px;
+        margin-bottom: 12px;
+    }
+
+    .ai-scan-header i {
+        color: #3498db;
+        font-size: 1.1rem;
+    }
+
+    .ai-scan-header h6 {
+        margin: 0;
+        color: #2d3436;
+        font-weight: 700;
+        font-size: 1rem;
+    }
+
+    .ai-scan-desc {
+        font-size: 0.85rem;
+        color: #6c757d;
+        margin-bottom: 0;
+    }
+
+    /* Split Boxes */
+    .split-box {
+        background-color: #f8f9fa;
+        border: 1px solid #e9ecef;
+        border-radius: 12px;
+        padding: 20px;
+    }
+
+    .split-box h6 {
+        color: #2d3436;
+        font-weight: 600;
+        margin-bottom: 1rem;
+    }
+
+    /* Buttons */
+    .btn {
+        border-radius: 8px;
+        padding: 10px 24px;
+        font-weight: 600;
+    }
+
+    .btn-success {
+        background-color: #14b8a6;
+        border-color: #14b8a6;
+        color: white;
+    }
+
+    .btn-secondary {
+        background-color: rgba(222, 226, 230, 0.6);
+        border-color: rgba(222, 226, 230, 0.8);
+        color: #6c757d;
+        backdrop-filter: blur(10px);
+    }
 
 
-  /* Split Between Cards */
+    /* Split Between Cards */
 
-.split-card {
-  cursor: pointer;
-  border: 1px solid rgba(222, 226, 230, 0.6) !important;
-  background: rgba(255, 255, 255, 0.7) !important;
-  backdrop-filter: blur(10px);
-  -webkit-backdrop-filter: blur(10px);
-  box-shadow: none !important;
-}
+    .split-card {
+        cursor: pointer;
+        border: 1px solid rgba(222, 226, 230, 0.6) !important;
+        background: rgba(255, 255, 255, 0.7) !important;
+        backdrop-filter: blur(10px);
+        -webkit-backdrop-filter: blur(10px);
+        box-shadow: none !important;
+    }
 
-.split-card input[type="checkbox"] {
-  cursor: pointer;
-}
+    .split-card input[type="checkbox"] {
+        cursor: pointer;
+    }
 
-.split-card input[type="checkbox"]:checked + span {
-  color: #14b8a6;
-  font-weight: 600;
-}
-
+    .split-card input[type="checkbox"]:checked+span {
+        color: #14b8a6;
+        font-weight: 600;
+    }
 </style>
 
 <div class="container mt-4" style="max-width: 800px;">
-    
+
     <div class="page-header">
         <h3>
             {% if expense %}
-                Edit Expense – <span class="text-primary">{{ expense.group.title }}</span>
+            Edit Expense – <span class="text-primary">{{ expense.group.title }}</span>
             {% else %}
-                Add Expense – <span class="text-primary">{{ group.title }}</span>
+            Add Expense – <span class="text-primary">{{ group.title }}</span>
             {% endif %}
         </h3>
         <p>Expense will be added to this group automatically.</p>
@@ -276,7 +285,8 @@
                     <div class="row g-3">
                         {% for radio in form.split_type %}
                         <div class="col-md-4">
-                            <div class="card h-100 border-0" style="background: rgba(255, 255, 255, 0.7); backdrop-filter: blur(10px);">
+                            <div class="card h-100 border-0"
+                                style="background: rgba(255, 255, 255, 0.7); backdrop-filter: blur(10px);">
                                 <div class="card-body p-3 d-flex align-items-center gap-2">
                                     {{ radio.tag }}
                                     <label class="form-check-label mb-0 fw-medium">{{ radio.choice_label }}</label>
@@ -290,33 +300,34 @@
                 <!-- SPLIT BETWEEN -->
                 <div class="mb-4">
 
-                <label class="form-label fw-semibold mb-3">
-                    Split Between
-                </label>
-
-                <div class="row g-3">
-
-                    {% for user in form.split_between %}
-
-                    <div class="col-lg-3 col-md-4 col-sm-6">
-
-                    <label class="d-flex align-items-center gap-2 p-3 rounded-3 border bg-white shadow-sm w-100 split-card">
-
-                        <!-- Checkbox -->
-                        {{ user.tag }}
-
-                        <!-- Email / Name -->
-                        <span class="text-truncate fw-medium">
-                        {{ user.choice_label }}
-                        </span>
-
+                    <label class="form-label fw-semibold mb-3">
+                        Split Between
                     </label>
 
+                    <div class="row g-3">
+
+                        {% for user in form.split_between %}
+
+                        <div class="col-lg-3 col-md-4 col-sm-6">
+
+                            <label
+                                class="d-flex align-items-center gap-2 p-3 rounded-3 border bg-white shadow-sm w-100 split-card">
+
+                                <!-- Checkbox -->
+                                {{ user.tag }}
+
+                                <!-- Email / Name -->
+                                <span class="text-truncate fw-medium">
+                                    {{ user.choice_label }}
+                                </span>
+
+                            </label>
+
+                        </div>
+
+                        {% endfor %}
+
                     </div>
-
-                    {% endfor %}
-
-                </div>
 
                 </div>
 
@@ -330,7 +341,8 @@
                         <div class="col-md-6 percent-row d-none" data-user="{{ member.id }}">
                             <label class="small text-muted mb-1">{{ member.full_name }}</label>
                             <div class="input-group">
-                                <input type="number" class="form-control percent-input" name="percent_{{ member.id }}" placeholder="0">
+                                <input type="number" class="form-control percent-input" name="percent_{{ member.id }}"
+                                    placeholder="0">
                                 <span class="input-group-text">%</span>
                             </div>
                         </div>
@@ -347,7 +359,8 @@
                             <label class="small text-muted mb-1">{{ member.full_name }}</label>
                             <div class="input-group">
                                 <span class="input-group-text">₹</span>
-                                <input type="number" class="form-control custom-input" name="amount_{{ member.id }}" placeholder="0.00">
+                                <input type="number" class="form-control custom-input" name="amount_{{ member.id }}"
+                                    placeholder="0.00">
                             </div>
                         </div>
                         {% endfor %}
@@ -361,15 +374,15 @@
                 <div class="d-flex gap-3 mt-4">
                     <button type="submit" class="btn btn-success px-4" id="save-btn">
                         {% if expense %}
-                            Update Expense
+                        Update Expense
                         {% else %}
-                            Save Expense
+                        Save Expense
                         {% endif %}
-                    </button>   
+                    </button>
 
                     <a href="{% if expense %}{% url 'groups:group_detail' expense.group.id %}
                             {% else %}{% url 'groups:group_detail' group.id %}{% endif %}"
-                    class="btn btn-secondary px-4">
+                        class="btn btn-secondary px-4">
                         Cancel
                     </a>
                 </div>
@@ -382,183 +395,183 @@
 
 
 <script>
-document.addEventListener("DOMContentLoaded", function () {
+    document.addEventListener("DOMContentLoaded", function () {
 
-    /* ================= COMMON ELEMENTS ================= */
+        /* ================= COMMON ELEMENTS ================= */
 
-    const splitRadios = document.querySelectorAll("input[name='split_type']");
-    const userChecks = document.querySelectorAll("input[name='split_between']");
-    const percentBox = document.getElementById("percentage-box");
-    const customBox = document.getElementById("custom-box");
-    const msgBox = document.getElementById("validation-msg");
-    const saveBtn = document.getElementById("save-btn");
+        const splitRadios = document.querySelectorAll("input[name='split_type']");
+        const userChecks = document.querySelectorAll("input[name='split_between']");
+        const percentBox = document.getElementById("percentage-box");
+        const customBox = document.getElementById("custom-box");
+        const msgBox = document.getElementById("validation-msg");
+        const saveBtn = document.getElementById("save-btn");
 
-    const amountInput = document.getElementById("id_amount");
-    const descInput = document.getElementById("id_description");
+        const amountInput = document.getElementById("id_amount");
+        const descInput = document.getElementById("id_description");
 
-    /* ================= SPLIT LOGIC ================= */
+        /* ================= SPLIT LOGIC ================= */
 
-    function selectedUsers() {
-        return Array.from(userChecks)
-            .filter(cb => cb.checked)
-            .map(cb => cb.value);
-    }
-
-    function splitType() {
-        return document.querySelector("input[name='split_type']:checked")?.value;
-    }
-
-    function updateUI() {
-        const users = selectedUsers();
-        const type = splitType();
-
-        percentBox.classList.add("d-none");
-        customBox.classList.add("d-none");
-        msgBox.innerHTML = "";
-        msgBox.className = "fw-semibold mb-4 p-3 rounded bg-light"; // Reset class
-        saveBtn.disabled = false;
-
-        document
-            .querySelectorAll(".percent-row,.amount-row")
-            .forEach(row => row.classList.add("d-none"));
-
-        if (!type || users.length === 0) return;
-
-        if (type === "percentage") {
-            percentBox.classList.remove("d-none");
-            users.forEach(id => {
-                document
-                    .querySelector(`.percent-row[data-user="${id}"]`)
-                    ?.classList.remove("d-none");
-            });
+        function selectedUsers() {
+            return Array.from(userChecks)
+                .filter(cb => cb.checked)
+                .map(cb => cb.value);
         }
 
-        if (type === "custom") {
-            customBox.classList.remove("d-none");
-            users.forEach(id => {
-                document
-                    .querySelector(`.amount-row[data-user="${id}"]`)
-                    ?.classList.remove("d-none");
-            });
+        function splitType() {
+            return document.querySelector("input[name='split_type']:checked")?.value;
         }
-    }
 
-    function validatePercentage() {
-        let total = 0;
-        document
-            .querySelectorAll(".percent-row:not(.d-none) input")
-            .forEach(i => total += Number(i.value || 0));
+        function updateUI() {
+            const users = selectedUsers();
+            const type = splitType();
 
-        if (total !== 100) {
-            msgBox.innerHTML = `<span class="text-danger">Total must be 100%</span>`;
-            saveBtn.disabled = true;
-        } else {
-            msgBox.innerHTML = `<span class="text-success">Percentage valid</span>`;
+            percentBox.classList.add("d-none");
+            customBox.classList.add("d-none");
+            msgBox.innerHTML = "";
+            msgBox.className = "fw-semibold mb-4 p-3 rounded bg-light"; // Reset class
             saveBtn.disabled = false;
-        }
-    }
 
-    function validateCustom() {
-        let total = 0;
+            document
+                .querySelectorAll(".percent-row,.amount-row")
+                .forEach(row => row.classList.add("d-none"));
+
+            if (!type || users.length === 0) return;
+
+            if (type === "percentage") {
+                percentBox.classList.remove("d-none");
+                users.forEach(id => {
+                    document
+                        .querySelector(`.percent-row[data-user="${id}"]`)
+                        ?.classList.remove("d-none");
+                });
+            }
+
+            if (type === "custom") {
+                customBox.classList.remove("d-none");
+                users.forEach(id => {
+                    document
+                        .querySelector(`.amount-row[data-user="${id}"]`)
+                        ?.classList.remove("d-none");
+                });
+            }
+        }
+
+        function validatePercentage() {
+            let total = 0;
+            document
+                .querySelectorAll(".percent-row:not(.d-none) input")
+                .forEach(i => total += Number(i.value || 0));
+
+            if (total !== 100) {
+                msgBox.innerHTML = `<span class="text-danger">Total must be 100%</span>`;
+                saveBtn.disabled = true;
+            } else {
+                msgBox.innerHTML = `<span class="text-success">Percentage valid</span>`;
+                saveBtn.disabled = false;
+            }
+        }
+
+        function validateCustom() {
+            let total = 0;
+            document
+                .querySelectorAll(".amount-row:not(.d-none) input")
+                .forEach(i => total += Number(i.value || 0));
+
+            const amount = Number(amountInput.value || 0);
+
+            if (total !== amount) {
+                msgBox.innerHTML =
+                    `<span class="text-danger">Total ₹${total} must equal ₹${amount}</span>`;
+                saveBtn.disabled = true;
+            } else {
+                msgBox.innerHTML =
+                    `<span class="text-success">Amount matched</span>`;
+                saveBtn.disabled = false;
+            }
+        }
+
+        splitRadios.forEach(r => r.addEventListener("change", updateUI));
+        userChecks.forEach(c => c.addEventListener("change", updateUI));
+
         document
-            .querySelectorAll(".amount-row:not(.d-none) input")
-            .forEach(i => total += Number(i.value || 0));
+            .querySelectorAll(".percent-input")
+            .forEach(i => i.addEventListener("input", validatePercentage));
 
-        const amount = Number(amountInput.value || 0);
+        document
+            .querySelectorAll(".custom-input")
+            .forEach(i => i.addEventListener("input", validateCustom));
 
-        if (total !== amount) {
-            msgBox.innerHTML =
-                `<span class="text-danger">Total ₹${total} must equal ₹${amount}</span>`;
-            saveBtn.disabled = true;
-        } else {
-            msgBox.innerHTML =
-                `<span class="text-success">Amount matched</span>`;
-            saveBtn.disabled = false;
-        }
-    }
+        /* ================= AI BILL SCAN ================= */
 
-    splitRadios.forEach(r => r.addEventListener("change", updateUI));
-    userChecks.forEach(c => c.addEventListener("change", updateUI));
+        const billInput = document.getElementById("billImage");
 
-    document
-        .querySelectorAll(".percent-input")
-        .forEach(i => i.addEventListener("input", validatePercentage));
+        if (billInput) {
+            billInput.addEventListener("change", function () {
 
-    document
-        .querySelectorAll(".custom-input")
-        .forEach(i => i.addEventListener("input", validateCustom));
+                if (!this.files.length) return;
 
-    /* ================= AI BILL SCAN ================= */
+                const formData = new FormData();
+                formData.append("bill", this.files[0]); // ✅ backend expects "bill"
 
-    const billInput = document.getElementById("billImage");
+                msgBox.innerHTML =
+                    `<span class="text-info">🔄 Scanning bill…</span>`;
+                saveBtn.disabled = true;
 
-    if (billInput) {
-        billInput.addEventListener("change", function () {
+                fetch("{% url 'expenses:scan_bill' %}", {
+                    method: "POST",
+                    headers: {
+                        "X-CSRFToken": "{{ csrf_token }}"
+                    },
+                    body: formData
+                })
+                    .then(res => res.json())
+                    .then(data => {
 
-            if (!this.files.length) return;
+                        if (data.success) {
 
-            const formData = new FormData();
-            formData.append("bill", this.files[0]); // ✅ backend expects "bill"
+                            // ✅ SAFETY: Ensure numeric value, never scientific notation
+                            if (data.amount !== null && data.amount !== undefined) {
+                                const numAmount = Number(data.amount);
 
-            msgBox.innerHTML =
-                `<span class="text-info">🔄 Scanning bill…</span>`;
-            saveBtn.disabled = true;
+                                // Validate amount is a reasonable number (₹10 - ₹100,000)
+                                if (numAmount >= 10 && numAmount <= 100000 && isFinite(numAmount)) {
+                                    amountInput.value = numAmount.toFixed(2);
+                                } else {
+                                    throw new Error("Amount out of realistic range");
+                                }
+                            }
 
-            fetch("{% url 'expenses:scan_bill' %}", {
-                method: "POST",
-                headers: {
-                    "X-CSRFToken": "{{ csrf_token }}"
-                },
-                body: formData
-            })
-            .then(res => res.json())
-            .then(data => {
+                            if (data.description && data.description.trim()) {
+                                descInput.value = data.description.trim();
+                            }
 
-                if (data.success) {
-
-                    // ✅ SAFETY: Ensure numeric value, never scientific notation
-                    if (data.amount !== null && data.amount !== undefined) {
-                        const numAmount = Number(data.amount);
-                        
-                        // Validate amount is a reasonable number (₹10 - ₹100,000)
-                        if (numAmount >= 10 && numAmount <= 100000 && isFinite(numAmount)) {
-                            amountInput.value = numAmount.toFixed(2);
-                        } else {
-                            throw new Error("Amount out of realistic range");
-                        }
-                    }
-
-                    if (data.description && data.description.trim()) {
-                        descInput.value = data.description.trim();
-                    }
-
-                    msgBox.innerHTML =
-                        `<span class="text-success">
+                            msgBox.innerHTML =
+                                `<span class="text-success">
                             ✅ Bill scanned successfully. Please verify details.
                         </span>`;
 
-                    // ✅ Re-validate after auto-fill
-                    if (splitType() === "custom") validateCustom();
-                    if (splitType() === "percentage") validatePercentage();
+                            // ✅ Re-validate after auto-fill
+                            if (splitType() === "custom") validateCustom();
+                            if (splitType() === "percentage") validatePercentage();
 
-                } else {
-                    msgBox.innerHTML =
-                        `<span class="text-danger">
+                        } else {
+                            msgBox.innerHTML =
+                                `<span class="text-danger">
                             ❌ ${data.message || "Failed to scan bill"}
                         </span>`;
-                }
+                        }
 
-                saveBtn.disabled = false;
-            })
-            .catch(err => {
-                console.error("Bill scan error:", err);
-                msgBox.innerHTML =
-                    `<span class="text-danger">❌ Failed to scan bill</span>`;
-                saveBtn.disabled = false;
+                        saveBtn.disabled = false;
+                    })
+                    .catch(err => {
+                        console.error("Bill scan error:", err);
+                        msgBox.innerHTML =
+                            `<span class="text-danger">❌ Failed to scan bill</span>`;
+                        saveBtn.disabled = false;
+                    });
             });
-        });
-    }
-});
+        }
+    });
 </script>
 
 

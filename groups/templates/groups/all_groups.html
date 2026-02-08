@@ -1,24 +1,37 @@
 {% extends "base.html" %}
+{% load static %}
 
 {% block title %}All Groups{% endblock %}
 
 {% block content %}
 
 <style>
-  /* Light dotted background pattern */
-  body {
-    background: 
-      radial-gradient(circle at 20% 20%, rgba(99, 230, 226, 0.08) 0%, transparent 50%),
-      radial-gradient(circle at 80% 80%, rgba(99, 230, 226, 0.06) 0%, transparent 50%),
-      radial-gradient(circle, rgba(200, 200, 200, 0.15) 1px, transparent 1px);
-    background-size: 100% 100%, 100% 100%, 20px 20px;
-    background-color: #f8fafb;
-  }
+  /* Background is standardized in grid-background.css */
 
   .all-groups-wrapper {
     max-width: 1400px;
     margin: 0 auto;
     padding: 2rem 1rem;
+  }
+
+  /* .all-groups-wrapper { ... } already exists */
+
+  .btn-add-expense-card {
+    padding: 0.6rem 1.25rem;
+    background: white;
+    color: #14b8a6;
+    border: 1px solid #14b8a6;
+    border-radius: 20px;
+    font-weight: 600;
+    font-size: 0.875rem;
+    text-decoration: none;
+    transition: all 0.2s;
+  }
+
+  .btn-add-expense-card:hover {
+    background: #f0fdfa;
+    border-color: #0d9488;
+    color: #0d9488;
   }
 
   .page-header {
@@ -102,193 +115,200 @@
     color: #9ca3af;
   }
 
-  .filter-group {
-    display: flex;
-    gap: 0.75rem;
-  }
-
-  .filter-dropdown {
-    padding: 0.75rem 1rem;
-    border: 1px solid #e5e7eb;
-    border-radius: 10px;
-    font-size: 0.9rem;
-    color: #374151;
-    background: white;
-    cursor: pointer;
-    font-weight: 500;
-    transition: all 0.2s;
-  }
-
-  .filter-dropdown:hover {
-    border-color: #14b8a6;
-  }
-
   .groups-grid {
     display: grid;
-    grid-template-columns: repeat(auto-fill, minmax(350px, 1fr));
+    grid-template-columns: repeat(auto-fill, minmax(380px, 1fr));
     gap: 1.5rem;
     margin-bottom: 3rem;
   }
 
+  /* Modern Card Design */
   .group-card {
     background: white;
-    border-radius: 16px;
-    padding: 1.75rem;
-    box-shadow: 0 1px 3px rgba(0, 0, 0, 0.08);
-    border: 1px solid #e5e7eb;
-    transition: all 0.3s;
+    border-radius: 20px;
+    padding: 1.5rem;
+    border: 1px solid #f3f4f6;
+    transition: all 0.3s ease;
+    display: flex;
+    flex-direction: column;
+    height: 100%;
     position: relative;
-    overflow: hidden;
   }
 
   .group-card:hover {
-    transform: translateY(-4px);
-    box-shadow: 0 8px 16px rgba(0, 0, 0, 0.12);
-    border-color: #14b8a6;
+    transform: translateY(-6px);
+    box-shadow: 0 20px 40px -5px rgba(0, 0, 0, 0.1);
+    border-color: #bae6fd;
+    background-color: #f0f9ff;
+  }
+
+  .card-header-row {
+    display: flex;
+    justify-content: space-between;
+    align-items: flex-start;
+    margin-bottom: 1rem;
   }
 
   .group-icon-wrapper {
-    width: 60px;
-    height: 60px;
+    width: 56px;
+    height: 56px;
     border-radius: 16px;
-    background: linear-gradient(135deg, #e0f2f1 0%, #b2dfdb 100%);
+    background: #e0f2fe;
+    /* Light blue/cyan */
+    color: #0284c7;
     display: flex;
     align-items: center;
     justify-content: center;
-    margin-bottom: 1.25rem;
   }
 
   .group-icon {
-    width: 32px;
-    height: 32px;
-    color: #14b8a6;
-  }
-
-  .status-badge {
-    position: absolute;
-    top: 1.25rem;
-    right: 1.25rem;
-    padding: 0.375rem 0.875rem;
-    border-radius: 6px;
-    font-size: 0.75rem;
-    font-weight: 600;
-    text-transform: uppercase;
-    letter-spacing: 0.025em;
-  }
-
-  .status-active {
-    background: #d1fae5;
-    color: #065f46;
-  }
-
-  .status-planning {
-    background: #dbeafe;
-    color: #1e40af;
-  }
-
-  .status-settled {
-    background: #d1fae5;
-    color: #065f46;
-  }
-
-  .status-onhold {
-    background: #fef3c7;
-    color: #92400e;
+    width: 28px;
+    height: 28px;
   }
 
   .group-title {
     font-size: 1.25rem;
     font-weight: 700;
     color: #111827;
-    margin: 0 0 0.75rem 0;
+    margin: 0 0 0.5rem 0;
   }
 
   .group-description {
     color: #6b7280;
     font-size: 0.9rem;
     line-height: 1.5;
-    margin-bottom: 1.25rem;
+    margin-bottom: 1.5rem;
     display: -webkit-box;
     -webkit-line-clamp: 2;
+    line-clamp: 2;
     -webkit-box-orient: vertical;
     overflow: hidden;
-    min-height: 2.7rem;
+    height: 2.7rem;
   }
 
-  .group-meta {
+  /* Financial Snapshot */
+  .financial-snapshot {
+    margin-bottom: 1.5rem;
+  }
+
+  .snapshot-label {
+    font-size: 0.75rem;
+    text-transform: uppercase;
+    letter-spacing: 0.05em;
+    color: #9ca3af;
+    font-weight: 600;
+    margin-bottom: 0.75rem;
     display: flex;
     align-items: center;
     gap: 0.5rem;
-    color: #6b7280;
-    font-size: 0.875rem;
-    margin-bottom: 1.25rem;
-    padding-bottom: 1.25rem;
-    border-bottom: 1px solid #f3f4f6;
   }
 
-  .group-meta svg {
-    width: 16px;
-    height: 16px;
-    color: #14b8a6;
+  .snapshot-grid {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 1rem;
   }
 
-  .group-meta-text {
-    font-weight: 500;
-    color: #374151;
-  }
-
-  .group-actions {
+  .snapshot-item {
     display: flex;
-    gap: 0.75rem;
+    flex-direction: column;
   }
 
-  .btn-view-details {
-    flex: 1;
-    padding: 0.625rem 1rem;
+  .snapshot-title {
+    font-size: 0.8rem;
+    color: #6b7280;
+    margin-bottom: 0.25rem;
+  }
+
+  .snapshot-value {
+    font-size: 1.125rem;
+    font-weight: 700;
+    color: #111827;
+  }
+
+  .snapshot-value.positive {
+    color: #059669;
+    /* Green */
+  }
+
+  .snapshot-value.negative {
+    color: #dc2626;
+    /* Red */
+  }
+
+
+  /* Footer with Avatar Stack & Button */
+  .card-footer-row {
+    margin-top: auto;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding-top: 1.5rem;
+    border-top: 1px solid #f3f4f6;
+  }
+
+  /* Avatar Stack */
+  .avatar-stack {
+    display: flex;
+    align-items: center;
+  }
+
+  .avatar-circle {
+    width: 36px;
+    height: 36px;
+    border-radius: 50%;
+    border: 2px solid white;
+    background: #e5e7eb;
+    margin-left: -10px;
+    /* Overlap */
+    object-fit: cover;
+  }
+
+  .avatar-circle:first-child {
+    margin-left: 0;
+  }
+
+  .avatar-more {
+    width: 36px;
+    height: 36px;
+    border-radius: 50%;
+    border: 2px solid white;
+    background: #f3f4f6;
+    color: #6b7280;
+    font-size: 0.75rem;
+    font-weight: 600;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    margin-left: -10px;
+    z-index: 1;
+  }
+
+  .btn-open-group {
+    padding: 0.6rem 1.25rem;
     background: #14b8a6;
+    /* Teal */
     color: white;
-    border: none;
-    border-radius: 8px;
+    border-radius: 20px;
     font-weight: 600;
     font-size: 0.875rem;
-    cursor: pointer;
-    transition: all 0.2s;
     text-decoration: none;
-    text-align: center;
+    transition: all 0.2s;
   }
 
-  .btn-view-details:hover {
+  .btn-open-group:hover {
     background: #0d9488;
     color: white;
     transform: translateY(-1px);
+    box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1);
   }
 
-  .btn-add-expense {
-    flex: 1;
-    padding: 0.625rem 1rem;
-    background: white;
-    color: #14b8a6;
-    border: 1.5px solid #14b8a6;
-    border-radius: 8px;
-    font-weight: 600;
-    font-size: 0.875rem;
-    cursor: pointer;
-    transition: all 0.2s;
-    text-decoration: none;
-    text-align: center;
-  }
-
-  .btn-add-expense:hover {
-    background: #f0fdfa;
-    color: #0d9488;
-    border-color: #0d9488;
-  }
-
+  /* Empty State */
   .empty-state {
     text-align: center;
     padding: 5rem 2rem;
     background: white;
-    border-radius: 16px;
+    border-radius: 20px;
     border: 2px dashed #e5e7eb;
   }
 
@@ -310,77 +330,10 @@
     font-size: 1rem;
     margin-bottom: 2rem;
   }
-
-  .pagination {
-    display: flex;
-    justify-content: center;
-    align-items: center;
-    gap: 0.5rem;
-    margin-top: 3rem;
-  }
-
-  .pagination-btn {
-    width: 40px;
-    height: 40px;
-    border: 1px solid #e5e7eb;
-    background: white;
-    color: #374151;
-    border-radius: 8px;
-    cursor: pointer;
-    font-weight: 500;
-    transition: all 0.2s;
-    display: flex;
-    align-items: center;
-    justify-content: center;
-  }
-
-  .pagination-btn:hover:not(:disabled) {
-    background: #f9fafb;
-    border-color: #14b8a6;
-  }
-
-  .pagination-btn.active {
-    background: #14b8a6;
-    color: white;
-    border-color: #14b8a6;
-  }
-
-  .pagination-btn:disabled {
-    opacity: 0.4;
-    cursor: not-allowed;
-  }
-
-  @media (max-width: 768px) {
-    .page-header {
-      flex-direction: column;
-      gap: 1.5rem;
-    }
-
-    .btn-create-group {
-      width: 100%;
-      justify-content: center;
-    }
-
-    .search-filter-section {
-      flex-direction: column;
-    }
-
-    .filter-group {
-      flex-direction: column;
-    }
-
-    .groups-grid {
-      grid-template-columns: 1fr;
-    }
-
-    .header-content h1 {
-      font-size: 2rem;
-    }
-  }
 </style>
 
 <div class="all-groups-wrapper">
-  
+
   <!-- Page Header -->
   <div class="page-header">
     <div class="header-content">
@@ -389,9 +342,9 @@
     </div>
     <a href="{% url 'groups:create_group' %}" class="btn-create-group">
       <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-        <circle cx="12" cy="12" r="10"/>
-        <line x1="12" y1="8" x2="12" y2="16"/>
-        <line x1="8" y1="12" x2="16" y2="12"/>
+        <circle cx="12" cy="12" r="10" />
+        <line x1="12" y1="8" x2="12" y2="16" />
+        <line x1="8" y1="12" x2="16" y2="12" />
       </svg>
       Create New Group
     </a>
@@ -400,93 +353,125 @@
   <!-- Search Bar -->
   <div class="search-filter-section">
     <div class="search-box">
-      <svg class="search-icon" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-        <circle cx="11" cy="11" r="8"/>
-        <path d="m21 21-4.35-4.35"/>
+      <svg class="search-icon" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor"
+        stroke-width="2">
+        <circle cx="11" cy="11" r="8" />
+        <path d="m21 21-4.35-4.35" />
       </svg>
-      <input 
-        type="text" 
-        class="search-input" 
-        placeholder="Search groups by name or purpose..."
-      />
+      <input type="text" class="search-input" placeholder="Search groups by name or purpose..." />
     </div>
   </div>
 
   <!-- Groups Grid -->
-  {% if groups %}
+  {% if groups_data %}
   <div class="groups-grid">
-    {% for group in groups %}
+    {% for item in groups_data %}
+    {% with group=item.group %}
     <div class="group-card">
-      
-      <!-- Status Badge -->
-      <span class="status-badge status-active">Active</span>
 
-      <!-- Group Icon -->
-      <div class="group-icon-wrapper">
-        <svg class="group-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-          <path d="M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2"/>
-          <circle cx="9" cy="7" r="4"/>
-          <path d="M23 21v-2a4 4 0 0 0-3-3.87"/>
-          <path d="M16 3.13a4 4 0 0 1 0 7.75"/>
-        </svg>
+      <div class="card-header-row">
+        <div class="group-icon-wrapper">
+          {% if 'Trip' in group.title %}
+          <svg class="group-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+            <path d="M22 2L11 13M22 2l-7 20-4-9-9-4 20-7z"
+              style="transform: rotate(45deg); transform-origin: center;" />
+          </svg>
+          {% elif 'Rent' in group.title or 'Home' in group.title %}
+          <svg class="group-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+            <path d="M3 9l9-7 9 7v11a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2z"></path>
+            <polyline points="9 22 9 12 15 12 15 22"></polyline>
+          </svg>
+          {% elif 'Food' in group.title or 'Dinner' in group.title %}
+          <svg class="group-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+            <path d="M18 8h1a4 4 0 0 1 0 8h-1"></path>
+            <path d="M2 8h16v9a4 4 0 0 1-4 4H6a4 4 0 0 1-4-4V8z"></path>
+            <line x1="6" y1="1" x2="6" y2="4"></line>
+            <line x1="10" y1="1" x2="10" y2="4"></line>
+            <line x1="14" y1="1" x2="14" y2="4"></line>
+          </svg>
+          {% else %}
+          <svg class="group-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+            <path d="M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2" />
+            <circle cx="9" cy="7" r="4" />
+            <path d="M23 21v-2a4 4 0 0 0-3-3.87" />
+            <path d="M16 3.13a4 4 0 0 1 0 7.75" />
+          </svg>
+          {% endif %}
+        </div>
+        <!-- No status badge as requested -->
       </div>
 
-      <!-- Group Title -->
       <h3 class="group-title">{{ group.title }}</h3>
-
-      <!-- Description -->
       <p class="group-description">
         {% if group.description %}
-          {{ group.description|truncatechars:90 }}
+        {{ group.description }}
         {% else %}
-          A shared fund for all members to contribute and track expenses together.
+        Shared expenses for {{ group.title }}
         {% endif %}
       </p>
 
-      <!-- Meta Info -->
-      <div class="group-meta">
-        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-          <path d="M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2"/>
-          <circle cx="9" cy="7" r="4"/>
-          <path d="M23 21v-2a4 4 0 0 0-3-3.87"/>
-          <path d="M16 3.13a4 4 0 0 1 0 7.75"/>
-        </svg>
-        <span class="group-meta-text">{{ group.members.count }} Members</span>
+      <div class="financial-snapshot">
+        <div class="snapshot-label">
+          <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"
+            style="margin-right: 4px;">
+            <polyline points="22 12 18 12 15 21 9 3 6 12 2 12"></polyline>
+          </svg>
+          Financial Snapshot
+        </div>
+        <div class="snapshot-grid">
+          <div class="snapshot-item">
+            <span class="snapshot-title">Total Spending</span>
+            <span class="snapshot-value">₹{{ item.total_spending|floatformat:0 }}</span>
+          </div>
+          <div class="snapshot-item">
+            <span class="snapshot-title">
+              {% if item.net_balance > 0 %}
+              Total Balance
+              {% elif item.net_balance < 0 %} Net Balance {% else %} Net Balance {% endif %} </span>
+                <span
+                  class="snapshot-value {% if item.net_balance > 0 %}positive{% elif item.net_balance < 0 %}negative{% endif %}">
+                  {% if item.net_balance > 0 %}
+                  +₹{{ item.net_balance|floatformat:0 }}
+                  {% elif item.net_balance < 0 %} -₹{{ item.abs_net_balance|floatformat:0 }} {% else %} ₹0 {% endif %}
+                    </span>
+          </div>
+        </div>
       </div>
 
-      <!-- Action Buttons -->
-      <div class="group-actions">
-        <a href="{% url 'groups:group_detail' group.id %}" class="btn-view-details">
-          View Details
-        </a>
-        {% if show_add_expense %}
-        <a href="{% url 'expenses:add_expense' group.id %}" class="btn-add-expense">
-          Add Expense
-        </a>
-        {% endif %}
+      <div class="card-footer-row">
+        <div class="avatar-stack">
+          {% for member in item.members|slice:":3" %}
+          {% if member.profile_image %}
+          <img src="{{ member.profile_image.url }}" alt="{{ member.full_name }}" class="avatar-circle">
+          {% else %}
+          <div class="avatar-circle"
+            style="background: #e2e8f0; display: flex; align-items: center; justify-content: center; font-size: 0.7rem; font-weight: 600; color: #64748b;">
+            {{ member.full_name|slice:":1"|upper }}
+          </div>
+          {% endif %}
+          {% endfor %}
+
+          {% if item.member_count > 3 %}
+          <div class="avatar-more">+{{ item.member_count|add:"-3" }}</div>
+          {% endif %}
+        </div>
+
+        <div class="action-buttons" style="display: flex; gap: 0.5rem;">
+          {% if show_add_expense %}
+          <a href="{% url 'expenses:add_expense' group.id %}" class="btn-add-expense-card">
+            Add
+          </a>
+          {% endif %}
+          <a href="{% url 'groups:group_detail' group.id %}" class="btn-open-group">
+            Open
+          </a>
+        </div>
       </div>
 
     </div>
+    {% endwith %}
     {% endfor %}
   </div>
-
-  <!-- Pagination -->
-  <div class="pagination">
-    <button class="pagination-btn" disabled>
-      <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-        <polyline points="15 18 9 12 15 6"/>
-      </svg>
-    </button>
-    <button class="pagination-btn active">1</button>
-    <button class="pagination-btn">2</button>
-    <button class="pagination-btn">3</button>
-    <button class="pagination-btn">
-      <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-        <polyline points="9 18 15 12 9 6"/>
-      </svg>
-    </button>
-  </div>
-
   {% else %}
   <!-- Empty State -->
   <div class="empty-state">
@@ -495,9 +480,9 @@
     <p>Create your first group to start tracking expenses.</p>
     <a href="{% url 'groups:create_group' %}" class="btn-create-group" style="display: inline-flex;">
       <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-        <circle cx="12" cy="12" r="10"/>
-        <line x1="12" y1="8" x2="12" y2="16"/>
-        <line x1="8" y1="12" x2="16" y2="12"/>
+        <circle cx="12" cy="12" r="10" />
+        <line x1="12" y1="8" x2="12" y2="16" />
+        <line x1="8" y1="12" x2="16" y2="12" />
       </svg>
       Create Your First Group
     </a>
@@ -507,24 +492,23 @@
 </div>
 
 <script>
-  // Search functionality for groups - Only search by group title
+  // Search functionality
   const searchInput = document.querySelector('.search-input');
   const groupCards = document.querySelectorAll('.group-card');
   const groupsGrid = document.querySelector('.groups-grid');
   const emptyState = document.querySelector('.empty-state');
 
   if (searchInput) {
-    searchInput.addEventListener('keyup', function() {
+    searchInput.addEventListener('keyup', function () {
       const searchTerm = this.value.toLowerCase().trim();
       let visibleCount = 0;
 
       groupCards.forEach(card => {
-        // Get only group title text
         const groupTitle = card.querySelector('.group-title') ? card.querySelector('.group-title').textContent.toLowerCase() : '';
+        const groupDesc = card.querySelector('.group-description') ? card.querySelector('.group-description').textContent.toLowerCase() : '';
 
-        // Check if search term matches group title only
-        if (groupTitle.includes(searchTerm) || searchTerm === '') {
-          card.style.display = '';
+        if (groupTitle.includes(searchTerm) || groupDesc.includes(searchTerm) || searchTerm === '') {
+          card.style.display = 'flex'; // Use flex as per CSS
           visibleCount++;
         } else {
           card.style.display = 'none';
@@ -533,24 +517,27 @@
 
       // Show/hide empty state based on results
       if (visibleCount === 0 && groupCards.length > 0 && searchTerm !== '') {
-        if (groupsGrid) {
-          groupsGrid.style.display = 'none';
+        if (groupsGrid) groupsGrid.style.display = 'none';
+
+        // Only create temp empty state if not already there
+        let tempEmptyState = document.querySelector('.temp-empty-state');
+        if (!tempEmptyState) {
+          tempEmptyState = document.createElement('div');
+          tempEmptyState.className = 'empty-state temp-empty-state';
+          tempEmptyState.innerHTML = `
+                <div class="empty-state-icon">🔍</div>
+                <h3>No Groups Found</h3>
+                <p>No groups match your search. Try a different search term.</p>
+            `;
+          document.querySelector('.all-groups-wrapper').appendChild(tempEmptyState);
+        } else {
+          tempEmptyState.style.display = 'block';
         }
-        if (emptyState) {
-          emptyState.style.display = 'block';
-          emptyState.innerHTML = `
-            <div class="empty-state-icon">🔍</div>
-            <h3>No Groups Found</h3>
-            <p>No groups match your search. Try a different search term.</p>
-          `;
-        }
-      } else if (visibleCount > 0 || searchTerm === '') {
-        if (groupsGrid) {
-          groupsGrid.style.display = 'grid';
-        }
-        if (emptyState && !emptyState.querySelector('.empty-state-icon')?.textContent.includes('📊')) {
-          emptyState.style.display = 'none';
-        }
+
+      } else {
+        if (groupsGrid) groupsGrid.style.display = 'grid';
+        const tempEmptyState = document.querySelector('.temp-empty-state');
+        if (tempEmptyState) tempEmptyState.style.display = 'none';
       }
     });
   }

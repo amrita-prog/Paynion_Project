@@ -7,35 +7,35 @@
   <h4 class="mb-4" style="font-weight: 600; color: #2d3748;">Expenses Paid by Me</h4>
 
   {% if expenses %}
-    {% for exp in expenses %}
-      <div class="expense-card card shadow-sm mb-3">
-        <div class="card-body">
-          <div class="expense-card-content">
-            <div class="expense-main">
-              <h6 class="expense-title">{{ exp.description }}</h6>
-              <p class="expense-group">
-                <span class="label-text">Group:</span> 
-                <span class="group-name">{{ exp.group.title }}</span>
-              </p>
-            </div>
-            
-            <div class="expense-meta">
-              <p class="expense-amount">
-                <span class="label-text">Amount:</span> 
-                <span class="amount-value">₹ {{ exp.amount }}</span>
-              </p>
-              <small class="expense-date">
-                {{ exp.created_at|date:"d M Y" }}
-              </small>
-            </div>
-          </div>
+  {% for exp in expenses %}
+  <div class="expense-card card shadow-sm mb-3">
+    <div class="card-body">
+      <div class="expense-card-content">
+        <div class="expense-main">
+          <h6 class="expense-title">{{ exp.description }}</h6>
+          <p class="expense-group">
+            <span class="label-text">Group:</span>
+            <span class="group-name">{{ exp.group.title }}</span>
+          </p>
+        </div>
+
+        <div class="expense-meta">
+          <p class="expense-amount">
+            <span class="label-text">Amount:</span>
+            <span class="amount-value">₹ {{ exp.amount }}</span>
+          </p>
+          <small class="expense-date">
+            {{ exp.created_at|date:"d M Y" }}
+          </small>
         </div>
       </div>
-    {% endfor %}
-  {% else %}
-    <div class="empty-state">
-      <p class="text-muted">No expenses found.</p>
     </div>
+  </div>
+  {% endfor %}
+  {% else %}
+  <div class="empty-state">
+    <p class="text-muted">No expenses found.</p>
+  </div>
   {% endif %}
 
 </div>
@@ -56,8 +56,10 @@
   }
 
   .expense-card:hover {
-    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.08) !important;
-    transform: translateY(-2px);
+    box-shadow: 0 12px 24px rgba(0, 0, 0, 0.12) !important;
+    transform: translateY(-6px);
+    background-color: #f0f9ff;
+    border: 1px solid #bae6fd;
   }
 
   .expense-card .card-body {

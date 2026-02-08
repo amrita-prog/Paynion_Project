@@ -1,0 +1,237 @@
+/* Clean White Dot Background - Standardized */
+body {
+    background-color: #ffffff;
+    background-image: none;
+    min-height: 100vh;
+    color: #333;
+}
+
+/* Ensure content is readable on grid background */
+.container {
+    background-color: transparent;
+}
+
+/* Card text colors */
+.card h4,
+.card h5,
+.card h6,
+.card p {
+    color: #333;
+}
+
+/* Style for cards to stand out against grid */
+.card {
+    background: rgba(255, 255, 255, 0.25);
+    backdrop-filter: blur(15px);
+    -webkit-backdrop-filter: blur(15px);
+    border: 1.5px solid rgba(255, 255, 255, 0.4) !important;
+    box-shadow: 0 8px 32px 0 rgba(0, 0, 0, 0.1), inset 0 0 30px rgba(255, 255, 255, 0.2), 0 0 20px rgba(100, 150, 255, 0.1);
+    border-radius: 20px !important;
+    transition: all 0.3s ease;
+    border-left: none !important;
+}
+
+.card:hover {
+    background: rgba(255, 255, 255, 0.35);
+    border: 1.5px solid rgba(255, 255, 255, 0.5) !important;
+    box-shadow: 0 12px 40px 0 rgba(0, 0, 0, 0.15), inset 0 0 40px rgba(255, 255, 255, 0.25), 0 0 30px rgba(100, 150, 255, 0.15);
+    border-left: none !important;
+}
+
+/* Square card shape for summary cards */
+.card-summary {
+    border-left: none !important;
+    aspect-ratio: auto;
+}
+
+/* Larger summary cards */
+.card-summary-large {
+    border-left: none !important;
+    position: relative;
+    min-height: 200px;
+    display: flex;
+    flex-direction: column;
+    justify-content: flex-end;
+}
+
+.card-status-badge {
+    position: absolute;
+    top: 15px;
+    right: 15px;
+    font-size: 0.75rem;
+    padding: 0.4rem 0.8rem;
+    border-radius: 20px;
+    font-weight: 600;
+    letter-spacing: 0.5px;
+}
+
+.card-status-badge.due-soon {
+    background: rgba(220, 53, 69, 0.2);
+    color: #dc3545;
+    border: 1px solid rgba(220, 53, 69, 0.3);
+}
+
+.card-status-badge.incoming {
+    background: rgba(40, 167, 69, 0.2);
+    color: #28a745;
+    border: 1px solid rgba(40, 167, 69, 0.3);
+}
+
+.card-status-badge.monthly {
+    background: rgba(108, 117, 125, 0.2);
+    color: #6c757d;
+    border: 1px solid rgba(108, 117, 125, 0.3);
+}
+
+.card-icon {
+    font-size: 2rem;
+    margin-bottom: 1rem;
+    color: rgba(100, 150, 255, 0.6);
+}
+
+.card-summary-large h6 {
+    font-size: 0.95rem;
+    color: #999;
+    margin-bottom: 0.5rem;
+    font-weight: 500;
+}
+
+.card-amount {
+    font-size: 1.8rem;
+    font-weight: 700;
+    margin: 0;
+    color: #fff;
+}
+
+/* Action buttons */
+.btn-action {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 0.75rem;
+    padding: 1rem 1.5rem;
+    border-radius: 12px;
+    text-decoration: none;
+    font-weight: 600;
+    font-size: 0.9rem;
+    transition: all 0.3s ease;
+    border: 1.5px solid transparent;
+    color: #fff;
+}
+
+.btn-scan {
+    background: linear-gradient(135deg, rgba(76, 175, 80, 0.3), rgba(76, 175, 80, 0.15));
+    border-color: rgba(76, 175, 80, 0.5);
+    color: #28a745;
+}
+
+.btn-scan:hover {
+    background: linear-gradient(135deg, rgba(76, 175, 80, 0.5), rgba(76, 175, 80, 0.3));
+    border-color: rgba(76, 175, 80, 0.7);
+    color: #fff;
+}
+
+.btn-add-expense,
+.btn-create-group,
+.btn-view-report {
+    background: rgba(255, 255, 255, 0.1);
+    border-color: rgba(255, 255, 255, 0.2);
+    color: #aaa;
+}
+
+.btn-add-expense:hover,
+.btn-create-group:hover,
+.btn-view-report:hover {
+    background: rgba(255, 255, 255, 0.2);
+    border-color: rgba(255, 255, 255, 0.4);
+    color: #fff;
+}
+
+.card-summary {
+    border-left: none;
+}
+
+/* Navbar blends nicely */
+.navbar {
+    background-color: rgba(100, 80, 60, 0.95) !important;
+    border-bottom: 1px solid rgba(0, 0, 0, 0.1);
+}
+
+.navbar-dark .navbar-brand,
+.navbar-dark .nav-link {
+    color: #fff !important;
+}
+
+.navbar-dark .nav-link:hover {
+    color: #f5f1e8 !important;
+}
+
+/* Optional: Add some transparency to modals and forms */
+.modal-content {
+    background: rgba(255, 255, 255, 0.25);
+    backdrop-filter: blur(15px);
+    -webkit-backdrop-filter: blur(15px);
+    border: 1.5px solid rgba(255, 255, 255, 0.4);
+    box-shadow: 0 8px 32px 0 rgba(0, 0, 0, 0.1), inset 0 0 30px rgba(255, 255, 255, 0.2);
+}
+
+.modal-content .modal-title {
+    color: #333;
+}
+
+/* Button styling for grid background */
+.btn-primary {
+    background-color: #8b7355;
+    border-color: #8b7355;
+}
+
+.btn-primary:hover {
+    background-color: #6d5a47;
+    border-color: #6d5a47;
+}
+
+/* Form inputs styling */
+.form-control {
+    background-color: rgba(255, 255, 255, 0.9);
+    border: 1px solid rgba(0, 0, 0, 0.15);
+    color: #333;
+}
+
+.form-control:focus {
+    background-color: rgba(255, 255, 255, 0.95);
+    border-color: #8b7355;
+    color: #333;
+    box-shadow: 0 0 0 0.2rem rgba(139, 115, 85, 0.25);
+}
+
+.form-control::placeholder {
+    color: rgba(0, 0, 0, 0.4);
+}
+
+/* Text color adjustments */
+.text-muted {
+    color: rgba(0, 0, 0, 0.5) !important;
+}
+
+/* Table styling */
+.table {
+    color: #333;
+    border-color: rgba(0, 0, 0, 0.1);
+}
+
+.table-striped>tbody>tr:nth-of-type(odd) {
+    background-color: rgba(0, 0, 0, 0.02);
+}
+
+.table-hover>tbody>tr:hover {
+    background-color: rgba(0, 0, 0, 0.04);
+}
+
+/* Links styling */
+a {
+    color: #8b7355;
+}
+
+a:hover {
+    color: #6d5a47;
+}
