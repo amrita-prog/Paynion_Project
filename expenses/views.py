@@ -87,7 +87,7 @@ def delete_expense(request, expense_id):
         for split in split_users:
             Notification.objects.create(
                 user=split.user,
-                message=f"Expense '{expense.description}' was deleted in group {group.name}"
+                message=f"Expense '{expense.description}' was deleted in group {group.title}"
             )
 
         expense.delete()

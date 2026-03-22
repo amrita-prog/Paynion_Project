@@ -6,330 +6,237 @@
 {% block content %}
 
 <style>
-  /* Background is standardized in grid-background.css */
-
   .all-groups-wrapper {
-    max-width: 1400px;
+    max-width: 1280px;
     margin: 0 auto;
-    padding: 2rem 1rem;
+    padding: 1.5rem 1rem 3rem;
   }
 
-  /* .all-groups-wrapper { ... } already exists */
-
-  .btn-add-expense-card {
-    padding: 0.6rem 1.25rem;
-    background: white;
-    color: #14b8a6;
-    border: 1px solid #14b8a6;
-    border-radius: 20px;
-    font-weight: 600;
-    font-size: 0.875rem;
-    text-decoration: none;
-    transition: all 0.2s;
-  }
-
-  .btn-add-expense-card:hover {
-    background: #f0fdfa;
-    border-color: #0d9488;
-    color: #0d9488;
-  }
-
+  /* Header */
   .page-header {
     display: flex;
     justify-content: space-between;
-    align-items: flex-start;
-    margin-bottom: 2rem;
+    align-items: center;
+    margin-bottom: 1.5rem;
   }
-
   .header-content h1 {
-    font-size: 2.5rem;
+    font-size: 1.75rem;
     font-weight: 700;
     color: #111827;
-    margin: 0 0 0.5rem 0;
+    margin: 0 0 0.2rem;
   }
-
-  .header-subtitle {
-    color: #6b7280;
-    font-size: 1rem;
-    margin: 0;
-  }
+  .header-subtitle { color: #6b7280; font-size: 0.875rem; margin: 0; }
 
   .btn-create-group {
-    padding: 0.75rem 1.5rem;
-    background: #14b8a6;
+    padding: 0.55rem 1.2rem;
+    background: linear-gradient(135deg, #14b8a6, #06b6d4);
     color: white;
     border: none;
-    border-radius: 10px;
+    border-radius: 8px;
     font-weight: 600;
-    font-size: 0.95rem;
+    font-size: 0.875rem;
     cursor: pointer;
-    transition: all 0.2s;
     display: flex;
     align-items: center;
-    gap: 0.5rem;
+    gap: 0.4rem;
     text-decoration: none;
-    box-shadow: 0 2px 4px rgba(20, 184, 166, 0.2);
+    box-shadow: 0 2px 8px rgba(20,184,166,0.25);
+    transition: all 0.2s;
+    white-space: nowrap;
   }
-
   .btn-create-group:hover {
-    background: #0d9488;
     transform: translateY(-1px);
-    box-shadow: 0 4px 8px rgba(20, 184, 166, 0.3);
+    box-shadow: 0 4px 12px rgba(20,184,166,0.35);
     color: white;
   }
 
-  .search-filter-section {
-    display: flex;
-    gap: 1rem;
-    margin-bottom: 2.5rem;
-    flex-wrap: wrap;
-  }
-
-  .search-box {
-    flex: 1;
-    min-width: 300px;
-    position: relative;
-  }
-
+  /* Search */
+  .search-filter-section { margin-bottom: 1.5rem; }
+  .search-box { position: relative; }
   .search-input {
     width: 100%;
-    padding: 0.75rem 1rem 0.75rem 2.75rem;
-    border: 1px solid #e5e7eb;
-    border-radius: 10px;
-    font-size: 0.95rem;
+    padding: 0.6rem 1rem 0.6rem 2.5rem;
+    border: 1.5px solid #e5e7eb;
+    border-radius: 8px;
+    font-size: 0.875rem;
     background: white;
     transition: all 0.2s;
   }
-
   .search-input:focus {
     outline: none;
     border-color: #14b8a6;
-    box-shadow: 0 0 0 3px rgba(20, 184, 166, 0.1);
+    box-shadow: 0 0 0 3px rgba(20,184,166,0.1);
   }
+  .search-icon { position: absolute; left: 0.75rem; top: 50%; transform: translateY(-50%); color: #9ca3af; pointer-events: none; }
 
-  .search-icon {
-    position: absolute;
-    left: 1rem;
-    top: 50%;
-    transform: translateY(-50%);
-    color: #9ca3af;
-  }
-
+  /* Grid — 3 columns on desktop, tighter cards */
   .groups-grid {
     display: grid;
-    grid-template-columns: repeat(auto-fill, minmax(380px, 1fr));
-    gap: 1.5rem;
-    margin-bottom: 3rem;
+    grid-template-columns: repeat(auto-fill, minmax(300px, 1fr));
+    gap: 1rem;
+    margin-bottom: 2rem;
   }
 
-  /* Modern Card Design */
+  /* Card */
   .group-card {
     background: white;
-    border-radius: 20px;
-    padding: 1.5rem;
-    border: 1px solid #f3f4f6;
-    transition: all 0.3s ease;
+    border-radius: 14px;
+    padding: 1rem 1.1rem 0.9rem;
+    border: 1.5px solid #f1f5f9;
+    transition: all 0.22s ease;
     display: flex;
     flex-direction: column;
-    height: 100%;
-    position: relative;
+    gap: 0;
+    box-shadow: 0 1px 3px rgba(0,0,0,0.04);
   }
-
   .group-card:hover {
-    transform: translateY(-6px);
-    box-shadow: 0 20px 40px -5px rgba(0, 0, 0, 0.1);
-    border-color: #bae6fd;
-    background-color: #f0f9ff;
+    transform: translateY(-3px);
+    box-shadow: 0 8px 24px rgba(20,184,166,0.12);
+    border-color: #99f6e4;
   }
 
+  /* Card top row: icon + balance pill */
   .card-header-row {
     display: flex;
     justify-content: space-between;
-    align-items: flex-start;
-    margin-bottom: 1rem;
+    align-items: center;
+    margin-bottom: 0.65rem;
   }
-
   .group-icon-wrapper {
-    width: 56px;
-    height: 56px;
-    border-radius: 16px;
+    width: 40px; height: 40px;
+    border-radius: 10px;
     background: #e0f2fe;
-    /* Light blue/cyan */
     color: #0284c7;
     display: flex;
     align-items: center;
     justify-content: center;
+    flex-shrink: 0;
   }
+  .group-icon { width: 20px; height: 20px; }
 
-  .group-icon {
-    width: 28px;
-    height: 28px;
+  /* Balance pill */
+  .balance-pill {
+    font-size: 0.72rem;
+    font-weight: 700;
+    padding: 3px 10px;
+    border-radius: 20px;
+    letter-spacing: 0.01em;
   }
+  .pill-owed    { background: #d1fae5; color: #065f46; }
+  .pill-owe     { background: #fee2e2; color: #991b1b; }
+  .pill-settled { background: #f3f4f6; color: #6b7280; }
 
+  /* Title & description */
   .group-title {
-    font-size: 1.25rem;
+    font-size: 1rem;
     font-weight: 700;
     color: #111827;
-    margin: 0 0 0.5rem 0;
+    margin: 0 0 0.2rem;
   }
-
   .group-description {
     color: #6b7280;
-    font-size: 0.9rem;
-    line-height: 1.5;
-    margin-bottom: 1.5rem;
-    display: -webkit-box;
-    -webkit-line-clamp: 2;
-    line-clamp: 2;
-    -webkit-box-orient: vertical;
-    overflow: hidden;
-    height: 2.7rem;
-  }
-
-  /* Financial Snapshot */
-  .financial-snapshot {
-    margin-bottom: 1.5rem;
-  }
-
-  .snapshot-label {
-    font-size: 0.75rem;
-    text-transform: uppercase;
-    letter-spacing: 0.05em;
-    color: #9ca3af;
-    font-weight: 600;
-    margin-bottom: 0.75rem;
-    display: flex;
-    align-items: center;
-    gap: 0.5rem;
-  }
-
-  .snapshot-grid {
-    display: grid;
-    grid-template-columns: 1fr 1fr;
-    gap: 1rem;
-  }
-
-  .snapshot-item {
-    display: flex;
-    flex-direction: column;
-  }
-
-  .snapshot-title {
     font-size: 0.8rem;
-    color: #6b7280;
-    margin-bottom: 0.25rem;
+    line-height: 1.4;
+    margin-bottom: 0.75rem;
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
   }
 
-  .snapshot-value {
-    font-size: 1.125rem;
-    font-weight: 700;
-    color: #111827;
+  /* Financial row — inline */
+  .financial-snapshot {
+    display: flex;
+    gap: 1rem;
+    padding: 0.6rem 0.75rem;
+    background: #f8fafc;
+    border-radius: 8px;
+    margin-bottom: 0.75rem;
   }
+  .snapshot-item { display: flex; flex-direction: column; }
+  .snapshot-title { font-size: 0.7rem; color: #9ca3af; margin-bottom: 1px; text-transform: uppercase; letter-spacing: 0.04em; }
+  .snapshot-value { font-size: 0.92rem; font-weight: 700; color: #111827; }
+  .snapshot-value.positive { color: #059669; }
+  .snapshot-value.negative { color: #dc2626; }
+  .snapshot-divider { width: 1px; background: #e5e7eb; align-self: stretch; margin: 0 0.25rem; }
 
-  .snapshot-value.positive {
-    color: #059669;
-    /* Green */
-  }
-
-  .snapshot-value.negative {
-    color: #dc2626;
-    /* Red */
-  }
-
-
-  /* Footer with Avatar Stack & Button */
+  /* Footer */
   .card-footer-row {
-    margin-top: auto;
     display: flex;
     justify-content: space-between;
     align-items: center;
-    padding-top: 1.5rem;
+    padding-top: 0.65rem;
     border-top: 1px solid #f3f4f6;
+    margin-top: auto;
   }
-
-  /* Avatar Stack */
-  .avatar-stack {
-    display: flex;
-    align-items: center;
-  }
-
+  .avatar-stack { display: flex; align-items: center; }
   .avatar-circle {
-    width: 36px;
-    height: 36px;
+    width: 28px; height: 28px;
     border-radius: 50%;
     border: 2px solid white;
     background: #e5e7eb;
-    margin-left: -10px;
-    /* Overlap */
+    margin-left: -8px;
     object-fit: cover;
+    font-size: 0.65rem;
+    font-weight: 600;
+    color: #64748b;
+    display: flex;
+    align-items: center;
+    justify-content: center;
   }
-
-  .avatar-circle:first-child {
-    margin-left: 0;
-  }
-
+  .avatar-circle:first-child { margin-left: 0; }
   .avatar-more {
-    width: 36px;
-    height: 36px;
+    width: 28px; height: 28px;
     border-radius: 50%;
     border: 2px solid white;
     background: #f3f4f6;
     color: #6b7280;
-    font-size: 0.75rem;
+    font-size: 0.65rem;
     font-weight: 600;
     display: flex;
     align-items: center;
     justify-content: center;
-    margin-left: -10px;
-    z-index: 1;
+    margin-left: -8px;
   }
-
   .btn-open-group {
-    padding: 0.6rem 1.25rem;
-    background: #14b8a6;
-    /* Teal */
+    padding: 0.4rem 1rem;
+    background: linear-gradient(135deg, #14b8a6, #06b6d4);
     color: white;
     border-radius: 20px;
     font-weight: 600;
-    font-size: 0.875rem;
+    font-size: 0.8rem;
+    text-decoration: none;
+    transition: all 0.2s;
+    box-shadow: 0 2px 6px rgba(20,184,166,0.2);
+  }
+  .btn-open-group:hover {
+    color: white;
+    transform: translateY(-1px);
+    box-shadow: 0 4px 10px rgba(20,184,166,0.35);
+  }
+  .btn-add-expense-card {
+    padding: 0.4rem 0.9rem;
+    background: white;
+    color: #14b8a6;
+    border: 1.5px solid #14b8a6;
+    border-radius: 20px;
+    font-weight: 600;
+    font-size: 0.8rem;
     text-decoration: none;
     transition: all 0.2s;
   }
+  .btn-add-expense-card:hover { background: #f0fdfa; color: #0d9488; }
 
-  .btn-open-group:hover {
-    background: #0d9488;
-    color: white;
-    transform: translateY(-1px);
-    box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1);
-  }
-
-  /* Empty State */
+  /* Empty state */
   .empty-state {
     text-align: center;
-    padding: 5rem 2rem;
+    padding: 4rem 2rem;
     background: white;
-    border-radius: 20px;
+    border-radius: 14px;
     border: 2px dashed #e5e7eb;
   }
-
-  .empty-state-icon {
-    font-size: 4rem;
-    margin-bottom: 1.5rem;
-    opacity: 0.4;
-  }
-
-  .empty-state h3 {
-    font-size: 1.5rem;
-    font-weight: 700;
-    color: #111827;
-    margin-bottom: 0.75rem;
-  }
-
-  .empty-state p {
-    color: #6b7280;
-    font-size: 1rem;
-    margin-bottom: 2rem;
-  }
+  .empty-state-icon { font-size: 3rem; margin-bottom: 1rem; opacity: 0.4; }
+  .empty-state h3 { font-size: 1.25rem; font-weight: 700; color: #111827; margin-bottom: 0.5rem; }
+  .empty-state p { color: #6b7280; font-size: 0.875rem; margin-bottom: 1.5rem; }
 </style>
 
 <div class="all-groups-wrapper">
@@ -369,102 +276,68 @@
     {% with group=item.group %}
     <div class="group-card">
 
+      {# Top row: icon + balance pill #}
       <div class="card-header-row">
         <div class="group-icon-wrapper">
           {% if 'Trip' in group.title %}
-          <svg class="group-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-            <path d="M22 2L11 13M22 2l-7 20-4-9-9-4 20-7z"
-              style="transform: rotate(45deg); transform-origin: center;" />
-          </svg>
+          <svg class="group-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M22 2L11 13M22 2l-7 20-4-9-9-4 20-7z"/></svg>
           {% elif 'Rent' in group.title or 'Home' in group.title %}
-          <svg class="group-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-            <path d="M3 9l9-7 9 7v11a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2z"></path>
-            <polyline points="9 22 9 12 15 12 15 22"></polyline>
-          </svg>
+          <svg class="group-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M3 9l9-7 9 7v11a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2z"/><polyline points="9 22 9 12 15 12 15 22"/></svg>
           {% elif 'Food' in group.title or 'Dinner' in group.title %}
-          <svg class="group-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-            <path d="M18 8h1a4 4 0 0 1 0 8h-1"></path>
-            <path d="M2 8h16v9a4 4 0 0 1-4 4H6a4 4 0 0 1-4-4V8z"></path>
-            <line x1="6" y1="1" x2="6" y2="4"></line>
-            <line x1="10" y1="1" x2="10" y2="4"></line>
-            <line x1="14" y1="1" x2="14" y2="4"></line>
-          </svg>
+          <svg class="group-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M18 8h1a4 4 0 0 1 0 8h-1"/><path d="M2 8h16v9a4 4 0 0 1-4 4H6a4 4 0 0 1-4-4V8z"/><line x1="6" y1="1" x2="6" y2="4"/><line x1="10" y1="1" x2="10" y2="4"/><line x1="14" y1="1" x2="14" y2="4"/></svg>
           {% else %}
-          <svg class="group-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-            <path d="M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2" />
-            <circle cx="9" cy="7" r="4" />
-            <path d="M23 21v-2a4 4 0 0 0-3-3.87" />
-            <path d="M16 3.13a4 4 0 0 1 0 7.75" />
-          </svg>
+          <svg class="group-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2"/><circle cx="9" cy="7" r="4"/><path d="M23 21v-2a4 4 0 0 0-3-3.87"/><path d="M16 3.13a4 4 0 0 1 0 7.75"/></svg>
           {% endif %}
         </div>
-        <!-- No status badge as requested -->
-      </div>
-
-      <h3 class="group-title">{{ group.title }}</h3>
-      <p class="group-description">
-        {% if group.description %}
-        {{ group.description }}
+        {% if item.net_balance > 0 %}
+          <span class="balance-pill pill-owed">✓ You're owed</span>
+        {% elif item.net_balance < 0 %}
+          <span class="balance-pill pill-owe">↑ You owe</span>
         {% else %}
-        Shared expenses for {{ group.title }}
+          <span class="balance-pill pill-settled">✔ Settled</span>
         {% endif %}
-      </p>
+      </div>
 
+      {# Title + description #}
+      <h3 class="group-title">{{ group.title }}</h3>
+      <p class="group-description">{% if group.description %}{{ group.description }}{% else %}Shared expenses for {{ group.title }}{% endif %}</p>
+
+      {# Financial snapshot — inline row #}
       <div class="financial-snapshot">
-        <div class="snapshot-label">
-          <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"
-            style="margin-right: 4px;">
-            <polyline points="22 12 18 12 15 21 9 3 6 12 2 12"></polyline>
-          </svg>
-          Financial Snapshot
+        <div class="snapshot-item">
+          <span class="snapshot-title">Total Spent</span>
+          <span class="snapshot-value">₹{{ item.total_spending|floatformat:0 }}</span>
         </div>
-        <div class="snapshot-grid">
-          <div class="snapshot-item">
-            <span class="snapshot-title">Total Spending</span>
-            <span class="snapshot-value">₹{{ item.total_spending|floatformat:0 }}</span>
-          </div>
-          <div class="snapshot-item">
-            <span class="snapshot-title">
-              {% if item.net_balance > 0 %}
-              Total Balance
-              {% elif item.net_balance < 0 %} Net Balance {% else %} Net Balance {% endif %} </span>
-                <span
-                  class="snapshot-value {% if item.net_balance > 0 %}positive{% elif item.net_balance < 0 %}negative{% endif %}">
-                  {% if item.net_balance > 0 %}
-                  +₹{{ item.net_balance|floatformat:0 }}
-                  {% elif item.net_balance < 0 %} -₹{{ item.abs_net_balance|floatformat:0 }} {% else %} ₹0 {% endif %}
-                    </span>
-          </div>
+        <div class="snapshot-divider"></div>
+        <div class="snapshot-item">
+          <span class="snapshot-title">Your Balance</span>
+          <span class="snapshot-value {% if item.net_balance > 0 %}positive{% elif item.net_balance < 0 %}negative{% endif %}">
+            {% if item.net_balance > 0 %}+₹{{ item.net_balance|floatformat:0 }}
+            {% elif item.net_balance < 0 %}-₹{{ item.abs_net_balance|floatformat:0 }}
+            {% else %}₹0{% endif %}
+          </span>
         </div>
       </div>
 
+      {# Footer: avatars + buttons #}
       <div class="card-footer-row">
         <div class="avatar-stack">
           {% for member in item.members|slice:":3" %}
           {% if member.profile_image %}
-          <img src="{{ member.profile_image.url }}" alt="{{ member.full_name }}" class="avatar-circle">
+          <img src="{{ member.profile_image.url }}" alt="{{ member.full_name }}" class="avatar-circle" title="{{ member.full_name }}">
           {% else %}
-          <div class="avatar-circle"
-            style="background: #e2e8f0; display: flex; align-items: center; justify-content: center; font-size: 0.7rem; font-weight: 600; color: #64748b;">
-            {{ member.full_name|slice:":1"|upper }}
-          </div>
+          <div class="avatar-circle" title="{{ member.full_name }}">{{ member.full_name|slice:":1"|upper }}</div>
           {% endif %}
           {% endfor %}
-
           {% if item.member_count > 3 %}
           <div class="avatar-more">+{{ item.member_count|add:"-3" }}</div>
           {% endif %}
         </div>
-
-        <div class="action-buttons" style="display: flex; gap: 0.5rem;">
+        <div style="display:flex; gap:0.4rem;">
           {% if show_add_expense %}
-          <a href="{% url 'expenses:add_expense' group.id %}" class="btn-add-expense-card">
-            Add
-          </a>
+          <a href="{% url 'expenses:add_expense' group.id %}" class="btn-add-expense-card">Add</a>
           {% endif %}
-          <a href="{% url 'groups:group_detail' group.id %}" class="btn-open-group">
-            Open
-          </a>
+          <a href="{% url 'groups:group_detail' group.id %}" class="btn-open-group">Open</a>
         </div>
       </div>
 
@@ -472,8 +345,8 @@
     {% endwith %}
     {% endfor %}
   </div>
-  {% else %}
   <!-- Empty State -->
+  {% else %}
   <div class="empty-state">
     <div class="empty-state-icon">📊</div>
     <h3>No Groups Found</h3>

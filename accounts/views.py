@@ -390,38 +390,56 @@ def dashboard(request):
         Expense.objects
         .filter(paid_by=user, created_at__date__gte=thirty_days_ago)
     )
-    
+
+    # All expenses from groups the user is a member of (last 30 days)
+    user_groups = Group.objects.filter(members=user)
+    last_30_days_expenses = (
+        Expense.objects
+        .filter(group__in=user_groups, created_at__date__gte=thirty_days_ago)
+    )
+
     # CATEGORY DATA - Categorize expenses by description keywords
     category_keywords = {
-        "Food": ["food", "lunch", "dinner", "breakfast", "pizza", "restaurant", "cafe", "snacks", "grocery", "meal"],
-        "Bills": ["bill", "electricity", "water", "internet", "phone", "utility"],
-        "Travel": ["transport", "uber", "taxi", "bus", "fuel", "petrol", "auto", "travel", "flight", "train"],
-        "Shopping": ["shopping", "clothes", "dress", "shoes", "mall", "store", "purchase"],
-        "Other": []
+        "Food":     ["food", "lunch", "dinner", "breakfast", "pizza", "restaurant",
+                     "cafe", "snacks", "grocery", "meal", "thali", "biryani",
+                     "chai", "swiggy", "zomato", "dominos", "barbeque", "seafood",
+                     "fisherman", "meghana", "mtr"],
+        "Travel":   ["transport", "uber", "taxi", "bus", "fuel", "petrol", "auto",
+                     "travel", "flight", "train", "ticket", "volvo", "cab", "ferry",
+                     "bike", "rental", "falls", "cable car", "permit", "scuba",
+                     "diving", "manali", "goa", "solang", "rohtang"],
+        "Bills":    ["bill", "electricity", "water", "internet", "phone", "utility",
+                     "wifi", "wi-fi", "jio", "fiber", "gas", "cylinder", "society",
+                     "maintenance", "cleaning", "bai", "cans"],
+        "Stay":     ["hotel", "resort", "hostel", "accommodation", "nights",
+                     "room", "rent", "flat", "pg", "baga", "lodge", "taj"],
+        "Shopping": ["shopping", "clothes", "dress", "shoes", "mall", "store",
+                     "purchase", "gift", "decoration", "balloon", "photobooth"],
+        "Other":    []
     }
-    
+
     category_totals = {cat: 0 for cat in category_keywords.keys()}
-    
+
     for expense in last_30_days_expenses:
         description_lower = expense.description.lower()
         categorized = False
-        
+
         for category, keywords in category_keywords.items():
             if category != "Other" and any(keyword in description_lower for keyword in keywords):
                 category_totals[category] += float(expense.amount)
                 categorized = True
                 break
-        
+
         if not categorized:
             category_totals["Other"] += float(expense.amount)
     
-    # Prepare category data for chart with specific colors
     category_colors_map = {
-        "Food": "#4ECDC4",      # Green/Teal
-        "Bills": "#FF6B6B",     # Red/Coral
-        "Travel": "#45B7D1",    # Blue
-        "Shopping": "#98D8C8",  # Mint
-        "Other": "#B0B0B0"      # Grey
+        "Food":     "#4ECDC4",   # Teal
+        "Travel":   "#45B7D1",   # Blue
+        "Bills":    "#FF6B6B",   # Red/Coral
+        "Stay":     "#F7B731",   # Amber/Orange
+        "Shopping": "#98D8C8",   # Mint
+        "Other":    "#B0B0B0"    # Grey
     }
     
     category_labels = []
@@ -429,7 +447,7 @@ def dashboard(request):
     category_colors = []
     total_30_days = 0
     
-    for category in ["Food", "Bills", "Travel", "Shopping", "Other"]:
+    for category in ["Food", "Travel", "Bills", "Stay", "Shopping", "Other"]:
         amount = category_totals[category]
         if amount > 0:
             category_labels.append(category)
