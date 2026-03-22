@@ -395,7 +395,6 @@
     }
   </style>
 
-  <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/js/bootstrap.bundle.min.js"></script>
 </head>
 
 <body>
@@ -404,6 +403,54 @@
   {% include 'navbar.html' %}
 
   <div class="container mt-4">
+
+    <!-- ===== DJANGO MESSAGES TOAST (login success, logout, etc.) ===== -->
+    <style>
+      .msg-toast-success { background: linear-gradient(135deg, #14b8a6 0%, #06b6d4 100%); border-radius: 10px 10px 0 0; }
+      .msg-toast-error   { background: linear-gradient(135deg, #ef4444 0%, #dc2626 100%); border-radius: 10px 10px 0 0; }
+      .msg-toast-warning { background: linear-gradient(135deg, #f59e0b 0%, #d97706 100%); border-radius: 10px 10px 0 0; }
+      .msg-toast-info    { background: linear-gradient(135deg, #3b82f6 0%, #2563eb 100%); border-radius: 10px 10px 0 0; }
+      .msg-toast-body    { background: rgba(255,255,255,0.97); border-radius: 0 0 10px 10px; font-size: 0.92rem; color: #1f2937; font-weight: 500; padding: 0.875rem 1rem; }
+    </style>
+    {% if messages %}
+    <div class="toast-container position-fixed top-0 end-0 p-3" style="z-index: 9999;">
+      {% for msg in messages %}
+      <div id="djangoMsgToast-{{ forloop.counter }}"
+           class="toast border-0 shadow"
+           role="alert" aria-live="assertive" aria-atomic="true"
+           data-bs-autohide="true" data-bs-delay="4000">
+        <div class="toast-header border-0 {% if 'error' in msg.tags or 'danger' in msg.tags %}msg-toast-error{% elif 'warning' in msg.tags %}msg-toast-warning{% elif 'info' in msg.tags %}msg-toast-info{% else %}msg-toast-success{% endif %}">
+          <span class="me-2" style="font-size: 1rem;">
+            {% if 'error' in msg.tags or 'danger' in msg.tags %}❌
+            {% elif 'warning' in msg.tags %}⚠️
+            {% elif 'info' in msg.tags %}ℹ️
+            {% else %}✅{% endif %}
+          </span>
+          <strong class="me-auto text-white" style="font-size: 0.9rem; font-weight: 600;">
+            {% if 'error' in msg.tags or 'danger' in msg.tags %}Error
+            {% elif 'warning' in msg.tags %}Warning
+            {% elif 'info' in msg.tags %}Info
+            {% else %}Success{% endif %}
+          </strong>
+          <button type="button" class="btn-close btn-close-white ms-2" data-bs-dismiss="toast" aria-label="Close"></button>
+        </div>
+        <div class="msg-toast-body">
+          {{ msg }}
+        </div>
+      </div>
+      {% endfor %}
+    </div>
+
+    <script>
+      document.addEventListener("DOMContentLoaded", function () {
+        document.querySelectorAll('[id^="djangoMsgToast-"]').forEach(function (toastEl) {
+          var toast = new bootstrap.Toast(toastEl, { delay: 4000 });
+          toast.show();
+        });
+      });
+    </script>
+    {% endif %}
+    <!-- ===== END MESSAGES TOAST ===== -->
 
     <h2 class="fw-bold mb-4 text-dark">Dashboard</h2>
 
@@ -514,45 +561,76 @@
               <a href="{% url 'groups:view_all_group' %}">View All</a>
             </div>
 
-            {% if groups %}
+            {% if groups_with_data %}
+            <style>
+              .group-item { padding: 14px 16px; border: 1.5px solid #f1f3f5; border-radius: 12px; margin-bottom: 10px; background: #fff; transition: all 0.2s; }
+              .group-item:hover { border-color: #bae6fd; background: #f0f9ff; transform: translateY(-2px); box-shadow: 0 4px 12px rgba(20,184,166,0.08); }
+              .group-badge-owed   { background: #d1fae5; color: #065f46; font-size: 0.72rem; font-weight: 700; padding: 3px 10px; border-radius: 20px; }
+              .group-badge-owe    { background: #fee2e2; color: #991b1b; font-size: 0.72rem; font-weight: 700; padding: 3px 10px; border-radius: 20px; }
+              .group-badge-settled{ background: #f3f4f6; color: #6b7280; font-size: 0.72rem; font-weight: 700; padding: 3px 10px; border-radius: 20px; }
+              .group-balance-text { font-size: 0.78rem; font-weight: 700; }
+              .group-total-text   { font-size: 0.75rem; color: #9ca3af; }
+              .progress-sm { height: 5px; border-radius: 3px; background: #f1f3f5; }
+            </style>
             <div class="group-list">
-              {% for group in groups|slice:":3" %}
+              {% for gd in groups_with_data %}
+              <a href="{% url 'groups:group_detail' group_id=gd.group.id %}" style="text-decoration:none; color:inherit;">
               <div class="group-item">
+
+                {# Header row: name + badge #}
                 <div class="d-flex justify-content-between align-items-start mb-2">
                   <div>
-                    <h6 class="fw-semibold mb-1 text-dark">{{ group.title }}</h6>
-                    <small class="text-muted">Created by {{ group.created_by.first_name }}</small>
+                    <h6 class="fw-semibold mb-0 text-dark" style="font-size:0.95rem;">{{ gd.group.title }}</h6>
+                    <small class="text-muted" style="font-size:0.75rem;">{{ gd.member_count }} member{{ gd.member_count|pluralize }} · Created by {{ gd.group.created_by.first_name }}</small>
                   </div>
-                  <span class="badge bg-success bg-opacity-10 text-success" style="font-size: 0.75rem;">Active</span>
+                  {% if gd.net_balance > 0 %}
+                    <span class="group-badge-owed">✓ You're owed</span>
+                  {% elif gd.net_balance < 0 %}
+                    <span class="group-badge-owe">↑ You owe</span>
+                  {% else %}
+                    <span class="group-badge-settled">✔ Settled</span>
+                  {% endif %}
                 </div>
 
-                <div class="d-flex align-items-center justify-content-between">
+                {# Member avatars + balance amount #}
+                <div class="d-flex align-items-center justify-content-between mt-1">
                   <div class="member-avatars d-flex align-items-center">
-                    {% for member in group.members.all|slice:":3" %}
-                    {% if member.profile_image %}
-                    <img src="{{ member.profile_image.url }}" alt="{{ member.full_name }}"
-                      title="{{ member.full_name }}">
-                    {% else %}
-                    <img src="{% static 'images/default-user.png' %}" alt="User" title="{{ member.full_name }}">
-                    {% endif %}
+                    {% for member in gd.members|slice:":3" %}
+                      {% if member.profile_image %}
+                        <img src="{{ member.profile_image.url }}" alt="{{ member.full_name }}" title="{{ member.full_name }}" style="width:28px;height:28px;border-radius:50%;object-fit:cover;border:2px solid #fff;margin-left:{% if forloop.first %}0{% else %}-8px{% endif %};">
+                      {% else %}
+                        <img src="{% static 'images/default-user.png' %}" alt="User" title="{{ member.full_name }}" style="width:28px;height:28px;border-radius:50%;object-fit:cover;border:2px solid #fff;margin-left:{% if forloop.first %}0{% else %}-8px{% endif %};">
+                      {% endif %}
                     {% endfor %}
-                    {% if group.members.count > 3 %}
-                    <div
-                      class="rounded-circle bg-light d-flex align-items-center justify-content-center text-muted fw-bold"
-                      style="width: 32px; height: 32px; margin-left: -10px; font-size: 0.75rem;">
-                      +{{ group.members.count|add:"-3" }}
-                    </div>
+                    {% if gd.member_count > 3 %}
+                      <div class="rounded-circle bg-light d-flex align-items-center justify-content-center text-muted fw-bold" style="width:28px;height:28px;margin-left:-8px;font-size:0.7rem;border:2px solid #fff;">+{{ gd.member_count|add:"-3" }}</div>
                     {% endif %}
                   </div>
 
-                  <small class="text-muted fw-bold">₹1,200 / ₹2,000</small>
+                  <div class="text-end">
+                    {% if gd.net_balance > 0 %}
+                      <div class="group-balance-text" style="color:#059669;">+₹{{ gd.abs_net_balance }}</div>
+                    {% elif gd.net_balance < 0 %}
+                      <div class="group-balance-text" style="color:#dc2626;">-₹{{ gd.abs_net_balance }}</div>
+                    {% else %}
+                      <div class="group-balance-text" style="color:#9ca3af;">₹0</div>
+                    {% endif %}
+                    <div class="group-total-text">of ₹{{ gd.total_spending|floatformat:0 }} total</div>
+                  </div>
                 </div>
 
-                <!-- Progress Bar -->
-                <div class="progress mt-2">
-                  <div class="progress-bar bg-info" role="progressbar" style="width: 60%;"></div>
+                {# Progress bar #}
+                <div class="progress-sm mt-2">
+                  <div class="progress-bar"
+                       role="progressbar"
+                       style="width: {{ gd.progress_pct }}%;
+                              background: {% if gd.net_balance > 0 %}linear-gradient(90deg,#14b8a6,#06b6d4){% elif gd.net_balance < 0 %}linear-gradient(90deg,#f87171,#ef4444){% else %}#d1d5db{% endif %};
+                              height: 5px; border-radius: 3px; transition: width 0.8s ease;">
+                  </div>
                 </div>
+
               </div>
+              </a>
               {% endfor %}
             </div>
             {% else %}
@@ -622,114 +700,19 @@
 
   <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
 
-  <!-- <script>
+  <!-- Dead chart/notification code removed (cleaned up) -->
 
-const chartData = {
-  labels: {{ chart.labels|safe }},
-  paid: {{ chart.paid|safe }},
-  need_to_pay: {{ chart.need_to_pay|safe }},
-};
-
-const ctx = document.getElementById("expenseChart").getContext("2d");
-
-new Chart(ctx, {
-  type: "bar",
-  data: {
-    labels: chartData.labels,
-    datasets: [
-      {
-        label: "Paid by Me",
-        data: chartData.paid,
-      },
-      {
-        label: "I Need To Pay",
-        data: chartData.need_to_pay,
-      }
-    ]
-  },
-  options: {
-    responsive: true,
-    plugins: {
-      legend: { position: "top" }
-    }
-  }
-});
-</script>
-
-
-
-
-{% if notification %}
-<script>
-document.addEventListener("DOMContentLoaded", function () {
-
-  const toastEl = document.getElementById("notifyToast");
-  if (!toastEl) return;
-
-  const toast = new bootstrap.Toast(toastEl, { delay: 4000 });
-  toast.show();
-
-  // mark notification as read
-  fetch("{% url 'accounts:mark_notification_read' notification.id %}", {
-    method: "POST",
-    headers: {
-      "X-CSRFToken": "{{ csrf_token }}"
-    }
-  });
-
-});
-</script> 
-{% endif %} -->
-
-  <script>
-    const expenseChartData = {
-      labels: {{ chart.labels| safe }},
-    paid: { { chart.paid | safe } },
-    need_to_pay: { { chart.need_to_pay | safe } },
-};
-
-    const expenseCtx = document
-      .getElementById("expenseChart")
-      .getContext("2d");
-
-    new Chart(expenseCtx, {
-      type: "bar",
-      data: {
-        labels: expenseChartData.labels,
-        datasets: [
-          {
-            label: "Paid by Me",
-            data: expenseChartData.paid,
-          },
-          {
-            label: "I Need To Pay",
-            data: expenseChartData.need_to_pay,
-          }
-        ]
-      },
-      options: {
-        responsive: true,
-        plugins: {
-          legend: { position: "top" }
-        },
-        scales: {
-          y: {
-            beginAtZero: true
-          }
-        }
-      }
-    });
-  </script>
+  <!-- expenseChart block removed: canvas #expenseChart doesn't exist in HTML, replaced by oweVsOwedChart below -->
 
 
   <script>
     let flowChartInstance = null;
 
     const flowChartData = {
-      labels: {{ chart.weekly_labels| safe }},
-    income: { { chart.weekly_income | safe } },
-    outcome: { { chart.weekly_outcome | safe } }
-};
+      labels: {{ chart.weekly_labels|safe }},
+      income: {{ chart.weekly_income|safe }},
+      outcome: {{ chart.weekly_outcome|safe }}
+    };
 
     function initExpenseFlowChart(type = 'income') {
       const flowCtx = document.getElementById('expenseFlowChart').getContext('2d');

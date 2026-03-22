@@ -412,11 +412,6 @@
 
             <!-- Right Side Items -->
             <div class="navbar-end-items">
-                <!-- Notification Icon -->
-                <span class="notification-icon" title="Notifications">
-                    <i class="fas fa-bell"></i>
-                </span>
-
                 <!-- Profile Picture - Clickable to go to Profile Page -->
                 <a href="{% url 'accounts:profile' %}" class="profile-dropdown-toggle" title="View Profile">
                     {% if request.user.profile_image %}

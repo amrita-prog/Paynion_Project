@@ -7,6 +7,7 @@ from django.contrib.auth.decorators import login_required
 from django.contrib.auth import get_user_model
 from groups.models import Group, GroupInvite
 from expenses.models import Expense, ExpenseSplit
+from expenses.utils import calculate_group_balances
 from django.db.models import Sum
 from django.conf import settings
 from django.urls import reverse
@@ -113,6 +114,28 @@ def dashboard(request):
     #  SUMMARY CARDS 
     total_groups = Group.objects.filter(members=user).count()
     total_expenses = Expense.objects.filter(paid_by=user).count()
+
+    # Compute real per-group data for Group Snapshots card
+    groups_with_data = []
+    for group in Group.objects.filter(members=user).order_by('-created_at')[:3]:
+        total_spending = Expense.objects.filter(group=group).aggregate(
+            total=Sum('amount'))['total'] or 0
+        group_balances = calculate_group_balances(group)
+        net_balance = group_balances.get(user, 0)
+        members = group.members.all()
+        # Progress %: how much of total spending is represented by abs(net_balance), capped at 100
+        progress_pct = min(100, round(abs(net_balance) / float(total_spending) * 100, 1)) if total_spending else 0
+        groups_with_data.append({
+            "group": group,
+            "total_spending": float(total_spending),
+            "net_balance": round(float(net_balance), 2),
+            "abs_net_balance": round(abs(float(net_balance)), 2),
+            "progress_pct": progress_pct,
+            "members": members,
+            "member_count": members.count(),
+        })
+
+    # Keep full groups list for the total_groups count
     groups = Group.objects.filter(members=user).order_by('-created_at')
 
     recent_expenses = (
@@ -459,6 +482,7 @@ def dashboard(request):
         "total_groups": total_groups,
         "total_expenses": total_expenses,
         "groups": groups,
+        "groups_with_data": groups_with_data,
         "recent_expenses": recent_expenses,
         "week_options": week_options,
         "total_paid": f"{total_paid:.2f}",

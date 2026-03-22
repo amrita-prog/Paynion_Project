@@ -444,45 +444,55 @@
                     {% endif %}
                     {% endfor %}
 
+
                     {% for field in form %}
-                    {% if field.name == 'password_confirmation' or field.name == 'password2' or field.name ==
-                    'confirm_password' %}
-                    <div class="form-group">
-                        <label class="form-label">Confirm Password</label>
+                        {% if field.name not in 'email password password1 password2 password_confirmation confirm_password full_name name first_name profile_image profile_picture avatar image photo' %}
+    
+                    <div class="form-group form-group-full">
+                        <label class="form-label">{{ field.label }}</label>
                         {{ field }}
+        
                         {% if field.errors %}
                         <span class="text-danger">{{ field.errors|striptags }}</span>
                         {% endif %}
                     </div>
+
                     {% endif %}
                     {% endfor %}
                 </div>
 
+
+
                 <!-- Remaining fields (phone, etc.) - excluding profile image -->
                 {% for field in form %}
-                {% if field.name != 'email' and field.name != 'password' and field.name != 'password1' and field.name !=
-                'password2' and field.name != 'password_confirmation' and field.name != 'confirm_password' and
-                field.name != 'full_name' and field.name != 'name' and field.name != 'first_name' and field.name !=
-                'profile_image' and field.name != 'profile_picture' and field.name != 'avatar' and field.name != 'image'
-                and field.name != 'photo' %}
+
+                {% if field.name not in "email password password1 password2 password_confirmation confirm_password full_name name first_name profile_image profile_picture avatar image photo" %}
+
                 <div class="form-group form-group-full">
                     <label class="form-label">{{ field.label }}</label>
                     {{ field }}
+
                     {% if field.errors %}
                     <span class="text-danger">{{ field.errors|striptags }}</span>
-                    {% endif %}
-                </div>
                 {% endif %}
+                </div>
+
+                {% endif %}
+
                 {% endfor %}
+
+
 
                 <!-- Hidden profile image field that will sync with our custom input -->
                 {% for field in form %}
-                {% if field.name == 'profile_image' or field.name == 'profile_picture' or field.name == 'avatar' or
-                field.name == 'image' or field.name == 'photo' %}
+                {% if field.name in "profile_image profile_picture avatar image photo" %}
+
                 {{ field }}
+
                 {% if field.errors %}
                 <span class="text-danger">{{ field.errors|striptags }}</span>
                 {% endif %}
+
                 {% endif %}
                 {% endfor %}
 
